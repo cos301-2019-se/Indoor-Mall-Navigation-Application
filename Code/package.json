@@ -15,8 +15,11 @@
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
     "jest": "^24.7.1",
-    "jest-expo": "^32.0.0"
+    "jest-expo": "^32.0.0",
+    "react-dom": "^16.8.6"
   },
   "jest": {
     "preset": "jest-expo",

@@ -4,6 +4,16 @@
 * See SRS folder for our software requirements specification.
 
 **Requirement Overview**
+    * A User should be able to navigate to a desired store
+    * A User should be able to register on the system by creating an account
+    * A User should be able to log in once registered to view their profile and utilize other functionality.
+    * A User should be able to view their current location and navigate to a desired location.\\ 
+    * A User should be able to scan the barcode of a product
+    * A User should be able to scan the QRcode of a product\\ 
+    * A User should be able to interact with their shopping cart\\
+    * A User should be able to interact with their wishlist\\
+    * A User should be able to have checked out items delivered.
+    * The System should allow a CRUD functionality to admin (Maintenance) regarding a Mall's map 
 
 ## **Team Members**
 

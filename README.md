@@ -1,4 +1,7 @@
-# **Indoor Mall Navigation Application**
+# **Brute Force**
+
+## **Indoor Mall Navigation Application**
+
 
 **Documentation**
 * See SRS folder for our software requirements specification.

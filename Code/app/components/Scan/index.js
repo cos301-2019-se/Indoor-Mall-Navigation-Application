@@ -3,11 +3,13 @@
 import React, { Component } from 'react';
 import { Alert, Linking, Dimensions, LayoutAnimation, Text, View, StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import { BarCodeScanner, Permissions } from 'expo';
+import dbconnection from '../../../library/db.js';
 
 class Scan extends Component {
   state = {
     hasCameraPermission: null,
     lastScannedUrl: null,
+    database: new dbconnection(),
   };
 
   componentDidMount() {
@@ -25,7 +27,9 @@ class Scan extends Component {
   _handleBarCodeRead = result => {
     if (result.data !== this.state.lastScannedUrl) {
       LayoutAnimation.spring();
-      this.setState({ lastScannedUrl: result.data });
+      var item = this.state.database.checkBarcode(result.data);
+      this.setState({ lastScannedUrl:  this.state.database.checkBarcode(result.data)});
+      //this.setState
     }
   };
 

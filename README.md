@@ -41,9 +41,18 @@
 |Team Member | Details | 
 | :---         | :---         |  
 |**Munyadziwa Tshisimba**|    **u11034531**   |
-|**Profile** |[Github]()|
+|**Profile** |[Github](https://github.com/khodanit)|
 |**Overview**|Working Together, Fully Participating and Learning|
-|**Position** |Final year student|
+|**Position** |Final year BSc IT|
 |**Interests** |Acoustic Guitar, Trying new things|
 |**Skills**|PHP, Java, Java script,  CSS3, HTML, SQL, C#, Unity|
+
+|Team Member | Details | 
+| :---         | :---         |  
+|**Bandile Dlamini**|    **14402425**   |
+|**Profile** |[Github]()|
+|**Overview**|Hard working and eager to learn new things|
+|**Position** |Final year student|
+|**Interests** |Robotics, Drones, Micro-Controllers, Software Development|
+|**Skills**|C, C++, C#, JAVA, JavaScript, PHP, .NET|
 

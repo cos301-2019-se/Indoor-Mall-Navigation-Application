@@ -48,7 +48,7 @@ export default class dbconnection{
 	fillTable (){
 		this.database.transaction(tx => {
 			tx.executeSql(
-				"INSERT INTO tbl_items(name)VALUES('Shoes'), ('Hamburger'), ('Cellphone')",
+				"INSERT INTO tbl_items(name)VALUES('Shoes'), ('Sweater'), ('Hoody'), ('Zambuck')",
 				[],
 				(tx, success)=>{console.log("DB Filled");}, 
 				(tx, error)=>{console.log("DB fill error " + error);}

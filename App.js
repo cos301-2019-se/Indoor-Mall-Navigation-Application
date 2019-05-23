@@ -1,29 +1,28 @@
-import React from 'react';
-import { StyleSheet, Text, View ,Button} from 'react-native';
-import Login from './app/components/Login';
-import Register from './app/components/Register';
-import Cart from './app/components/Cart';
-import Search from './app/components/Search';
-import Scan from './app/components/Scan';
-import {createStackNavigator, createAppContainer} from 'react-navigation';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow
+ */
 
-class App extends React.Component {
+import React, {Component} from 'react';
+import { StyleSheet, Text, View} from 'react-native';
+import { Button } from 'react-native-elements';
+//import { Button} from 'react-native-material-design';
 
-  constructor(props){
-    super(props);
-  }
-
+export default class App extends Component<Props> {
   render() {
-    return(
-    <View style={styles.container}>
+    const { navigate } = this.props.navigation;
+    return (
+      <View style={styles.container}>
       <Text>This is a default entry Page</Text>
-      <Text style={styles.btn}>Use the navigation buttons to go to the page you want to work on</Text>
-     
-      <Button  onPress={() => this.props.navigation.navigate('login')} title="Login"></Button>
-      <Button style={styles.container && styles.btn}  onPress={() => this.props.navigation.navigate('register')} title="Register"></Button>
-      <Button style={styles.btn} onPress={() => this.props.navigation.navigate('cart')} title="Cart"></Button>
-      <Button style={styles.btn} onPress={() => this.props.navigation.navigate('search')} title="Search"></Button>
-      <Button style={styles.btn} onPress={() => this.props.navigation.navigate('scan')} title="Scan"></Button>
+      <Text>Use the navigation buttons to go to the page you want to work on</Text>
+      <Button title="Login"></Button>
+      <Button title="Register"></Button>
+      <Button title="Cart"></Button>
+      <Button title="Search"></Button>
+      <Button title="Scan" ></Button>
     </View>
     );
   }
@@ -31,25 +30,13 @@ class App extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#ffffff',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
+    justifyContent: 'center'
   },
   btn: {
     marginTop: 8,
-    padding: 8
+    padding: 8,
+    backgroundColor:"red"
   },
 });
-
- const NavStack = createStackNavigator({
-   entry: App,
-   login : Login,
-   register: Register,
-   search: Search,
-   cart: Cart,
-   scan: Scan,
-});
-const nav = createAppContainer(NavStack);
-export default nav;

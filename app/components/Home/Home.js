@@ -15,7 +15,7 @@ export default class Home extends React.Component{
       <Button title="Register"></Button>
       <Button title="Cart"></Button>
       <Button title="Search"></Button>
-      <Button title="Scan" ></Button>
+      <Button title="Scan" onPress={() => this.props.navigation.navigate('Scan')}></Button>
     </View>
     );
   }

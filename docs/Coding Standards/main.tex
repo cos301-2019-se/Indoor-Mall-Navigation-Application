@@ -1,0 +1,280 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage{indentfirst}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[english]{babel}
+\usepackage{biblatex}
+
+\addbibresource{bibliography.bib}
+
+\title{Indoor Mall Navigation - Coding Standards}
+\author{Brute Force }
+\date{May 2019}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\begin{document}
+
+\maketitle
+
+\pagebreak
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+
+The following document describes The coding standards that are to be practised during the development and implementation of the project 'Indoor Mall Navigation' by Brute Force for DVT.
+\newline
+\newline
+This will provide a set of rules that will be used as guidelines and requirements for written programs.
+
+\section{Required and Optional Items}
+\subsection{File Header}
+Each file is to contain a file header in the beginning of the code. The following is a summary of the file header items
+\cite{kung}
+\begin{center}
+        \begin{tabular}{|>{\centering}p{3.5cm}|p{10cm}|}
+             \hline
+              \textbf{Item} & \textbf{Description}  \tabularnewline
+             \hline
+             File Name & Name of file including it's extension and path to file\tabularnewline
+             \hline
+              Version Number & This will be the file version number (this should be changed before every commit)\tabularnewline
+              \hline
+             Author Name & This should be the name of the department working on the file\tabularnewline 
+             \hline
+             Project Name & The current program name\tabularnewline
+             \hline
+             Organization & Name of the organization.\tabularnewline
+             \hline
+             Copyright & Copyright information.\tabularnewline
+             \hline
+             Related Documents & A list of the related documents\tabularnewline
+             \hline
+             Update History & A list of updates which include author, name of person and reason for update\tabularnewline
+             \hline
+             Functional Description & An overall description of the program (what it does)\tabularnewline
+             \hline
+             Error Messages & A list of potential error messages that program may produce with a simple description of each message\tabularnewline
+             \hline
+             Assumptions & Conditions that must be satisfied (these a conditions that affect the operation of the program\tabularnewline
+             \hline
+             Constraints & Restrictions on the use of program\tabularnewline
+             \hline
+        \end{tabular}
+    \end{center}
+\pagebreak
+
+
+    
+\begin{lstlisting}
+/**
+ *  File Name: db.js (path: library/db.js)
+ *  Version: 1.0
+ * 	Author: Brute Force - Database Management
+ * 	Project: Indoor Mall Navigation
+ * 	Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Related Documents: Scan, Register, Login
+ * 	
+ * 	Update History:
+ * 
+ *  Date		Author		Changes
+ * 	--------------------------------------------
+ * 	10/04/2019 	Thomas		Original
+ * 
+ * 	Functional Description: This program file establishes a database connection with the database
+ * 	Error Messages: Database Connection Failed
+ * 	Constraints: Can only be used to connect to database
+ * 	Assumptions: It is assumed that the database connect will be established
+ * 
+ */
+\end{lstlisting}
+An example of a file header
+
+\subsection{Class Descriptions}
+
+Each class within the program should have a brief class description to ensure program readability and writeability across the developers involved. The required fields for each class description is the Purpose field. The other fields are a suggestion that is highly recommended in cases where the program will be written by multiple developers. \cite{kung}
+
+Fields that would be found in the class description include:
+
+\begin{itemize}
+\item Purpose - A sentence stating the purpose of of the class
+\item Usage Instructions - A Simple description of how the class is to be used by other classes and methods (restrictions and constraints)
+\item Description of Methods- A simple description of the class methods which may include it's purpose, parameters, return type, and input and output files (exclude get and set methods)
+\item Description of Fields - a simple description of each field
+\item In-code Comments - comments within the class to help in the understanding and processing of the program (In-code comments will be found within the class and not necessarily outside of the class implementation code)
+
+\end{itemize}
+
+\begin{lstlisting}
+import { SQLite } from 'expo';
+
+/**
+ * Purpose		: This class is used to establish a database connection with SQLite
+ * 
+ * Description	: The class creates and establishes one connection to the database to allow following methods to alter the database using the already established connection.
+ * 
+ * Usage        :       
+ */
+
+export default class dbconnection{
+	database: null;
+	created: false;
+	filled: false;
+	open: false;
+
+/**
+ * Purpose		: A constructor that creates the database connection
+ * 
+ * Description	: Establishes connection with SQLite database
+ */
+	constructor(props)
+	{
+		this.database = SQLite.openDatabase("indoors");
+		this.open = true;
+		//console.log("opened");
+		this.dropTable();
+		this.buildTable();
+		this.fillTable();
+		//console.log(this.created);
+	}
+
+\end{lstlisting}
+
+
+
+\pagebreak
+
+
+\section{Coding Requirements and Conventions}
+\subsection{Naming Conventions}
+    \indent \textbf{Variables}
+     Variable names should be meaningful but not too long. Variable 
+     \indent names must start with a lowercase letter and Camel Casing must be used if  \indent necessary. Every variable must be initialized prior to its first use.
+     \begin{lstlisting}
+        var userLocation = new Location(this);
+    \end{lstlisting}
+    \newline \newline
+    \indent  \indent \textbf{Classes, Subroutines, Objects, Functions and Methods}
+    The names \indent of classes, subroutines, objects, functions and methods must describe its \indent purpose, and start with a capital letter, Camel Casing must be used where \indent necessary. 
+    
+\subsection{Formatting Conventions}
+    \indent \textbf{Indentation}
+    Indentation is very important and should be consistent through-  \indent out the project. The body of a block should be indented and also the body \indent of a structure like a loop should also be indented. \newline
+    \begin{lstlisting}
+        class App extends React.Component
+        {
+            constructor(props)
+            {
+                super(props);
+            }
+            
+            for(int i = 0; i < 10; i++)
+            {
+                LoopImplementation();
+            }
+        }
+    \end{lstlisting}
+    \newline 
+    \indent \textbf{Braces}
+    Braces should be on a new line to improve readability. Every method/function should have braces, even if they contain one line.
+    \begin{lstlisting}
+        // BAD!
+        if(shopFound)
+            Navigate(shop);
+        
+        // GOOD  
+        if(shopFound)
+        {
+            Navigate(shop);
+        }
+    \end{lstlisting}
+    
+
+\subsection{In-code Comment Conventions}
+    \indent \textbf{Inline Comments}
+    Inline comments should be used at a minimum, only \indent when they are absolute necessary will inline comments be accepted because \indent over-using them can cause the code to not be readable. Function Comments \indent are encouraged over Inline Comments
+    \begin{lstlisting}
+       for(int i = 0; i < 10; i++)
+       {
+            LoopImplementation(); // Call the implementation for this loop
+       }
+    \end{lstlisting}
+    
+    
+    \indent \textbf{Function Comments}
+    Every function should have a comment block above \indent it, Function Comments will include:\newline
+ \indent \indent•	A brief description of the function (What it does)\newline
+ \indent \indent•	The parameters it requires\newline
+ \indent \indent•	What it returns\newline
+    \begin{lstlisting}
+        /**
+        * Navigate User to shop
+        * 
+        * @param shop - The shop to navigate to
+        * @returns null
+        */
+        function Navigation(shop)
+        {
+            // Navigate to shop
+        }
+    \end{lstlisting}
+
+
+\section{Rules and Responsibilities}
+\subsection{Rules}
+These rules describe how the coding standards developed will be applied during the project
+
+\begin{enumerate}
+    \item All programs should contain a file header with the following minimum requirements
+    \begin{itemize}
+        \item File name
+        \item Copyright
+        \item Update History
+        \item Functional Description
+    \end{itemize}{}
+    
+    \item Test case programs are subject to \textbf{Rule. 1}.
+    \item All coding conventions as stipulated in this document will be considered as coding requirements henceforth. This is subject to change throughout the development process to the discretion of the Project Manager and Organization.
+    \item Rules are subject to change throughout the development process to the discretion of the Project Manager, Organization and Developers assigned to the development and maintenance of such standards
+\end{enumerate}
+
+\subsection{Responsibilities}
+The following responsibilities have been designated to the following parties in order to achieve accountability and consistency throughout the development process.
+
+\begin{enumerate}
+    \item The drafting and compiling of coding standards is assigned to Mr. Bandile Dlamini (Server Side Development) and Miss. Munyadziwa Tshisimba (Database Development and Management)
+    \item The educating of coding standards to all programmers is assigned to Mr. B Dlamini.
+    \item Follow up on program compliance with coding standards is assigned to Miss. M Tshisimba
+    \item Oversight is assigned to Mr. Thomas Honiball (Project Manager)
+\end{enumerate}
+\section{Conclusion}
+
+This document is to serve as a guideline. Developers/Programmers are to follow the minimum requirements as stipulated in the rules.
+
+\printbibliography
+
+\end{document}

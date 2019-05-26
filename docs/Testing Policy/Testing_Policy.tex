@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Indoor Mall Navigation Testing Policy}
+\author{Thomas Honiball }
+\date{May 2019}
+
+\begin{document}
+
+\maketitle
+
+\section{Scope and Overview}
+\subsection{Overview}
+The Indoor Mall Navigation Application aims to aid shoppers in a large mall by providing a searchable, navigable map available on their mobile device. The system also provides a shopping interface which allows users to purchase items using barcodes or beacons.
+\subsection{Scope}
+The scope of this testing policy will cover low-level unit testing and integration testing.
+
+\section{Testing Approach}
+\subsection{Unit Testing}
+Unit testing for the system will be carried out using Jest as a testing tool. Tests will be compiled for each functional component of the module being tested and will be carried out before each commit to the git repository as well as before each merge with other git branches by the team member responsible for the module. This will be done to ensure only functional code is used in the further development of the system. 
+\linebreak
+\subsubsection{Test Cases}
+Unit testing for each functional component should consist of at least the following test cases:
+\begin{table}[]
+	\begin{tabular}{ll}
+		Case \#& Case Description \\
+ 		1 & Test Function with Expected Valid Input\\
+ 		2 & Test Function with Input of Invalid Data Type\\
+ 		3 & Test Function with Input of Valid Data Type with Exceptional Value\\
+ 		4 & Test Function with Empty Input
+	\end{tabular}
+\end{table}
+
+\
+
+\end{document}

@@ -284,7 +284,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="Proceed Forward"
+            android:text="Approaching"
             android:layout_below="@id/electoral_vote_counter"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentLeft="true"
@@ -315,7 +315,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="100"
+            android:text="- -"
             android:background="@color/light_gray_transparent"
             android:layout_above="@id/electoral_vote_text"
             android:layout_alignEnd="@id/days_to_election_text"

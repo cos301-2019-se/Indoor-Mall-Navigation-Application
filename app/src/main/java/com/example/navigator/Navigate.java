@@ -1,8 +1,10 @@
 package com.example.navigator;
 
 
+import android.content.ServiceConnection;
 import android.hardware.SensorEventListener;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -54,8 +56,18 @@ import android.widget.VideoView;
 import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
 import com.example.navigator.utils.ArDisplayView;
 
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconConsumer;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
+
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -63,7 +75,7 @@ import java.util.Locale;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Navigate extends Fragment implements SensorEventListener {
+public class Navigate extends Fragment implements BeaconConsumer, SensorEventListener {
 
     private String TAG = "GameFragment";
     public static final float MOVE_FACTOR_X = 50f;
@@ -161,6 +173,9 @@ public class Navigate extends Fragment implements SensorEventListener {
     private Drawable arrowRight = null;
     private Drawable arrowUp = null;
     private Drawable arrowDown = null;
+
+    private BeaconManager beaconManager;
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
@@ -294,13 +309,17 @@ public class Navigate extends Fragment implements SensorEventListener {
     final Runnable electionDayCountdown = new Runnable() {
         @Override
         public void run() {
-            daysToElection -= 1;
+            /*daysToElection -= 1;
             ((TextView)rootView.findViewById(R.id.days_to_election)).setText(daysToElection + "m");
             if(daysToElection == 0) {
                 gameOver();
             } else {
                 handler.postDelayed(electionDayCountdown, TIME_TO_NEXT_ELECTION_DAY);
-            }
+            }*/
+
+            onBeaconServiceConnect();
+
+
         }
     };
 
@@ -355,6 +374,14 @@ public class Navigate extends Fragment implements SensorEventListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.d(TAG,"onCreateView");
+
+        beaconManager = BeaconManager.getInstanceForApplication(getContext());
+        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
+        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
+        beaconManager.getBeaconParsers().add(new BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        //        setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+        beaconManager.bind(this);
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
@@ -1148,6 +1175,71 @@ public class Navigate extends Fragment implements SensorEventListener {
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {}
+    }
+
+    @Override
+    public void onBeaconServiceConnect() {
+        beaconManager.removeAllMonitorNotifiers();
+        beaconManager.addMonitorNotifier(new MonitorNotifier() {
+            @Override
+            public void didEnterRegion(Region region) {
+                Log.i(TAG, "I just saw an beacon for the first time!");
+            }
+
+            @Override
+            public void didExitRegion(Region region) {
+                Log.i(TAG, "I no longer see an beacon");
+            }
+
+            @Override
+            public void didDetermineStateForRegion(int state, Region region) {
+                Log.i(TAG, "I have just switched from seeing/not seeing beacons: "+state);
+            }
+        });
+
+        try {
+            beaconManager.startMonitoringBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
+        } catch (RemoteException e) {    }
+
+        try {beaconManager.removeAllRangeNotifiers();
+            beaconManager.addRangeNotifier(new RangeNotifier() {
+                @Override
+                public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                    if (beacons.size() > 0) {
+                        Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
+
+
+
+                        //String str = "Beacon is " + beacons.iterator().next().getDistance() + "m away";
+
+                        //((TextView)rootView.findViewById(R.id.days_to_election)).setText(0 + "m");
+                        double distance = beacons.iterator().next().getDistance();
+                        final String distance_str = df2.format(distance) + "m";
+                        ((TextView)rootView.findViewById(R.id.days_to_election)).setText(distance_str);
+
+
+
+                        Log.i(TAG,distance_str);
+                    }
+                }
+            });
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+        } catch (RemoteException e) {    }
+    }
+
+    @Override
+    public Context getApplicationContext(){
+        return getContext();
+    }
+
+    @Override
+    public void unbindService(ServiceConnection serviceConnection){
+
+    }
+
+    @Override
+    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i){
+        return false;
     }
 
 }

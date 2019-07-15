@@ -23,6 +23,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
+import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -34,21 +37,88 @@ import org.altbeacon.beacon.Region;
 
 import java.util.Collection;
 
-public class MainActivity extends AppCompatActivity implements BeaconConsumer {
+public class MainActivity extends AppCompatActivity implements BeaconConsumer, NavigationFragmentInteractionListener {
     private TextView mTextMessage;
     protected static final String TAG = "MonitoringActivity";
     private BeaconManager beaconManager;
     private static final int PERMISSIONS_REQUEST_CODE = 1111;
     private RelativeLayout mContainer;
+    public MixpanelAPI mixpanel;
+
+    int PERMISSION_ALL = 1;
+    String[] PERMISSIONS = {
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.CAMERA
+    };
 
     private boolean havePermissions() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
+
+        if (getBaseContext() != null && PERMISSIONS != null) {
+            for (String permission : PERMISSIONS) {
+                if (ActivityCompat.checkSelfPermission(getBaseContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void requestPermissions() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_CODE);
+        ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+    }
+
+    @Override
+    public void onFragmentInteraction(String previousFragment, String upcomingFragment, Bundle data) {
+        Log.d(TAG, "onFragmentInteraction: " + upcomingFragment);
+        switch(upcomingFragment) {
+            case "GameFragment":
+                createAndAddFragment(previousFragment, upcomingFragment, Navigate.class, true, data);
+                break;
+
+        }
+    }
+
+    public void createAndAddFragment(String previousFragment, String upcomingFragment, Class<? extends Fragment> fragClass, boolean
+            addToBackStack, Bundle bundleData) {
+
+        Fragment frag = getSupportFragmentManager().findFragmentByTag(upcomingFragment);
+        if(frag == null) {
+            Log.d(TAG, "frag is null: " + upcomingFragment);
+
+            try {
+                frag = fragClass.newInstance();
+                frag.setArguments(bundleData);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.d(TAG, "frag is not null : " + upcomingFragment);
+        }
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.frame, frag, upcomingFragment);
+        if(addToBackStack)
+        {
+            ft.addToBackStack(upcomingFragment);
+        }
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.commit();
+    }
+
+    public void hideSplashScreen() {
+        //getWindow().getDecorView().findViewById(R.id.splash_screen).setVisibility(View.GONE);
+    }
+
+    @Override
+    public void trackEvent(String eventName) {
+        mixpanel.track(eventName);
+    }
+
+    @Override
+    public void timeEvent(String eventName) {
+        mixpanel.timeEvent(eventName);
     }
 
     @Override
@@ -56,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        mixpanel = MixpanelAPI.getInstance(this, "9feb719bbed8b10b51fe93fd9915d97d");
 
         final Navigate navigateFragment = new Navigate();
         final Cart cartFragment = new Cart();
@@ -92,11 +162,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                         return true;
                     case R.id.navigation_scan:
                         setFragment(scanFragment);
-                        //mTextMessage.setText(R.string.title_scan);
                         return true;
                     case R.id.navigation_cart:
                         setFragment(cartFragment);
-                        //mTextMessage.setText(R.string.title_cart);
                         return true;
                 }
                 return false;

@@ -46,14 +46,6 @@
             android:paddingTop="@dimen/huge"
             android:layout_height="wrap_content"/>
 
-        <ImageView
-            android:layout_width="100dp"
-            android:src="@drawable/donaldsays_logo"
-            android:layout_below="@id/app_title"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/medium"
-            android:layout_height="100dp"/>
-
         <TextView
             android:layout_width="wrap_content"
             android:text="Help"
@@ -121,7 +113,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:textColor="@color/dark_gray"
-            android:text="Tap to shoot, hold down for rapid fire"
+            android:text=""
             android:gravity="center"
             android:id="@+id/shoot_instructions"
             android:layout_below="@id/shoot_button_instructions"
@@ -203,19 +195,6 @@
                     android:padding="@dimen/large"
                     android:layout_height="wrap_content"/>
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:text="Scan"
-                    android:id="@+id/share_win"
-                    android:visibility="visible"
-                    android:elevation="14dp"
-                    android:layout_marginStart="@dimen/medium"
-                    android:layout_marginLeft="@dimen/medium"
-                    android:layout_marginTop="@dimen/medium"
-                    android:background="@drawable/pressable_blue_to_light_rounded"
-                    android:textColor="@color/white"
-                    android:padding="@dimen/large"
-                    android:layout_height="wrap_content"/>
 
             </LinearLayout>
 
@@ -231,22 +210,6 @@
                 android:text="You have reached your destination!"
                 android:layout_height="wrap_content"/>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:text="Close"
-                android:id="@+id/shirts_link_win"
-                android:visibility="visible"
-                android:elevation="14dp"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@+id/button_container_win"
-                android:layout_marginTop="@dimen/xxxlarge"
-                android:background="@drawable/rounded_box_blue_light"
-                android:textColor="@color/white"
-                android:paddingTop="@dimen/large"
-                android:paddingBottom="@dimen/large"
-                android:paddingStart="@dimen/xxxlarge"
-                android:paddingEnd="@dimen/xxxlarge"
-                android:layout_height="wrap_content"/>
 
         </RelativeLayout>
 
@@ -255,7 +218,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
-        android:id="@+id/game_hud_container"
+        android:id="@+id/ar_container"
         android:visibility="gone"
         android:layout_height="match_parent">
 
@@ -283,10 +246,10 @@
             android:layout_width="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="80dp"
             android:text="Stop"
             android:textAllCaps="true"
-            android:id="@+id/shoot_button"
+            android:id="@+id/stop_button"
             android:background="@drawable/rounded_box_5dp_primary_color"
             android:textColor="@color/white"
             android:padding="@dimen/large"

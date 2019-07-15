@@ -3,6 +3,8 @@ package com.example.navigator;
 
 import android.hardware.SensorEventListener;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +20,6 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -28,29 +29,24 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -165,6 +161,97 @@ public class Navigate extends Fragment implements SensorEventListener {
     private Drawable arrowRight = null;
     private Drawable arrowUp = null;
     private Drawable arrowDown = null;
+
+    int PERMISSION_ALL = 1;
+    String[] PERMISSIONS = {
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.CAMERA
+    };
+    private static final int PERMISSIONS_REQUEST_CODE = 1111;
+    private RelativeLayout mContainer;
+
+    private boolean havePermissions() {
+
+        if (getContext() != null && PERMISSIONS != null) {
+            for (String permission : PERMISSIONS) {
+                if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void requestPermissions() {
+        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
+    }
+
+    private void showLinkToSettingsSnackbar() {
+        if (mContainer == null) {
+            return;
+        }
+        Snackbar.make(mContainer,
+                R.string.permission_denied_explanation,
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.settings, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Build intent that displays the App settings screen.
+                        Intent intent = new Intent();
+                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package",
+                                BuildConfig.APPLICATION_ID, null);
+                        intent.setData(uri);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                }).show();
+    }
+
+    private void showRequestPermissionsSnackbar() {
+        if (mContainer == null) {
+            return;
+        }
+        Snackbar.make(mContainer, R.string.permission_rationale,
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.ok, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Request permission.
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                PERMISSIONS_REQUEST_CODE);
+                    }
+                }).show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[]permissions, @NonNull int[] grantResults) {
+        if (requestCode != PERMISSIONS_REQUEST_CODE) {
+            return;
+        }
+
+        for (int i = 0; i < permissions.length; i++) {
+            String permission = permissions[i];
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                if (shouldShowRequestPermissionRationale(permission)) {
+                    Log.i(TAG, "Permission denied without 'NEVER ASK AGAIN': "
+                            + permission);
+                    showRequestPermissionsSnackbar();
+                } else {
+                    Log.i(TAG, "Permission denied with 'NEVER ASK AGAIN': "
+                            + permission);
+                    showLinkToSettingsSnackbar();
+                }
+            } else {
+                Log.i(TAG, "Permission granted, building GoogleApiClient");
+            }
+        }
+    }
+
 
     LocationListener locationListener;
 
@@ -297,42 +384,15 @@ public class Navigate extends Fragment implements SensorEventListener {
 
             locationListener = new MyLocationListener();
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if(getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_DENIED){
-                    if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
-                        new AlertDialog.Builder(getContext())
-                                .setTitle("Call Permission")
-                                .setMessage("Hi there! We can't call anyone without the call permission, could you please grant it?")
-                                .setPositiveButton("Yep", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_COARSE_LOCATION);
-                                    }
-                                })
-                                .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        Toast.makeText(getContext(), ":(", Toast.LENGTH_SHORT).show();
-                                    }
-                                }).show();
-                    } else {
-                        //requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_COARSE_LOCATION);
-                        editLocation.setText("Please!! move your device to"+
-                                " see the changes in coordinates."+"\nWait.. 1");
-                        locationManager.requestLocationUpdates(LocationManager
-                                .GPS_PROVIDER, 1000, 0,locationListener);
-                    }
-                } else{
-                    editLocation.setText("Please!! move your device to"+
-                            " see the changes in coordinates."+"\nWait.. 2");
-                    locationManager.requestLocationUpdates(LocationManager
-                            .GPS_PROVIDER, 1000, 10,locationListener);
-                }
-            } else{
-                editLocation.setText("Please!! move your device to"+
-                        " see the changes in coordinates."+"\nWait.. 3");
+            if(havePermissions()) {
+                //requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_COARSE_LOCATION);
+                editLocation.setText("Please!! move your device to" +
+                        " see the changes in coordinates." + "\nWait.. 1");
                 locationManager.requestLocationUpdates(LocationManager
-                        .GPS_PROVIDER, 1000, 10,locationListener);
+                        .GPS_PROVIDER, 1000, 0, locationListener);
+            }
+            else {
+                requestPermissions();
             }
 
         } else {
@@ -378,14 +438,6 @@ public class Navigate extends Fragment implements SensorEventListener {
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == MY_PERMISSION_ACCESS_COARSE_LOCATION){
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //makeCall();
-            }
-        }
-    }
 
     @Override
     public void onPause() {
@@ -445,7 +497,7 @@ public class Navigate extends Fragment implements SensorEventListener {
         Log.d(TAG,"onResume");
         rootView.findViewById(R.id.instructions_container).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.win_container).setVisibility(View.GONE);
-        rootView.findViewById(R.id.game_hud_container).setVisibility(View.GONE);
+        rootView.findViewById(R.id.ar_container).setVisibility(View.GONE);
         rootView.findViewById(R.id.camera_frame).setVisibility(View.GONE);
         rootView.findViewById(R.id.ar_content_overlay).setVisibility(View.GONE);
 
@@ -460,7 +512,7 @@ public class Navigate extends Fragment implements SensorEventListener {
     private void applyCustomStyles()
     {
 
-        ((ImageView)rootView.findViewById(R.id.crosshairs)).setImageDrawable(arrowDown);
+        ((ImageView)rootView.findViewById(R.id.crosshairs)).setImageDrawable(arrowUp);
         laserAnimSet = generateLaserAnimation();
 
     }
@@ -476,20 +528,15 @@ public class Navigate extends Fragment implements SensorEventListener {
                 rootView.findViewById(R.id.instructions_container).setVisibility(View.GONE);
                 initializeSound();
                 initializeAr();
-                prepareGame();
+                prepareNavigation();
             }
         });
 
 
-        rootView.findViewById(R.id.shoot_button).setOnTouchListener(new View.OnTouchListener() {
+        rootView.findViewById(R.id.stop_button).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    startFiring.run();
-                }
-                if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    handler.removeCallbacks(startFiring);
-                }
+                onResume();
                 return false;
             }
         });
@@ -497,7 +544,7 @@ public class Navigate extends Fragment implements SensorEventListener {
         View.OnClickListener playAgain = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                prepareGame();
+                prepareNavigation();
                 mListener.trackEvent("Play Again Button Clicked");
             }
         };
@@ -511,19 +558,6 @@ public class Navigate extends Fragment implements SensorEventListener {
                 mListener.trackEvent("Share Link Clicked");
             }
         };
-
-        rootView.findViewById(R.id.share_win).setOnClickListener(shareApp);
-
-        View.OnClickListener harambeLink = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.trackEvent("Harambe Shirt Link Clicked");
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://teespring.com/dems-out-for-harambe-2016#pid=2&cid=576&sid=front"));
-                startActivity(browserIntent);
-            }
-        };
-
-        rootView.findViewById(R.id.shirts_link_win).setOnClickListener(harambeLink);
 
 
         rootView.findViewById(R.id.how_to_play).setOnTouchListener(new View.OnTouchListener() {
@@ -737,7 +771,7 @@ public class Navigate extends Fragment implements SensorEventListener {
 
     private void gameOver() {
 
-        rootView.findViewById(R.id.shoot_button).setVisibility(View.GONE);
+        rootView.findViewById(R.id.stop_button).setVisibility(View.GONE);
         rootView.findViewById(R.id.crosshairs).setVisibility(View.GONE);
         /*for(int i = 0; i < btcShot.size(); i++) {
             arLeftTrackerObjects.get(i).setVisibility(View.GONE);
@@ -914,14 +948,14 @@ public class Navigate extends Fragment implements SensorEventListener {
         }
     }
 
-    private void prepareGame() {
+    private void prepareNavigation() {
         arContentOverlay.removeAllViews();
 
         rootView.findViewById(R.id.instructions_container).setVisibility(View.GONE);
         rootView.findViewById(R.id.how_to_play_container).setVisibility(View.GONE);
         rootView.findViewById(R.id.win_container).setVisibility(View.GONE);
-        rootView.findViewById(R.id.game_hud_container).setVisibility(View.VISIBLE);
-        rootView.findViewById(R.id.shoot_button).setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.ar_container).setVisibility(View.VISIBLE);
+        rootView.findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.crosshairs).setVisibility(View.VISIBLE);
         ((TextView)rootView.findViewById(R.id.electoral_vote_counter)).setTextColor
                 (ContextCompat.getColor(getContext(), R.color.white));

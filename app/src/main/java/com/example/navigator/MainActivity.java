@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     private static final int PERMISSIONS_REQUEST_CODE = 1111;
     private RelativeLayout mContainer;
     public MixpanelAPI mixpanel;
+    public BottomNavigationView bottomNavigationView;
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
@@ -126,17 +127,19 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        bottomNavigationView = findViewById(R.id.nav_view);
+
+        if (!havePermissions()) {
+            Log.i(TAG, "Requesting permissions needed for this app.");
+            requestPermissions();
+        }
+
         mixpanel = MixpanelAPI.getInstance(this, "9feb719bbed8b10b51fe93fd9915d97d");
 
         final Navigate navigateFragment = new Navigate();
         final Cart cartFragment = new Cart();
         final Scan scanFragment = new Scan();
         final Search searchFragment = new Search();
-        BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
-        if (!havePermissions()) {
-            Log.i(TAG, "Requesting permissions needed for this app.");
-            requestPermissions();
-        }
 
         beaconManager = BeaconManager.getInstanceForApplication(this);
         // To detect proprietary beacons, you must add a line like below corresponding to your beacon
@@ -174,6 +177,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
 
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+
+
     }
 
     private void setFragment(Fragment fragment){
@@ -243,7 +248,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
                 }
             } else {
                 Log.i(TAG, "Permission granted, building GoogleApiClient");
-
             }
         }
     }

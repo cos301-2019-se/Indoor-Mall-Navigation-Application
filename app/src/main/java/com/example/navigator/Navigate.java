@@ -12,7 +12,7 @@ import android.view.ViewGroup;
  * A simple {@link Fragment} subclass.
  */
 public class Navigate extends Fragment {
-
+    //DatabaseReference ref;
 
     public Navigate() {
         // Required empty public constructor

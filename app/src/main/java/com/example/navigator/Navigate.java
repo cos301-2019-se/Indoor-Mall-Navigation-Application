@@ -73,6 +73,7 @@ import java.util.Locale;
 /**
  * A simple {@link Fragment} subclass.
  */
+
 public class Navigate extends Fragment implements BeaconConsumer, SensorEventListener {
 
     private String TAG = "GameFragment";
@@ -361,6 +362,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             setNewMargins();
         }
     };
+
 
     public Navigate() {
         // Required empty public constructor

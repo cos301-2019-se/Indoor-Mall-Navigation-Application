@@ -13,10 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.Manifest;
 import android.animation.Animator;
-import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -413,10 +411,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
             if(havePermissions()) {
                 //requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_COARSE_LOCATION);
-                editLocation.setText("Please!! move your device to" +
-                        " see the changes in coordinates." + "\nWait.. 1");
+                editLocation.setText("Searching for GPS Co-ordinates...");
+                editLocation.setEnabled(false);
                 locationManager.requestLocationUpdates(LocationManager
-                        .GPS_PROVIDER, 1000, 0, locationListener);
+                        .GPS_PROVIDER, 1000, 1, locationListener);
             }
             else {
                 requestPermissions();
@@ -1208,16 +1206,13 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                     if (beacons.size() > 0) {
                         Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
 
-
-
-                        //String str = "Beacon is " + beacons.iterator().next().getDistance() + "m away";
-
-                        //((TextView)rootView.findViewById(R.id.days_to_election)).setText(0 + "m");
                         double distance = beacons.iterator().next().getDistance();
                         final String distance_str = df2.format(distance) + "m";
-                        ((TextView)rootView.findViewById(R.id.days_to_election)).setText(distance_str);
+                        ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText(distance_str);
 
-
+                        String beaconName = beacons.iterator().next().getBluetoothName();
+                        String distanceLabel = "Distance from " + beaconName;
+                        ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
 
                         Log.i(TAG,distance_str);
                     }

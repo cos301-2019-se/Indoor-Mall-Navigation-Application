@@ -1,3 +1,23 @@
+/**
+ *
+ *  File Name: Shop.java (path: app/src/main/java/com.example.navigator/utils/Search.java)
+ *  Version: 1.0
+ *  Author: Brute Force - Insert Shop Names into Database
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  09/07/2019  Thabo Ntsoane    Original
+ *
+ *  Functional Description: This program file searches and navigates user to a specific shop
+ *  Error Messages: None
+ *  Constraints: Can only be used by instances of the class.
+ *  Assumptions: It is assumed that the Search function will return the appropriate name and ID of the shop.
+ *
+ */
 package com.example.navigator;
 
 

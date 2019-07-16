@@ -220,6 +220,7 @@
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
         android:id="@+id/ar_container"
+        android:visibility="gone"
         android:layout_height="match_parent">
 
         <EditText
@@ -237,8 +238,8 @@
             android:layout_marginRight="10dp"
             android:layout_marginBottom="8dp"
             android:textSize="12sp"
-            android:inputType="none">
-
+            android:inputType="none"
+            android:enabled="false">
             <requestFocus></requestFocus>
         </EditText>
 
@@ -271,7 +272,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="0 / 270"
+            android:text="-"
             android:layout_alignParentTop="true"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentLeft="true"
@@ -284,7 +285,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="Check Point"
+            android:text="- -"
             android:layout_below="@id/electoral_vote_counter"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentLeft="true"

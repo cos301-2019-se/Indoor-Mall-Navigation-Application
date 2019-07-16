@@ -2,6 +2,9 @@ package com.example.navigator;
 
 
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.SensorEventListener;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -175,6 +178,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     private BeaconManager beaconManager;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
+    private Bitmap mBlip;
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
@@ -374,6 +378,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.d(TAG,"onCreateView");
+
+        mBlip = ((BitmapDrawable) ContextCompat.getDrawable(getContext(), R.mipmap.arr_up)).getBitmap();
 
         beaconManager = BeaconManager.getInstanceForApplication(getContext());
         // To detect proprietary beacons, you must add a line like below corresponding to your beacon
@@ -1212,7 +1218,14 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                         final String distance_str = df2.format(distance) + "m";
                         ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText(distance_str);
 
-                        String beaconName = beacons.iterator().next().getBluetoothName();
+                        String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();
+                        String beaconName = beacons.iterator().next().getBluetoothAddress();
+                        if(bluetoothAddress.equals("51:0D:6F:72:E6:A0")){
+                            beaconName = "Edgars";
+                        }
+                        else if (bluetoothAddress.equals("72:92:CF:8E:05:68")){
+                            beaconName = "Spitz";
+                        }
                         String distanceLabel = "Distance from " + beaconName;
                         ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
 

@@ -26,11 +26,21 @@ public class Shop {
     private String category;
     private int shopId;
 
+    /*
+    *Purpose: Constructor that set's passed parameters to their appropriate variables.
+    *
+     */
     public Shop(String Cat, String  nm, int si){
         category = Cat;
         name = nm;
         shopId = si;
     }
+
+    /*
+    *  Purpose: Get and Set Shop_id, Name and Category
+    *
+    *
+    * */
     public int getShopId() {
         return shopId;
     }

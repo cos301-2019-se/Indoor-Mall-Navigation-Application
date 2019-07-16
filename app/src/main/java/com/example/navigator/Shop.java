@@ -1,8 +1,8 @@
 /**
  *
- *  File Name: Shop.java (path: app/src/main/java/com.example.navigator/utils/Shop.java)
+ *  File Name: Navigation.js (path: app/src/main/java/com.example.navigator/utils/Search.js)
  *  Version: 1.0
- *  Author: Brute Force - Insert Shop Names into Database
+ *  Author: Brute Force - Database Management
  *  Project: Indoor Mall Navigation
  *  Organisation: DVT
  *  Copyright: (c) Copyright 2019 University of Pretoria
@@ -12,10 +12,10 @@
  *  --------------------------------------------
  *  11/07/2019  Thabo Ntsoane    Original
  *
- *  Functional Description: This program file is a class for Creating an object of a shop.
- *  Error Messages: None
- *  Constraints: Can only be used by instances of the class.
- *  Assumptions: It is assumed that all instances are existing Shops.
+ *  Functional Description: This program file creates instances in the DB
+ *  Error Messages: none
+ *  Constraints: Can only be used to navigate
+ *  Assumptions: It is assumed that the user will be navigated to destination appropriately
  *
  */
 package com.example.navigator;

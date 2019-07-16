@@ -1,3 +1,23 @@
+/**
+ *
+ *  File Name: Navigation.js (path: component/app/navigation.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  09/07/2019  Thabo Ntsoane    Original
+ *
+ *  Functional Description: This program file searches and navigates user to a specific shop
+ *  Error Messages: Shop does not exist
+ *  Constraints: Can only be used to navigate
+ *  Assumptions: It is assumed that the user will be navigated to destination appropriately
+ *
+*/
 package com.example.navigator;
 
 
@@ -33,13 +53,19 @@ public class Search extends Fragment {
     ArrayAdapter<String > adapter;
     Button sub;
     DatabaseReference ref;
-    Shop ObjShop, ObjShop1,ObjShop2,ObjShop3,ObjShop4,ObjShop5,ObjShop6,ObjShop7,ObjShop8,ObjShop9,ObjShop10,ObjShop11,ObjShop12,ObjShop13,ObjShop14,ObjShop15,ObjShop16,ObjShop17,ObjShop18,ObjShop19,ObjShop20,ObjShop21;
+    //Shop ObjShop, ObjShop1,ObjShop2,ObjShop3,ObjShop4,ObjShop5,ObjShop6,ObjShop7,ObjShop8,ObjShop9,ObjShop10,ObjShop11,ObjShop12,ObjShop13,ObjShop14,ObjShop15,ObjShop16,ObjShop17,ObjShop18,ObjShop19,ObjShop20,ObjShop21;
 
     public Search() {
         // Required empty public constructor
-        //EditText edittext = findViewById(R.id.editText);
-
     }
+
+    /**
+     * Purpose: onCreateView is a function that is created when the search view is loaded
+     *
+     * Description: When the page is loaded, the function pushes all the shop names to the Database and
+     * populates the Database.
+     *
+     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,7 +138,13 @@ public class Search extends Fragment {
             }
         });*/
 
-        //READING FROM DATABASE
+        /**
+         * Purpose: onCreateView function that pulls all the shop names from the Database
+         *
+         * Description: When the page is loaded, the function pulls all the names from the Database and
+         * populates the Search drop down.
+         *
+         */
         ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -129,6 +161,12 @@ public class Search extends Fragment {
             }
         });
 
+        /**
+         * Purpose: onQueryTextSubmit is a function that searches the whole list for the typed out shop
+         *
+         * Description: This is a function that searches the whole list for the typed out shop
+         *
+         */
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1,list);
         listView.setAdapter(adapter);
 
@@ -170,12 +208,6 @@ public class Search extends Fragment {
                         Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
                     }
                 }
-
-                /*if(list.contains(query)){
-                    adapter.getFilter().filter(query);
-                }else{
-                    Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
-                }*/
                 return false;
             }
         });

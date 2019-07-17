@@ -1,9 +1,8 @@
 package com.example.navigator;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -36,11 +34,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         progressDialog = new ProgressDialog(this);
 
 
-        if(firebaseAuth.getCurrentUser()!= null){
+        /*if(firebaseAuth.getCurrentUser()!= null){
             finish();
             //profile activity
-            startActivity(new Intent(this, Navigate.class));
-        }
+            startActivity(new Intent(this, Scan.class));
+        }*/
 
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
@@ -67,7 +65,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         if(TextUtils.isEmpty(password)){
             //password is empty
-            Toast.makeText(this,"Please Enter Password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Please Enter Password",Toast.LENGTH_SHORT).show();
             //stop the function
             return;
         }
@@ -85,7 +83,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         if(task.isSuccessful()){
                             finish();
                             //start profile activity
-                            startActivity(new Intent(getApplicationContext(),Navigate.class)); //cant do new intent in OncompleteListner so getappli..context used
+                            startActivity(new Intent(getApplicationContext(),MainActivity.class)); //cant do new intent in OncompleteListner so getappli..context used
                         }
                         else{
                             Toast.makeText(getApplicationContext(), "Login Failed...Try Again", Toast.LENGTH_SHORT).show();

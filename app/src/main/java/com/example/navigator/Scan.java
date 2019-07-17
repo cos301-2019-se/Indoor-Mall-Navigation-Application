@@ -42,7 +42,7 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View view) {
 
-          startActivity(new Intent(getContext(),Signup.class));
+          startActivity(new Intent(getContext(),Login.class));
 
         }
       });

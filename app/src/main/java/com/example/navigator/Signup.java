@@ -3,6 +3,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,17 +20,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseUser;
 
-public class Signup extends AppCompatActivity implements View.OnClickListener {
-
+public class  Signup extends AppCompatActivity implements View.OnClickListener {
     private Button buttonSignUp;
     private EditText editTextEmail;
     private EditText editTextPassword;
     private EditText editTextUsername;
     private TextView textViewLogIn;
     private DatabaseReference mDatabase;
-
     private ProgressDialog progressDialog;   //progress loading
-
     private FirebaseAuth firebaseAuth;
 
 
@@ -36,24 +35,21 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
-
         progressDialog = new ProgressDialog(this);
 
-        if(firebaseAuth.getCurrentUser()!= null){
+        /*if(firebaseAuth.getCurrentUser()!= null){
             finish();
             //profile activity
-            startActivity(new Intent(this, Navigate.class));
-        }
+            startActivity(new Intent(this, Scan.class));
+        }*/
 
         buttonSignUp = (Button) findViewById(R.id.buttonSignUp);
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         editTextUsername = (EditText) findViewById(R.id.editTextUsername);
         textViewLogIn = (TextView) findViewById(R.id.textViewLogIn);
-
         buttonSignUp.setOnClickListener(this);
         textViewLogIn.setOnClickListener(this);
 
@@ -106,7 +102,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                     finish();
                     //start profile activity
                     onAuthSuccess(task.getResult().getUser());
-                    startActivity(new Intent(getApplicationContext(),Navigate.class));
+                    startActivity(new Intent(getApplicationContext(),Login.class));
                 }
 
                 else{

@@ -113,9 +113,6 @@ public class  Signup extends AppCompatActivity implements View.OnClickListener {
             }
         });
 
-
-
-
     }
 
     private void onAuthSuccess(FirebaseUser user) {

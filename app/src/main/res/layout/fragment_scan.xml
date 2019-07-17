@@ -15,7 +15,7 @@
         android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:layout_width="270dp"
-        android:layout_height="60dp"
+        android:layout_height="45dp"
         android:background="@drawable/buttonshape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
@@ -31,4 +31,18 @@
         android:textSize="22sp"
         android:layout_marginTop="20dp"
         android:id="@+id/result_text"/>
+
+    <Button
+        android:layout_marginTop="20dp"
+        android:text="Add To Cart"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:layout_width="270dp"
+        android:layout_height="45dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:id="@+id/btn_addToCart"/>
 </LinearLayout>

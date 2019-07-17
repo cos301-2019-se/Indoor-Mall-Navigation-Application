@@ -10,14 +10,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Signup extends AppCompatActivity implements View.OnClickListener {
 
@@ -78,13 +77,13 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
 
         if(TextUtils.isEmpty(password)){
             //password is empty
-            Toast.makeText(this,"Please Enter Password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Please Enter Password",Toast.LENGTH_SHORT).show();
             //stop the function
             return;
         }
 
         if(length<6){
-            Toast.makeText(this,"Password atleast 6 character or more", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Password atleast 6 character or more",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -103,7 +102,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                     //user is registerd
                     //start profile activity
                     progressDialog.hide();
-                    Toast.makeText(Signup.this,"Registerd Successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Signup.this,"Registerd Successfully",Toast.LENGTH_SHORT).show();
                     finish();
                     //start profile activity
                     onAuthSuccess(task.getResult().getUser());
@@ -112,7 +111,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
 
                 else{
                     progressDialog.hide();
-                    Toast.makeText(Signup.this,"Could'nt Register, Email already exist", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Signup.this,"Could'nt Register, Email already exist",Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -128,7 +127,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         String username = editTextUsername.getText().toString().trim();
         if(TextUtils.isEmpty(username)){
             //password is empty
-            Toast.makeText(this,"Please Enter Username", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Please Enter Username",Toast.LENGTH_SHORT).show();
             //stop the function
             return;
         }
@@ -157,8 +156,5 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
 
     }
 }
-
-
-
 
 

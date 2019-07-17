@@ -14,6 +14,7 @@ public class Scan extends Fragment {
 
   public static TextView resultTextView;
   Button buttonScan;
+  Button buttonAddToCart;
     public Scan() {
         // Required empty public constructor
     }
@@ -26,6 +27,7 @@ public class Scan extends Fragment {
       View view = inflater.inflate(R.layout.fragment_scan, container, false);
       resultTextView = (TextView) view.findViewById(R.id.result_text);
       buttonScan = (Button) view.findViewById(R.id.btn_scan);
+      buttonAddToCart = (Button) view.findViewById(R.id.btn_addToCart) ;
 
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -36,10 +38,16 @@ public class Scan extends Fragment {
         }
       });
 
+      buttonAddToCart.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+          startActivity(new Intent(getContext(),Signup.class));
+
+        }
+      });
 
       return view;
-
-
 
     }
 

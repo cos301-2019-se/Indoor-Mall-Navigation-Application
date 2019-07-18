@@ -7,8 +7,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +36,7 @@ public class Cart extends Fragment {
     Button  fetch;
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
+    ListView cartList;
 
     DatabaseReference rootRef,demoRef;
     public Cart() {
@@ -49,6 +52,7 @@ public class Cart extends Fragment {
         fetch = (Button) view.findViewById(R.id.fetch);
         demoValue = (TextView) view.findViewById(R.id.tvValue);
         rootRef = FirebaseDatabase.getInstance().getReference();
+        cartList = view.findViewById(R.id.cartList);
 
         //database reference pointing to Product node
         demoRef = rootRef.child("Product");
@@ -60,13 +64,19 @@ public class Cart extends Fragment {
                 demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        List<Object> list = new ArrayList<>();
+                        List list = new ArrayList<>();
                         Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
                         for(int i = 0; i < map.size(); i++){
                             list.add(map);
                             i++;
                         }
+
+
+
+                        ArrayAdapter adapter = new ArrayAdapter<String>(getContext(),
+                                android.R.layout.simple_list_item_1, list);
+                        cartList.setAdapter(adapter);
 
                         Log.d(TAG, "Barcodes: " + list);
 

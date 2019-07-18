@@ -5,6 +5,7 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.GeomagneticField;
 import android.hardware.SensorEventListener;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -41,6 +42,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
@@ -55,7 +57,11 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
+import com.example.navigator.utils.AngleLowpassFilter;
 import com.example.navigator.utils.ArDisplayView;
+import com.example.navigator.utils.CompassView;
+import com.example.navigator.utils.LowPassFilter;
+import com.example.navigator.utils.RadarScanView;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -67,17 +73,57 @@ import org.altbeacon.beacon.Region;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+
+import static android.content.ContentValues.TAG;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 
-public class Navigate extends Fragment implements BeaconConsumer, SensorEventListener {
+public class Navigate extends Fragment implements BeaconConsumer, SensorEventListener,
+        LocationListener{
+
+
+    private RelativeLayout mContainer;
+    private static final int PERMISSIONS_REQUEST_CODE = 1111;
+    private AngleLowpassFilter angleLowpassFilter = new AngleLowpassFilter();
+
+    public static final String NA = "N/A";
+    public static final String FIXED = "FIXED";
+    // location min time
+    private static final int LOCATION_MIN_TIME = 30 * 1000;
+    // location min distance
+    private static final int LOCATION_MIN_DISTANCE = 10;
+    // Gravity for accelerometer data
+    private float[] gravity = new float[3];
+    // magnetic data
+    private float[] geomagnetic = new float[3];
+    // Rotation data
+    private float[] rotation = new float[9];
+    // orientation (azimuth, pitch, roll)
+    private float[] orientation = new float[3];
+    // smoothed values
+    private float[] smoothed = new float[3];
+    // sensor manager
+    private SensorManager sensorManager;
+    // sensor gravity
+    private Sensor sensorGravity;
+    private Sensor sensorMagnetic;
+    private LocationManager locationManager;
+    private Location currentLocation;
+    private GeomagneticField geomagneticField;
+    private double bearing = 0;
+    private TextView textDirection, textLat, textLong;
+    private CompassView compassView;
+
+
 
     private String TAG = "GameFragment";
     public static final float MOVE_FACTOR_X = 50f;
@@ -136,7 +182,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     String accelData = "Accelerometer Data";
     String compassData = "Compass Data";
     String gyroData = "Gyro Data";
-    private SensorManager sensorManager;
 
     private MediaPlayer laserMp;
     private MediaPlayer coinMp;
@@ -166,8 +211,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private float gyroZ;
 
     public Vibrator vibe;
-    public LocationManager locationManager;
-
 
     private Handler handler = new Handler();
 
@@ -178,7 +221,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     private BeaconManager beaconManager;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
-    private Bitmap mBlip;
+    SensorManager mSensorManager;
+    Sensor accSensor;
+    Sensor magnetSensor;
+
+    RadarScanView mRadar;
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
@@ -186,8 +233,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA
     };
-    private static final int PERMISSIONS_REQUEST_CODE = 1111;
-    private RelativeLayout mContainer;
 
     private boolean havePermissions() {
 
@@ -270,10 +315,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         }
     }
 
-
     LocationListener locationListener;
-
-    private EditText editLocation = null;
 
     final Runnable autoGenerateArObjects = new Runnable() {
         @Override
@@ -379,8 +421,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         // Inflate the layout for this fragment
         Log.d(TAG,"onCreateView");
 
-        mBlip = ((BitmapDrawable) ContextCompat.getDrawable(getContext(), R.mipmap.arr_up)).getBitmap();
-
         beaconManager = BeaconManager.getInstanceForApplication(getContext());
         // To detect proprietary beacons, you must add a line like below corresponding to your beacon
         // type.  Do a web search for "setBeaconLayout" to get the proper expression.
@@ -391,7 +431,18 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
-        editLocation = (EditText) rootView.findViewById(R.id.editTextLocation);
+        textLat = (TextView) rootView.findViewById(R.id.latitude);
+        textLong = (TextView) rootView.findViewById(R.id.longitude);
+        textDirection = (TextView) rootView.findViewById(R.id.text);
+        compassView = (CompassView) rootView.findViewById(R.id.compass);
+        // keep screen light on (wake lock light)
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        mSensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
+        accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        //mRadar.setUseMetric(true);
 
         if (ContextCompat.checkSelfPermission( getContext() ,android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
         {
@@ -418,9 +469,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             locationListener = new MyLocationListener();
 
             if(havePermissions()) {
-                //requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_COARSE_LOCATION);
-                editLocation.setText("Searching for GPS Co-ordinates...");
-                editLocation.setEnabled(false);
                 locationManager.requestLocationUpdates(LocationManager
                         .GPS_PROVIDER, 1000, 1, locationListener);
             }
@@ -480,13 +528,72 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         stopSensing();
         landingVideo.stopPlayback();
 
+        mSensorManager.unregisterListener(mRadar, accSensor);
+        mSensorManager.unregisterListener(mRadar, magnetSensor);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        sensorGravity = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorMagnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        // listen to these sensors
+        sensorManager.registerListener(this, sensorGravity,
+                SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorMagnetic,
+                SensorManager.SENSOR_DELAY_NORMAL);
+
+        // I forgot to get location manager from system service ... Ooops <img draggable="false" class="emoji" alt="😀" src="https://s.w.org/images/core/emoji/12.0.0-1/svg/1f600.svg">
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        if (!havePermissions()) {
+            Log.i(TAG, "Requesting permissions needed for this app.");
+            requestPermissions();
+        }
+
+
+        if (getContext() != null && PERMISSIONS != null) {
+            for (String permission : PERMISSIONS) {
+                if (ActivityCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                            LOCATION_MIN_TIME, LOCATION_MIN_DISTANCE, this);
+                }
+            }
+        }
+
+        // get last known position
+        Location gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        if (gpsLocation != null) {
+            currentLocation = gpsLocation;
+        } else {
+            // try with network provider
+            Location networkLocation = locationManager
+                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            if (networkLocation != null) {
+                currentLocation = networkLocation;
+            } else {
+                // Fix a position
+                currentLocation = new Location(FIXED);
+                currentLocation.setAltitude(1);
+                currentLocation.setLatitude(43.296482);
+                currentLocation.setLongitude(5.36978);
+            }
+
+            // set current location
+            onLocationChanged(currentLocation);
+        }
     }
 
     @Override
     public void onStop() {
         Log.d(TAG,"onStop");
         stopAllRunnables();
-        sensorManager.unregisterListener(this);
+
         handler.removeCallbacks(countElectoralVotes);
         handler.removeCallbacks(electionDayCountdown);
         handler.removeCallbacks(autoGenerateArObjects);
@@ -501,8 +608,51 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         if(mexicansMp != null) mexicansMp.stop();
         if(tittiesMp != null) tittiesMp.stop();
 
+        // remove listeners
+        //sensorManager.unregisterListener(this);
+        sensorManager.unregisterListener(this, sensorGravity);
+        sensorManager.unregisterListener(this, sensorMagnetic);
+        locationManager.removeUpdates(this);
 
         super.onStop();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLocation = location;
+        // used to update location info on screen
+        updateLocation(location);
+        geomagneticField = new GeomagneticField(
+                (float) currentLocation.getLatitude(),
+                (float) currentLocation.getLongitude(),
+                (float) currentLocation.getAltitude(),
+                System.currentTimeMillis());
+    }
+
+    private void updateLocation(Location location) {
+        if (FIXED.equals(location.getProvider())) {
+            textLat.setText(NA);
+            textLong.setText(NA);
+        }
+
+        // better => make this creation outside method
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        NumberFormat formatter = new DecimalFormat("#0.00", dfs);
+        textLat.setText("Lat : " + formatter.format(location.getLatitude()));
+        textLong.setText("Long : " + formatter.format(location.getLongitude()));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
     }
 
     @Override
@@ -540,12 +690,16 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         applyCustomStyles();
         configureSensors();
 
+        //if (mBeaconManager.isBound(this)) mBeaconManager.setBackgroundMode(false);
+        mSensorManager.registerListener(mRadar, accSensor, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(mRadar, magnetSensor, SensorManager.SENSOR_DELAY_GAME);
+
     }
 
     private void applyCustomStyles()
     {
 
-        ((ImageView)rootView.findViewById(R.id.crosshairs)).setImageDrawable(arrowUp);
+        //((ImageView)rootView.findViewById(R.id.crosshairs)).setImageDrawable(arrowUp);
         laserAnimSet = generateLaserAnimation();
 
     }
@@ -1104,6 +1258,83 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
                 break;
         }
+
+        boolean accelOrMagnetic = false;
+
+        // get accelerometer data
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // we need to use a low pass filter to make data smoothed
+            smoothed = LowPassFilter.filter(sensorEvent.values, gravity);
+            gravity[0] = smoothed[0];
+            gravity[1] = smoothed[1];
+            gravity[2] = smoothed[2];
+            accelOrMagnetic = true;
+
+        } else if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            smoothed = LowPassFilter.filter(sensorEvent.values, geomagnetic);
+            geomagnetic[0] = smoothed[0];
+            geomagnetic[1] = smoothed[1];
+            geomagnetic[2] = smoothed[2];
+            accelOrMagnetic = true;
+
+        }
+
+        // get rotation matrix to get gravity and magnetic data
+        SensorManager.getRotationMatrix(rotation, null, gravity, geomagnetic);
+        // get bearing to target
+        SensorManager.getOrientation(rotation, orientation);
+        // east degrees of true North
+        bearing = orientation[0];
+
+        //angleLowpassFilter.add((float) bearing);
+
+        // convert from radians to degrees
+        //bearing = (Math.toDegrees(angleLowpassFilter.average()) + 360) % 360;
+        bearing = Math.toDegrees(bearing);
+
+        // fix difference between true North and magnetical North
+        if (geomagneticField != null) {
+            bearing += geomagneticField.getDeclination();
+        }
+
+        // bearing must be in 0-360
+        if (bearing < 0) {
+            bearing += 360;
+        }
+
+        // update compass view
+        compassView.setBearing((float) bearing);
+
+        if (accelOrMagnetic) {
+            compassView.postInvalidate();
+        }
+
+        updateTextDirection(bearing); // display text direction on screen
+    }
+
+    private void updateTextDirection(double bearing) {
+        int range = (int) (bearing / (360f / 16f));
+        String dirTxt = "";
+
+        if (range == 15 || range == 0)
+            dirTxt = "N";
+        if (range == 1 || range == 2)
+            dirTxt = "NE";
+        if (range == 3 || range == 4)
+            dirTxt = "E";
+        if (range == 5 || range == 6)
+            dirTxt = "SE";
+        if (range == 7 || range == 8)
+            dirTxt = "S";
+        if (range == 9 || range == 10)
+            dirTxt = "SW";
+        if (range == 11 || range == 12)
+            dirTxt = "W";
+        if (range == 13 || range == 14)
+            dirTxt = "NW";
+
+        textDirection.setText("" + ((int) bearing) + ((char) 176) + " "
+                + dirTxt); // char 176 ) = degrees ...
     }
 
     @Override
@@ -1119,6 +1350,12 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 break;
             case Sensor.TYPE_MAGNETIC_FIELD:
                 break;
+        }
+
+        if (sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD
+                && i == SensorManager.SENSOR_STATUS_UNRELIABLE) {
+            // manage fact that compass data are unreliable ...
+            // toast ? display on screen ?
         }
 
     }
@@ -1143,11 +1380,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         @Override
         public void onLocationChanged(Location loc) {
-            editLocation.setText("");
-            /*Toast.makeText(
-                    getContext(),
-                    "Location changed: Lat: " + loc.getLatitude() + " Lng: "
-                            + loc.getLongitude(), Toast.LENGTH_SHORT).show();*/
             String longitude = "Longitude: " + loc.getLongitude();
             Log.v(TAG, longitude);
             String latitude = "Latitude: " + loc.getLatitude();
@@ -1170,7 +1402,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
             String s = longitude + "\n" + latitude + "\n\nMy Current City is: "
                     + cityName;
-            editLocation.setText(s);
         }
 
         @Override

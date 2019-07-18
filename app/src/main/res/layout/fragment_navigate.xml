@@ -220,28 +220,49 @@
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
         android:id="@+id/ar_container"
-        android:visibility="gone"
         android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/editTextLocation"
-            android:layout_width="match_parent"
+        <com.example.navigator.utils.CompassView
+            android:id="@+id/compass"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true" />
+
+        <TextView
+            android:id="@+id/latitude"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/stop_button"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="8dp"
-            android:textSize="12sp"
-            android:inputType="none"
-            android:enabled="false">
-            <requestFocus></requestFocus>
-        </EditText>
+            android:layout_marginStart="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginBottom="18dp"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/longitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/stop_button"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginBottom="18dp"
+            android:layout_toEndOf="@+id/latitude"
+            android:layout_toRightOf="@+id/latitude"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/stop_button"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginBottom="18dp"
+            android:layout_toEndOf="@+id/longitude"
+            android:layout_toRightOf="@+id/longitude"
+            android:text="TextView" />
 
         <Button
             android:layout_width="wrap_content"
@@ -334,89 +355,96 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:visibility="visible"
         android:id="@+id/sensor_data_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:paddingStart="@dimen/xxlarge"
         android:paddingLeft="@dimen/xxlarge"
-        android:layout_height="match_parent">
+        android:visibility="visible">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_gravity="left"
-            android:gravity="left"
-            android:visibility="visible"
-            android:layout_alignParentBottom="true"
             android:id="@+id/gyro_data"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="left"
+            android:gravity="left"
+            android:visibility="visible">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
-                android:text="Gyro Data"
                 android:id="@+id/gyro_title"
-                android:layout_height="wrap_content"/>
-            <TextView
                 android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
+                android:layout_height="wrap_content"
+                android:text="Gyro Data"
+                android:textColor="@color/transparent" />
+
+            <TextView
                 android:id="@+id/gyro_text_x"
-                android:text="X"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/gyro_title"
-                android:layout_height="wrap_content"/>
+                android:text="X"
+                android:textColor="@color/transparent" />
+
             <TextView
-                android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
                 android:id="@+id/gyro_text_y"
-                android:text="Y"
-                android:layout_below="@id/gyro_text_x"
-                android:layout_height="wrap_content"/>
-            <TextView
                 android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/gyro_text_x"
+                android:text="Y"
+                android:textColor="@color/transparent" />
+
+            <TextView
                 android:id="@+id/gyro_text_z"
-                android:text="Z"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/gyro_text_y"
-                android:layout_height="wrap_content"/>
+                android:text="Z"
+                android:textColor="@color/transparent" />
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/magneto_data"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/gyro_data"
             android:layout_gravity="left"
             android:gravity="left"
-            android:id="@+id/magneto_data"
-            android:visibility="visible"
-            android:layout_above="@id/gyro_data"
-            android:layout_height="wrap_content">
+            android:visibility="visible">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
-                android:text="Accel Data"
                 android:id="@+id/accel_title"
-                android:layout_height="wrap_content"/>
-            <TextView
                 android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
+                android:layout_height="wrap_content"
+                android:text="Accel Data"
+                android:textColor="@color/transparent" />
+
+            <TextView
                 android:id="@+id/accel_text_x"
-                android:text="X"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/accel_title"
-                android:layout_height="wrap_content"/>
+                android:text="X"
+                android:textColor="@color/transparent" />
+
             <TextView
-                android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
                 android:id="@+id/accel_text_y"
-                android:text="Y"
-                android:layout_below="@id/accel_text_x"
-                android:layout_height="wrap_content"/>
-            <TextView
                 android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/accel_text_x"
+                android:text="Y"
+                android:textColor="@color/transparent" />
+
+            <TextView
                 android:id="@+id/accel_text_z"
-                android:text="Z"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/accel_text_y"
-                android:layout_height="wrap_content"/>
+                android:text="Z"
+                android:textColor="@color/transparent" />
         </RelativeLayout>
+
 
     </RelativeLayout>
 

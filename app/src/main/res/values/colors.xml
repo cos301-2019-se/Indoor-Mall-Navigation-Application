@@ -38,4 +38,7 @@
     <color name="gray_transparent">#BB313542</color>
     <color name="transparent">#00f7f7f7</color>
     <color name="white_transparent">#88F8F8F8</color>
+
+    <color name="hn_orange_lighter">#FF8C3F</color>
+    <color name="hn_orange">#FF6600</color>
 </resources>

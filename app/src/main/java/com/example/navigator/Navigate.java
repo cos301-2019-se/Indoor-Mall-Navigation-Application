@@ -1,8 +1,11 @@
 package com.example.navigator;
 
 
+import android.content.ServiceConnection;
+import android.hardware.GeomagneticField;
 import android.hardware.SensorEventListener;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -11,10 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.Manifest;
 import android.animation.Animator;
-import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -38,24 +39,48 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
+import com.example.navigator.utils.AngleLowpassFilter;
 import com.example.navigator.utils.ArDisplayView;
+import com.example.navigator.utils.CompassView;
+import com.example.navigator.utils.LowPassFilter;
+import com.example.navigator.utils.RadarScanView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconConsumer;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,7 +89,43 @@ import java.util.Locale;
  * A simple {@link Fragment} subclass.
  */
 
-public class Navigate extends Fragment implements SensorEventListener {
+public class Navigate extends Fragment implements BeaconConsumer, SensorEventListener,
+        LocationListener{
+
+
+    private RelativeLayout mContainer;
+    private static final int PERMISSIONS_REQUEST_CODE = 1111;
+    private AngleLowpassFilter angleLowpassFilter = new AngleLowpassFilter();
+
+    public static final String NA = "N/A";
+    public static final String FIXED = "FIXED";
+    // location min time
+    private static final int LOCATION_MIN_TIME = 30 * 1000;
+    // location min distance
+    private static final int LOCATION_MIN_DISTANCE = 10;
+    // Gravity for accelerometer data
+    private float[] gravity = new float[3];
+    // magnetic data
+    private float[] geomagnetic = new float[3];
+    // Rotation data
+    private float[] rotation = new float[9];
+    // orientation (azimuth, pitch, roll)
+    private float[] orientation = new float[3];
+    // smoothed values
+    private float[] smoothed = new float[3];
+    // sensor manager
+    private SensorManager sensorManager;
+    // sensor gravity
+    private Sensor sensorGravity;
+    private Sensor sensorMagnetic;
+    private LocationManager locationManager;
+    private Location currentLocation;
+    private GeomagneticField geomagneticField;
+    private double bearing = 0;
+    private TextView textDirection, textLat, textLong;
+    private CompassView compassView;
+
+
 
     private String TAG = "GameFragment";
     public static final float MOVE_FACTOR_X = 50f;
@@ -97,7 +158,8 @@ public class Navigate extends Fragment implements SensorEventListener {
     private ViewGroup inflateContainer;
     private LayoutInflater inflater;
     private VideoView landingVideo;
-    private View howToPlayContainer;
+    private View howToUseContainer;
+    private View searchContainer;
 
     private List<View> arObjects;
     private List<View> arLeftTrackerObjects;
@@ -123,7 +185,6 @@ public class Navigate extends Fragment implements SensorEventListener {
     String accelData = "Accelerometer Data";
     String compassData = "Compass Data";
     String gyroData = "Gyro Data";
-    private SensorManager sensorManager;
 
     private MediaPlayer laserMp;
     private MediaPlayer coinMp;
@@ -153,8 +214,6 @@ public class Navigate extends Fragment implements SensorEventListener {
     private float gyroZ;
 
     public Vibrator vibe;
-    public LocationManager locationManager;
-
 
     private Handler handler = new Handler();
 
@@ -163,14 +222,27 @@ public class Navigate extends Fragment implements SensorEventListener {
     private Drawable arrowUp = null;
     private Drawable arrowDown = null;
 
+    private BeaconManager beaconManager;
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
+    SensorManager mSensorManager;
+    Sensor accSensor;
+    Sensor magnetSensor;
+
+    SearchView searchView;
+    ListView listView;
+    ArrayList<String> list;
+    ArrayAdapter<String > adapter;
+    Button sub;
+    DatabaseReference ref;
+
+    RadarScanView mRadar;
+
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA
     };
-    private static final int PERMISSIONS_REQUEST_CODE = 1111;
-    private RelativeLayout mContainer;
 
     private boolean havePermissions() {
 
@@ -253,10 +325,7 @@ public class Navigate extends Fragment implements SensorEventListener {
         }
     }
 
-
     LocationListener locationListener;
-
-    private EditText editLocation = null;
 
     final Runnable autoGenerateArObjects = new Runnable() {
         @Override
@@ -295,13 +364,17 @@ public class Navigate extends Fragment implements SensorEventListener {
     final Runnable electionDayCountdown = new Runnable() {
         @Override
         public void run() {
-            daysToElection -= 1;
+            /*daysToElection -= 1;
             ((TextView)rootView.findViewById(R.id.days_to_election)).setText(daysToElection + "m");
             if(daysToElection == 0) {
                 gameOver();
             } else {
                 handler.postDelayed(electionDayCountdown, TIME_TO_NEXT_ELECTION_DAY);
-            }
+            }*/
+
+            onBeaconServiceConnect();
+
+
         }
     };
 
@@ -358,9 +431,102 @@ public class Navigate extends Fragment implements SensorEventListener {
         // Inflate the layout for this fragment
         Log.d(TAG,"onCreateView");
 
+        beaconManager = BeaconManager.getInstanceForApplication(getContext());
+        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
+        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
+        beaconManager.getBeaconParsers().add(new BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        //        setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+        beaconManager.bind(this);
+
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
-        editLocation = (EditText) rootView.findViewById(R.id.editTextLocation);
+
+        // Search Bar Implementation-------------------------------------------------------------
+
+        searchView = (SearchView) rootView.findViewById(R.id.searchView);
+        listView = (ListView) rootView.findViewById(R.id.lv1);
+        list = new ArrayList<>();
+        //list.add("Zara");
+        ref = FirebaseDatabase.getInstance().getReference();
+
+        ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String ShopName = snapshot.child("name").getValue().toString();
+                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
+                    list.add(ShopName);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1,list);
+        listView.setAdapter(adapter);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                for(int i = 0; i < list.size(); i++){
+                    if(list.get(i).toLowerCase().contains(query.toLowerCase())){
+                        adapter.getFilter().filter(query);
+                        listView.setAdapter(adapter);
+                        break;
+                    }
+                    else{
+                        listView.setAdapter(null);
+                        Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                if(list.contains(query)){
+                    adapter.getFilter().filter(query);
+                }else{
+                    Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //    adapter.getFilter().filter(newText);
+                for(int i = 0; i < list.size(); i++){
+                    if(list.get(i).toLowerCase().contains(newText.toLowerCase())){
+                        adapter.getFilter().filter(newText);
+                        listView.setAdapter(adapter);
+                        break;
+                    }
+                    else{
+                        listView.setAdapter(null);
+                        Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                    }
+                }
+                return false;
+            }
+        });
+
+        //--------------------------------
+
+
+
+        textLat = (TextView) rootView.findViewById(R.id.latitude);
+        textLong = (TextView) rootView.findViewById(R.id.longitude);
+        textDirection = (TextView) rootView.findViewById(R.id.text);
+        compassView = (CompassView) rootView.findViewById(R.id.compass);
+        // keep screen light on (wake lock light)
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        mSensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
+        accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        //mRadar.setUseMetric(true);
 
         if (ContextCompat.checkSelfPermission( getContext() ,android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
         {
@@ -387,11 +553,8 @@ public class Navigate extends Fragment implements SensorEventListener {
             locationListener = new MyLocationListener();
 
             if(havePermissions()) {
-                //requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_COARSE_LOCATION);
-                editLocation.setText("Please!! move your device to" +
-                        " see the changes in coordinates." + "\nWait.. 1");
                 locationManager.requestLocationUpdates(LocationManager
-                        .GPS_PROVIDER, 1000, 0, locationListener);
+                        .GPS_PROVIDER, 1000, 1, locationListener);
             }
             else {
                 requestPermissions();
@@ -407,7 +570,8 @@ public class Navigate extends Fragment implements SensorEventListener {
 
         inflateContainer = container;
         this.inflater = inflater;
-        howToPlayContainer = rootView.findViewById(R.id.how_to_play_container);
+        howToUseContainer = rootView.findViewById(R.id.how_to_use_container);
+        searchContainer = rootView.findViewById(R.id.search_container);
         mListener.timeEvent("App Opened to Play Game");
 
         configureGameWindow();
@@ -449,13 +613,73 @@ public class Navigate extends Fragment implements SensorEventListener {
         stopSensing();
         landingVideo.stopPlayback();
 
+        mSensorManager.unregisterListener(mRadar, accSensor);
+        mSensorManager.unregisterListener(mRadar, magnetSensor);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        sensorGravity = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorMagnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        // listen to these sensors
+        sensorManager.registerListener(this, sensorGravity,
+                SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorMagnetic,
+                SensorManager.SENSOR_DELAY_NORMAL);
+
+        // I forgot to get location manager from system service ... Ooops <img draggable="false" class="emoji" alt="😀" src="https://s.w.org/images/core/emoji/12.0.0-1/svg/1f600.svg">
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        if (!havePermissions()) {
+            Log.i(TAG, "Requesting permissions needed for this app.");
+            requestPermissions();
+        }
+
+        Location gpsLocation = null;
+
+        if (getContext() != null && PERMISSIONS != null) {
+            for (String permission : PERMISSIONS) {
+                if (ActivityCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                            LOCATION_MIN_TIME, LOCATION_MIN_DISTANCE, this);
+                    // get last known position
+                    gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                    if (gpsLocation != null) {
+                        currentLocation = gpsLocation;
+                    } else {
+                        // try with network provider
+                        Location networkLocation = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                        if (networkLocation != null) {
+                            currentLocation = networkLocation;
+                        } else {
+                            // Fix a position
+                            currentLocation = new Location(FIXED);
+                            currentLocation.setAltitude(1);
+                            currentLocation.setLatitude(43.296482);
+                            currentLocation.setLongitude(5.36978);
+                        }
+
+                        // set current location
+                        onLocationChanged(currentLocation);
+                    }
+                }
+            }
+        }
+
     }
 
     @Override
     public void onStop() {
         Log.d(TAG,"onStop");
         stopAllRunnables();
-        sensorManager.unregisterListener(this);
+
         handler.removeCallbacks(countElectoralVotes);
         handler.removeCallbacks(electionDayCountdown);
         handler.removeCallbacks(autoGenerateArObjects);
@@ -470,8 +694,51 @@ public class Navigate extends Fragment implements SensorEventListener {
         if(mexicansMp != null) mexicansMp.stop();
         if(tittiesMp != null) tittiesMp.stop();
 
+        // remove listeners
+        //sensorManager.unregisterListener(this);
+        sensorManager.unregisterListener(this, sensorGravity);
+        sensorManager.unregisterListener(this, sensorMagnetic);
+        locationManager.removeUpdates(this);
 
         super.onStop();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLocation = location;
+        // used to update location info on screen
+        updateLocation(location);
+        geomagneticField = new GeomagneticField(
+                (float) currentLocation.getLatitude(),
+                (float) currentLocation.getLongitude(),
+                (float) currentLocation.getAltitude(),
+                System.currentTimeMillis());
+    }
+
+    private void updateLocation(Location location) {
+        if (FIXED.equals(location.getProvider())) {
+            textLat.setText(NA);
+            textLong.setText(NA);
+        }
+
+        // better => make this creation outside method
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        NumberFormat formatter = new DecimalFormat("#0.00", dfs);
+        textLat.setText("Lat : " + formatter.format(location.getLatitude()));
+        textLong.setText("Long : " + formatter.format(location.getLongitude()));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
     }
 
     @Override
@@ -509,21 +776,27 @@ public class Navigate extends Fragment implements SensorEventListener {
         applyCustomStyles();
         configureSensors();
 
+        //if (mBeaconManager.isBound(this)) mBeaconManager.setBackgroundMode(false);
+        mSensorManager.registerListener(mRadar, accSensor, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(mRadar, magnetSensor, SensorManager.SENSOR_DELAY_GAME);
+
     }
 
     private void applyCustomStyles()
     {
 
-        ((ImageView)rootView.findViewById(R.id.crosshairs)).setImageDrawable(arrowUp);
+        //((ImageView)rootView.findViewById(R.id.crosshairs)).setImageDrawable(arrowUp);
         laserAnimSet = generateLaserAnimation();
 
     }
 
     private void assignClickListeners()
     {
-        rootView.findViewById(R.id.play_button).setOnClickListener(new View.OnClickListener() {
+        rootView.findViewById(R.id.navigate_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 Log.d(TAG, "onLongClick: ");
                 mListener.trackEvent("App Opened to Play Game");
 
@@ -561,18 +834,79 @@ public class Navigate extends Fragment implements SensorEventListener {
             }
         };
 
-
-        rootView.findViewById(R.id.how_to_play).setOnTouchListener(new View.OnTouchListener() {
+        rootView.findViewById(R.id.search_destination).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    howToPlayContainer.setVisibility(View.VISIBLE);
+                    searchContainer.setVisibility(View.VISIBLE);
                     mListener.trackEvent("How to Play Clicked");
 
-                    howToPlayContainer.animate().alpha(1f).setListener(new Animator.AnimatorListener() {
+                    searchContainer.animate().alpha(1f).setListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animator) {
-                            howToPlayContainer.setVisibility(View.VISIBLE);
+                            searchContainer.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+                }
+                return false;
+            }
+        });
+        rootView.findViewById(R.id.dismiss_search).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchContainer.animate().alpha(0f).setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        searchContainer.setVisibility(View.GONE);
+
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                });
+
+            }
+        });
+
+
+        rootView.findViewById(R.id.how_to_use).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    howToUseContainer.setVisibility(View.VISIBLE);
+                    mListener.trackEvent("How to Play Clicked");
+
+                    howToUseContainer.animate().alpha(1f).setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            howToUseContainer.setVisibility(View.VISIBLE);
                         }
 
                         @Override
@@ -597,7 +931,7 @@ public class Navigate extends Fragment implements SensorEventListener {
         rootView.findViewById(R.id.dismiss_how_to_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                howToPlayContainer.animate().alpha(0f).setListener(new Animator.AnimatorListener() {
+                howToUseContainer.animate().alpha(0f).setListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animator) {
 
@@ -605,7 +939,7 @@ public class Navigate extends Fragment implements SensorEventListener {
 
                     @Override
                     public void onAnimationEnd(Animator animator) {
-                        howToPlayContainer.setVisibility(View.GONE);
+                        howToUseContainer.setVisibility(View.GONE);
 
                     }
 
@@ -954,7 +1288,7 @@ public class Navigate extends Fragment implements SensorEventListener {
         arContentOverlay.removeAllViews();
 
         rootView.findViewById(R.id.instructions_container).setVisibility(View.GONE);
-        rootView.findViewById(R.id.how_to_play_container).setVisibility(View.GONE);
+        rootView.findViewById(R.id.how_to_use_container).setVisibility(View.GONE);
         rootView.findViewById(R.id.win_container).setVisibility(View.GONE);
         rootView.findViewById(R.id.ar_container).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
@@ -1073,6 +1407,83 @@ public class Navigate extends Fragment implements SensorEventListener {
 
                 break;
         }
+
+        boolean accelOrMagnetic = false;
+
+        // get accelerometer data
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // we need to use a low pass filter to make data smoothed
+            smoothed = LowPassFilter.filter(sensorEvent.values, gravity);
+            gravity[0] = smoothed[0];
+            gravity[1] = smoothed[1];
+            gravity[2] = smoothed[2];
+            accelOrMagnetic = true;
+
+        } else if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            smoothed = LowPassFilter.filter(sensorEvent.values, geomagnetic);
+            geomagnetic[0] = smoothed[0];
+            geomagnetic[1] = smoothed[1];
+            geomagnetic[2] = smoothed[2];
+            accelOrMagnetic = true;
+
+        }
+
+        // get rotation matrix to get gravity and magnetic data
+        SensorManager.getRotationMatrix(rotation, null, gravity, geomagnetic);
+        // get bearing to target
+        SensorManager.getOrientation(rotation, orientation);
+        // east degrees of true North
+        bearing = orientation[0];
+
+        //angleLowpassFilter.add((float) bearing);
+
+        // convert from radians to degrees
+        //bearing = (Math.toDegrees(angleLowpassFilter.average()) + 360) % 360;
+        bearing = Math.toDegrees(bearing);
+
+        // fix difference between true North and magnetical North
+        if (geomagneticField != null) {
+            bearing += geomagneticField.getDeclination();
+        }
+
+        // bearing must be in 0-360
+        if (bearing < 0) {
+            bearing += 360;
+        }
+
+        // update compass view
+        compassView.setBearing((float) bearing);
+
+        if (accelOrMagnetic) {
+            compassView.postInvalidate();
+        }
+
+        updateTextDirection(bearing); // display text direction on screen
+    }
+
+    private void updateTextDirection(double bearing) {
+        int range = (int) (bearing / (360f / 16f));
+        String dirTxt = "";
+
+        if (range == 15 || range == 0)
+            dirTxt = "N";
+        if (range == 1 || range == 2)
+            dirTxt = "NE";
+        if (range == 3 || range == 4)
+            dirTxt = "E";
+        if (range == 5 || range == 6)
+            dirTxt = "SE";
+        if (range == 7 || range == 8)
+            dirTxt = "S";
+        if (range == 9 || range == 10)
+            dirTxt = "SW";
+        if (range == 11 || range == 12)
+            dirTxt = "W";
+        if (range == 13 || range == 14)
+            dirTxt = "NW";
+
+        textDirection.setText("" + ((int) bearing) + ((char) 176) + " "
+                + dirTxt); // char 176 ) = degrees ...
     }
 
     @Override
@@ -1088,6 +1499,12 @@ public class Navigate extends Fragment implements SensorEventListener {
                 break;
             case Sensor.TYPE_MAGNETIC_FIELD:
                 break;
+        }
+
+        if (sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD
+                && i == SensorManager.SENSOR_STATUS_UNRELIABLE) {
+            // manage fact that compass data are unreliable ...
+            // toast ? display on screen ?
         }
 
     }
@@ -1112,11 +1529,6 @@ public class Navigate extends Fragment implements SensorEventListener {
 
         @Override
         public void onLocationChanged(Location loc) {
-            editLocation.setText("");
-            /*Toast.makeText(
-                    getContext(),
-                    "Location changed: Lat: " + loc.getLatitude() + " Lng: "
-                            + loc.getLongitude(), Toast.LENGTH_SHORT).show();*/
             String longitude = "Longitude: " + loc.getLongitude();
             Log.v(TAG, longitude);
             String latitude = "Latitude: " + loc.getLatitude();
@@ -1139,7 +1551,6 @@ public class Navigate extends Fragment implements SensorEventListener {
             }
             String s = longitude + "\n" + latitude + "\n\nMy Current City is: "
                     + cityName;
-            editLocation.setText(s);
         }
 
         @Override
@@ -1150,6 +1561,75 @@ public class Navigate extends Fragment implements SensorEventListener {
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {}
+    }
+
+    @Override
+    public void onBeaconServiceConnect() {
+        beaconManager.removeAllMonitorNotifiers();
+        beaconManager.addMonitorNotifier(new MonitorNotifier() {
+            @Override
+            public void didEnterRegion(Region region) {
+                Log.i(TAG, "I just saw an beacon for the first time!");
+            }
+
+            @Override
+            public void didExitRegion(Region region) {
+                Log.i(TAG, "I no longer see an beacon");
+            }
+
+            @Override
+            public void didDetermineStateForRegion(int state, Region region) {
+                Log.i(TAG, "I have just switched from seeing/not seeing beacons: "+state);
+            }
+        });
+
+        try {
+            beaconManager.startMonitoringBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
+        } catch (RemoteException e) {    }
+
+        try {beaconManager.removeAllRangeNotifiers();
+            beaconManager.addRangeNotifier(new RangeNotifier() {
+                @Override
+                public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                    if (beacons.size() > 0) {
+                        Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
+
+                        double distance = beacons.iterator().next().getDistance();
+                        final String distance_str = df2.format(distance) + "m";
+                        ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText(distance_str);
+
+                        String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();
+                        String beaconName = beacons.iterator().next().getBluetoothAddress();
+                        if(bluetoothAddress.equals("51:0D:6F:72:E6:A0")){
+                            beaconName = "Edgars";
+                        }
+                        else if (bluetoothAddress.equals("72:92:CF:8E:05:68")){
+                            beaconName = "Spitz";
+                        }
+                        String distanceLabel = "Distance from " + beaconName;
+                        ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
+
+                        Log.i(TAG,distance_str);
+                    }
+                }
+            });
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+        } catch (RemoteException e) {    }
+    }
+
+    @Override
+    public Context getApplicationContext(){
+        return getContext();
+    }
+
+    @Override
+    public void unbindService(ServiceConnection serviceConnection){
+
+    }
+
+    @Override
+    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i){
+        return false;
     }
 
 }

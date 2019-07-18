@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,7 +9,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/instructions_container"
-        android:visibility="gone"
         android:layout_height="match_parent">
 
         <VideoView
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_centerInParent="true"
             android:text="Navigate"
-            android:id="@+id/play_button"
+            android:id="@+id/navigate_button"
             android:textSize="@dimen/text_large"
             android:background="@drawable/pressable_primary_to_primary_light_rounded"
             android:textColor="@color/black"
@@ -48,9 +48,20 @@
 
         <TextView
             android:layout_width="wrap_content"
+            android:text="Search"
+            android:id="@+id/search_destination"
+            android:layout_above="@id/navigate_button"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_large"
+            android:paddingBottom="@dimen/enormous"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
             android:text="Help"
-            android:id="@+id/how_to_play"
-            android:layout_below="@id/play_button"
+            android:id="@+id/how_to_use"
+            android:layout_below="@id/navigate_button"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white"
             android:textSize="@dimen/text_large"
@@ -65,7 +76,54 @@
         android:layout_marginBottom="@dimen/huge"
         android:layout_marginLeft="@dimen/large"
         android:layout_marginRight="@dimen/large"
-        android:id="@+id/how_to_play_container"
+        android:id="@+id/search_container"
+        android:layout_centerVertical="true"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        android:alpha="0"
+        android:clickable="true"
+        android:background="@drawable/rounded_box_white"
+        android:paddingTop="@dimen/large"
+        android:paddingBottom="@dimen/large"
+        android:paddingStart="@dimen/xxxlarge"
+        android:paddingEnd="@dimen/xxxlarge"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Close"
+            android:id="@+id/dismiss_search"
+            android:layout_centerHorizontal="true"
+            android:textSize="@dimen/text_large"
+            android:paddingBottom="@dimen/xlarge"
+            android:textColor="@color/setcoins_red"
+            android:layout_height="wrap_content"/>
+
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:layout_below="@id/dismiss_search"
+            android:queryHint="Search Here"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lv1"
+            android:divider="#ad5"
+            android:dividerHeight="2dp"
+            android:layout_below="@+id/searchView"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/enormous"
+        android:layout_marginBottom="@dimen/huge"
+        android:layout_marginLeft="@dimen/large"
+        android:layout_marginRight="@dimen/large"
+        android:id="@+id/how_to_use_container"
         android:layout_centerVertical="true"
         android:animateLayoutChanges="true"
         android:visibility="gone"
@@ -222,25 +280,47 @@
         android:visibility="gone"
         android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/editTextLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/days_to_election_text"
-            android:layout_alignStart="@+id/days_to_election_text"
-            android:layout_alignLeft="@+id/days_to_election_text"
-            android:layout_alignEnd="@+id/days_to_election_text"
-            android:layout_alignRight="@+id/days_to_election_text"
-            android:layout_marginStart="-199dp"
-            android:layout_marginLeft="-199dp"
-            android:layout_marginTop="21dp"
-            android:layout_marginEnd="-3dp"
-            android:layout_marginRight="-3dp"
-            android:layout_weight="0.33"
-            android:editable="false">
+        <com.example.navigator.utils.CompassView
+            android:id="@+id/compass"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true" />
 
-            <requestFocus></requestFocus>
-        </EditText>
+        <TextView
+            android:id="@+id/latitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/stop_button"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginBottom="18dp"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/longitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/stop_button"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginBottom="18dp"
+            android:layout_toEndOf="@+id/latitude"
+            android:layout_toRightOf="@+id/latitude"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/stop_button"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginBottom="18dp"
+            android:layout_toEndOf="@+id/longitude"
+            android:layout_toRightOf="@+id/longitude"
+            android:text="TextView" />
 
         <Button
             android:layout_width="wrap_content"
@@ -271,7 +351,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="0 / 270"
+            android:text="-"
             android:layout_alignParentTop="true"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentLeft="true"
@@ -284,7 +364,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="Proceed Forward"
+            android:text="- -"
             android:layout_below="@id/electoral_vote_counter"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentLeft="true"
@@ -302,10 +382,10 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="Distance from Destination"
+            android:text="- -"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentRight="true"
-            android:id="@+id/days_to_election_text"
+            android:id="@+id/distance_label"
             android:layout_alignBottom="@id/electoral_vote_text"
             android:paddingStart="@dimen/large"
             android:paddingEnd="@dimen/large"
@@ -315,17 +395,17 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="100"
+            android:text="- -"
             android:background="@color/light_gray_transparent"
             android:layout_above="@id/electoral_vote_text"
-            android:layout_alignEnd="@id/days_to_election_text"
-            android:layout_alignRight="@id/days_to_election_text"
-            android:layout_alignStart="@id/days_to_election_text"
-            android:layout_alignLeft="@id/days_to_election_text"
+            android:layout_alignEnd="@id/distance_label"
+            android:layout_alignRight="@id/distance_label"
+            android:layout_alignStart="@id/distance_label"
+            android:layout_alignLeft="@id/distance_label"
             android:gravity="center"
             android:textSize="@dimen/text_xxlarge"
             android:layout_alignParentTop="true"
-            android:id="@+id/days_to_election"
+            android:id="@+id/distance_from_beacon"
             android:padding="@dimen/large"
             android:textColor="@color/white"
             android:layout_height="wrap_content"/>
@@ -333,89 +413,96 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:visibility="visible"
         android:id="@+id/sensor_data_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:paddingStart="@dimen/xxlarge"
         android:paddingLeft="@dimen/xxlarge"
-        android:layout_height="match_parent">
+        android:visibility="visible">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_gravity="left"
-            android:gravity="left"
-            android:visibility="visible"
-            android:layout_alignParentBottom="true"
             android:id="@+id/gyro_data"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="left"
+            android:gravity="left"
+            android:visibility="visible">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
-                android:text="Gyro Data"
                 android:id="@+id/gyro_title"
-                android:layout_height="wrap_content"/>
-            <TextView
                 android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
+                android:layout_height="wrap_content"
+                android:text="Gyro Data"
+                android:textColor="@color/transparent" />
+
+            <TextView
                 android:id="@+id/gyro_text_x"
-                android:text="X"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/gyro_title"
-                android:layout_height="wrap_content"/>
+                android:text="X"
+                android:textColor="@color/transparent" />
+
             <TextView
-                android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
                 android:id="@+id/gyro_text_y"
-                android:text="Y"
-                android:layout_below="@id/gyro_text_x"
-                android:layout_height="wrap_content"/>
-            <TextView
                 android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/gyro_text_x"
+                android:text="Y"
+                android:textColor="@color/transparent" />
+
+            <TextView
                 android:id="@+id/gyro_text_z"
-                android:text="Z"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/gyro_text_y"
-                android:layout_height="wrap_content"/>
+                android:text="Z"
+                android:textColor="@color/transparent" />
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/magneto_data"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/gyro_data"
             android:layout_gravity="left"
             android:gravity="left"
-            android:id="@+id/magneto_data"
-            android:visibility="visible"
-            android:layout_above="@id/gyro_data"
-            android:layout_height="wrap_content">
+            android:visibility="visible">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
-                android:text="Accel Data"
                 android:id="@+id/accel_title"
-                android:layout_height="wrap_content"/>
-            <TextView
                 android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
+                android:layout_height="wrap_content"
+                android:text="Accel Data"
+                android:textColor="@color/transparent" />
+
+            <TextView
                 android:id="@+id/accel_text_x"
-                android:text="X"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/accel_title"
-                android:layout_height="wrap_content"/>
+                android:text="X"
+                android:textColor="@color/transparent" />
+
             <TextView
-                android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
                 android:id="@+id/accel_text_y"
-                android:text="Y"
-                android:layout_below="@id/accel_text_x"
-                android:layout_height="wrap_content"/>
-            <TextView
                 android:layout_width="wrap_content"
-                android:textColor="@color/transparent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/accel_text_x"
+                android:text="Y"
+                android:textColor="@color/transparent" />
+
+            <TextView
                 android:id="@+id/accel_text_z"
-                android:text="Z"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/accel_text_y"
-                android:layout_height="wrap_content"/>
+                android:text="Z"
+                android:textColor="@color/transparent" />
         </RelativeLayout>
+
 
     </RelativeLayout>
 

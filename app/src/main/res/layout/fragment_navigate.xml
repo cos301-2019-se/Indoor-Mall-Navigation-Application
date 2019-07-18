@@ -9,7 +9,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/instructions_container"
-        android:visibility="gone"
         android:layout_height="match_parent">
 
         <VideoView
@@ -29,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_centerInParent="true"
             android:text="Navigate"
-            android:id="@+id/play_button"
+            android:id="@+id/navigate_button"
             android:textSize="@dimen/text_large"
             android:background="@drawable/pressable_primary_to_primary_light_rounded"
             android:textColor="@color/black"
@@ -49,9 +48,20 @@
 
         <TextView
             android:layout_width="wrap_content"
+            android:text="Search"
+            android:id="@+id/search_destination"
+            android:layout_above="@id/navigate_button"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_large"
+            android:paddingBottom="@dimen/enormous"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
             android:text="Help"
-            android:id="@+id/how_to_play"
-            android:layout_below="@id/play_button"
+            android:id="@+id/how_to_use"
+            android:layout_below="@id/navigate_button"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white"
             android:textSize="@dimen/text_large"
@@ -66,7 +76,54 @@
         android:layout_marginBottom="@dimen/huge"
         android:layout_marginLeft="@dimen/large"
         android:layout_marginRight="@dimen/large"
-        android:id="@+id/how_to_play_container"
+        android:id="@+id/search_container"
+        android:layout_centerVertical="true"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        android:alpha="0"
+        android:clickable="true"
+        android:background="@drawable/rounded_box_white"
+        android:paddingTop="@dimen/large"
+        android:paddingBottom="@dimen/large"
+        android:paddingStart="@dimen/xxxlarge"
+        android:paddingEnd="@dimen/xxxlarge"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Close"
+            android:id="@+id/dismiss_search"
+            android:layout_centerHorizontal="true"
+            android:textSize="@dimen/text_large"
+            android:paddingBottom="@dimen/xlarge"
+            android:textColor="@color/setcoins_red"
+            android:layout_height="wrap_content"/>
+
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:layout_below="@id/dismiss_search"
+            android:queryHint="Search Here"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lv1"
+            android:divider="#ad5"
+            android:dividerHeight="2dp"
+            android:layout_below="@+id/searchView"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/enormous"
+        android:layout_marginBottom="@dimen/huge"
+        android:layout_marginLeft="@dimen/large"
+        android:layout_marginRight="@dimen/large"
+        android:id="@+id/how_to_use_container"
         android:layout_centerVertical="true"
         android:animateLayoutChanges="true"
         android:visibility="gone"
@@ -220,6 +277,7 @@
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
         android:id="@+id/ar_container"
+        android:visibility="gone"
         android:layout_height="match_parent">
 
         <com.example.navigator.utils.CompassView

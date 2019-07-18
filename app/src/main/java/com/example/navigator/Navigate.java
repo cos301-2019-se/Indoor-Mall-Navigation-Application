@@ -2,9 +2,6 @@ package com.example.navigator;
 
 
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.hardware.GeomagneticField;
 import android.hardware.SensorEventListener;
 import android.os.Bundle;
@@ -48,10 +45,12 @@ import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -62,6 +61,11 @@ import com.example.navigator.utils.ArDisplayView;
 import com.example.navigator.utils.CompassView;
 import com.example.navigator.utils.LowPassFilter;
 import com.example.navigator.utils.RadarScanView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -79,8 +83,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -156,7 +158,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private ViewGroup inflateContainer;
     private LayoutInflater inflater;
     private VideoView landingVideo;
-    private View howToPlayContainer;
+    private View howToUseContainer;
+    private View searchContainer;
 
     private List<View> arObjects;
     private List<View> arLeftTrackerObjects;
@@ -224,6 +227,13 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     SensorManager mSensorManager;
     Sensor accSensor;
     Sensor magnetSensor;
+
+    SearchView searchView;
+    ListView listView;
+    ArrayList<String> list;
+    ArrayAdapter<String > adapter;
+    Button sub;
+    DatabaseReference ref;
 
     RadarScanView mRadar;
 
@@ -431,6 +441,80 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
+
+        // Search Bar Implementation-------------------------------------------------------------
+
+        searchView = (SearchView) rootView.findViewById(R.id.searchView);
+        listView = (ListView) rootView.findViewById(R.id.lv1);
+        list = new ArrayList<>();
+        //list.add("Zara");
+        ref = FirebaseDatabase.getInstance().getReference();
+
+        ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String ShopName = snapshot.child("name").getValue().toString();
+                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
+                    list.add(ShopName);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1,list);
+        listView.setAdapter(adapter);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                for(int i = 0; i < list.size(); i++){
+                    if(list.get(i).toLowerCase().contains(query.toLowerCase())){
+                        adapter.getFilter().filter(query);
+                        listView.setAdapter(adapter);
+                        break;
+                    }
+                    else{
+                        listView.setAdapter(null);
+                        Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                if(list.contains(query)){
+                    adapter.getFilter().filter(query);
+                }else{
+                    Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //    adapter.getFilter().filter(newText);
+                for(int i = 0; i < list.size(); i++){
+                    if(list.get(i).toLowerCase().contains(newText.toLowerCase())){
+                        adapter.getFilter().filter(newText);
+                        listView.setAdapter(adapter);
+                        break;
+                    }
+                    else{
+                        listView.setAdapter(null);
+                        Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                    }
+                }
+                return false;
+            }
+        });
+
+        //--------------------------------
+
+
+
         textLat = (TextView) rootView.findViewById(R.id.latitude);
         textLong = (TextView) rootView.findViewById(R.id.longitude);
         textDirection = (TextView) rootView.findViewById(R.id.text);
@@ -486,7 +570,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         inflateContainer = container;
         this.inflater = inflater;
-        howToPlayContainer = rootView.findViewById(R.id.how_to_play_container);
+        howToUseContainer = rootView.findViewById(R.id.how_to_use_container);
+        searchContainer = rootView.findViewById(R.id.search_container);
         mListener.timeEvent("App Opened to Play Game");
 
         configureGameWindow();
@@ -554,39 +639,40 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             requestPermissions();
         }
 
+        Location gpsLocation = null;
 
         if (getContext() != null && PERMISSIONS != null) {
             for (String permission : PERMISSIONS) {
                 if (ActivityCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_GRANTED) {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                             LOCATION_MIN_TIME, LOCATION_MIN_DISTANCE, this);
+                    // get last known position
+                    gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                    if (gpsLocation != null) {
+                        currentLocation = gpsLocation;
+                    } else {
+                        // try with network provider
+                        Location networkLocation = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                        if (networkLocation != null) {
+                            currentLocation = networkLocation;
+                        } else {
+                            // Fix a position
+                            currentLocation = new Location(FIXED);
+                            currentLocation.setAltitude(1);
+                            currentLocation.setLatitude(43.296482);
+                            currentLocation.setLongitude(5.36978);
+                        }
+
+                        // set current location
+                        onLocationChanged(currentLocation);
+                    }
                 }
             }
         }
 
-        // get last known position
-        Location gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        if (gpsLocation != null) {
-            currentLocation = gpsLocation;
-        } else {
-            // try with network provider
-            Location networkLocation = locationManager
-                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-            if (networkLocation != null) {
-                currentLocation = networkLocation;
-            } else {
-                // Fix a position
-                currentLocation = new Location(FIXED);
-                currentLocation.setAltitude(1);
-                currentLocation.setLatitude(43.296482);
-                currentLocation.setLongitude(5.36978);
-            }
-
-            // set current location
-            onLocationChanged(currentLocation);
-        }
     }
 
     @Override
@@ -706,9 +792,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     private void assignClickListeners()
     {
-        rootView.findViewById(R.id.play_button).setOnClickListener(new View.OnClickListener() {
+        rootView.findViewById(R.id.navigate_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 Log.d(TAG, "onLongClick: ");
                 mListener.trackEvent("App Opened to Play Game");
 
@@ -746,18 +834,79 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
         };
 
-
-        rootView.findViewById(R.id.how_to_play).setOnTouchListener(new View.OnTouchListener() {
+        rootView.findViewById(R.id.search_destination).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    howToPlayContainer.setVisibility(View.VISIBLE);
+                    searchContainer.setVisibility(View.VISIBLE);
                     mListener.trackEvent("How to Play Clicked");
 
-                    howToPlayContainer.animate().alpha(1f).setListener(new Animator.AnimatorListener() {
+                    searchContainer.animate().alpha(1f).setListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animator) {
-                            howToPlayContainer.setVisibility(View.VISIBLE);
+                            searchContainer.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+                }
+                return false;
+            }
+        });
+        rootView.findViewById(R.id.dismiss_search).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchContainer.animate().alpha(0f).setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        searchContainer.setVisibility(View.GONE);
+
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                });
+
+            }
+        });
+
+
+        rootView.findViewById(R.id.how_to_use).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    howToUseContainer.setVisibility(View.VISIBLE);
+                    mListener.trackEvent("How to Play Clicked");
+
+                    howToUseContainer.animate().alpha(1f).setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            howToUseContainer.setVisibility(View.VISIBLE);
                         }
 
                         @Override
@@ -782,7 +931,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         rootView.findViewById(R.id.dismiss_how_to_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                howToPlayContainer.animate().alpha(0f).setListener(new Animator.AnimatorListener() {
+                howToUseContainer.animate().alpha(0f).setListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animator) {
 
@@ -790,7 +939,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
                     @Override
                     public void onAnimationEnd(Animator animator) {
-                        howToPlayContainer.setVisibility(View.GONE);
+                        howToUseContainer.setVisibility(View.GONE);
 
                     }
 
@@ -1139,7 +1288,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         arContentOverlay.removeAllViews();
 
         rootView.findViewById(R.id.instructions_container).setVisibility(View.GONE);
-        rootView.findViewById(R.id.how_to_play_container).setVisibility(View.GONE);
+        rootView.findViewById(R.id.how_to_use_container).setVisibility(View.GONE);
         rootView.findViewById(R.id.win_container).setVisibility(View.GONE);
         rootView.findViewById(R.id.ar_container).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.stop_button).setVisibility(View.VISIBLE);

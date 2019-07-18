@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".Scan">
+
+    <!-- TODO: Update blank fragment layout -->
+
+
+    <Button
+        android:text="SCAN"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:layout_width="270dp"
+        android:layout_height="45dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:id="@+id/btn_scan"/>
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Result"
+        android:gravity="center"
+        android:textSize="22sp"
+        android:layout_marginTop="20dp"
+        android:id="@+id/result_text"
+        android:layout_marginBottom="120dp"/>
+
+    <Button
+        android:layout_marginTop="20dp"
+        android:text="Add To Cart"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:layout_width="270dp"
+        android:layout_height="40dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:id="@+id/btn_addToCart"/>
+
+    <Button
+        android:layout_marginTop="20dp"
+        android:text="Add To Wishlist"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:layout_width="270dp"
+        android:layout_height="40dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:id="@+id/btn_addToWishlist"/>
+</LinearLayout>

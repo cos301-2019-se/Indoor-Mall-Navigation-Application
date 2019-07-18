@@ -139,7 +139,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         final Navigate navigateFragment = new Navigate();
         final Cart cartFragment = new Cart();
         final Scan scanFragment = new Scan();
-        final Search searchFragment = new Search();
+        final Wishlist searchFragment = new Wishlist();
+
 
         beaconManager = BeaconManager.getInstanceForApplication(this);
         // To detect proprietary beacons, you must add a line like below corresponding to your beacon
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
                     case R.id.navigation_home:
                         setFragment(navigateFragment);
                         return true;
-                    case R.id.navigation_search:
+                    case R.id.navigation_wishlist:
                         setFragment(searchFragment);
                         return true;
                     case R.id.navigation_scan:
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
 
     }
 
-    private void setFragment(Fragment fragment){
+    public void setFragment(Fragment fragment){
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment);
         fragmentTransaction.commit();

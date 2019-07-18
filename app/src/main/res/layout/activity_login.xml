@@ -75,6 +75,8 @@
                 android:text="Dont Have an account? SignUp"
                 android:textColor="@color/black"
                 android:textStyle="bold|italic" />
+
+
         </LinearLayout>
 
     </LinearLayout>

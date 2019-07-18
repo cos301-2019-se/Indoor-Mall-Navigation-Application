@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Navigator</string>
     <string name="title_navigate">Navigate</string>
-    <string name="title_search">Search</string>
     <string name="title_scan">Scan</string>
     <string name="title_cart">Cart</string>
+    <string name="title_wishlist">Wishlist</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

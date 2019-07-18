@@ -7,11 +7,6 @@
         android:title="@string/title_navigate" />
 
     <item
-        android:id="@+id/navigation_search"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:title="@string/title_search" />
-
-    <item
         android:id="@+id/navigation_scan"
         android:icon="@drawable/ic_camera_black_24dp"
         android:title="@string/title_scan" />
@@ -20,5 +15,9 @@
         android:id="@+id/navigation_cart"
         android:icon="@drawable/ic_shopping_cart_black_24dp"
         android:title="@string/title_cart" />
+    <item
+        android:id="@+id/navigation_wishlist"
+        android:icon="@drawable/ic_favorite_black_24dp"
+        android:title="@string/title_wishlist" />
 
 </menu>

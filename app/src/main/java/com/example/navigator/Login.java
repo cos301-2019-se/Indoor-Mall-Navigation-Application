@@ -1,8 +1,11 @@
 package com.example.navigator;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.wifi.ScanResult;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,6 +17,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import static android.widget.Toast.LENGTH_LONG;
 
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
@@ -24,7 +32,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private TextView textViewSignup;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
-
+    DatabaseReference rootRef,demoRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +82,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         progressDialog.setMessage("Please Wait...");
         progressDialog.show();
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        //database reference pointing to demo node
+        demoRef = rootRef.child("Product");
+        final String sessionId = getIntent().getStringExtra("EXTRA_SESSION_ID");
+
 
         firebaseAuth.signInWithEmailAndPassword(email,password)
                 .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
@@ -83,7 +96,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         if(task.isSuccessful()){
                             finish();
                             //start profile activity
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                           // startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                            //Fragment fragment = CustomFragment.newInstance();
+                            demoRef.push().setValue(sessionId);
+                            Toast.makeText(getApplicationContext(),"Item added to cart", Toast.LENGTH_LONG).show();
+
+                           //startActivity(new Intent(getApplicationContext(),MainActivity.class));
                         }
                         else{
                             Toast.makeText(getApplicationContext(), "Login Failed...Try Again", Toast.LENGTH_SHORT).show();

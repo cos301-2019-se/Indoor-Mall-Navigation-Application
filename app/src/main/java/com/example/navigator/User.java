@@ -15,17 +15,14 @@ public class User {
         this.userid=userid;
         this.username = username;
         this.email = email;
-
     }
 
     public String getuserid() {
        return userid;
     }
-
     public String getusername() {
         return username;
     }
-
     public String getemail() {
        return email;
     }

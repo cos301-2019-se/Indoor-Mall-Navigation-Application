@@ -9,6 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/instructions_container"
+        android:visibility="gone"
         android:layout_height="match_parent">
 
         <VideoView
@@ -28,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_centerInParent="true"
             android:text="Navigate"
+            android:visibility="invisible"
             android:id="@+id/navigate_button"
             android:textSize="@dimen/text_large"
             android:background="@drawable/pressable_primary_to_primary_light_rounded"
@@ -210,7 +212,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:id="@+id/win_container"
+        android:id="@+id/arrived_at_destination"
         android:visibility="gone"
         android:background="@color/light_gray_transparent"
         android:layout_height="match_parent">
@@ -277,7 +279,6 @@
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
         android:id="@+id/ar_container"
-        android:visibility="gone"
         android:layout_height="match_parent">
 
         <com.example.navigator.utils.CompassView
@@ -296,7 +297,7 @@
             android:layout_marginStart="3dp"
             android:layout_marginLeft="3dp"
             android:layout_marginBottom="18dp"
-            android:text="TextView" />
+            android:text="Loading Latitude..." />
 
         <TextView
             android:id="@+id/longitude"
@@ -308,7 +309,7 @@
             android:layout_marginBottom="18dp"
             android:layout_toEndOf="@+id/latitude"
             android:layout_toRightOf="@+id/latitude"
-            android:text="TextView" />
+            android:text="Loading Longitude..." />
 
         <TextView
             android:id="@+id/text"
@@ -355,7 +356,7 @@
             android:layout_alignParentTop="true"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentLeft="true"
-            android:id="@+id/electoral_vote_counter"
+            android:id="@+id/check_point_label"
             android:textColor="@color/white"
             android:gravity="center"
             android:textSize="@dimen/text_xxlarge"
@@ -365,19 +366,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:text="- -"
-            android:layout_below="@id/electoral_vote_counter"
+            android:layout_below="@id/check_point_label"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentLeft="true"
-            android:layout_alignRight="@id/electoral_vote_counter"
-            android:id="@+id/electoral_vote_text"
+            android:layout_alignRight="@id/check_point_label"
+            android:id="@+id/check_point"
             android:textColor="@color/white"
             android:gravity="center"
-            android:paddingStart="@dimen/xlarge"
-            android:paddingLeft="@dimen/xlarge"
-            android:paddingEnd="@dimen/large"
-            android:paddingRight="@dimen/large"
             android:paddingBottom="@dimen/large"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
 
         <TextView
@@ -386,18 +383,18 @@
             android:background="@color/light_gray_transparent"
             android:layout_alignParentRight="true"
             android:id="@+id/distance_label"
-            android:layout_alignBottom="@id/electoral_vote_text"
+            android:layout_alignBottom="@id/check_point"
             android:paddingStart="@dimen/large"
             android:paddingEnd="@dimen/large"
             android:paddingBottom="@dimen/large"
             android:textColor="@color/white"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="wrap_content"
             android:text="- -"
             android:background="@color/light_gray_transparent"
-            android:layout_above="@id/electoral_vote_text"
+            android:layout_above="@id/check_point"
             android:layout_alignEnd="@id/distance_label"
             android:layout_alignRight="@id/distance_label"
             android:layout_alignStart="@id/distance_label"

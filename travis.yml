@@ -1,11 +1,12 @@
 language: android
 dist: trusty
+jdk: oraclejdk8
 android:
   components:
     # Uncomment the lines below if you want to
     # use the latest revision of Android SDK Tools
-    # - tools
-    # - platform-tools
+    - tools
+    - platform-tools
 
     # The BuildTools version used by your project
     - build-tools-28.0.3
@@ -22,5 +23,6 @@ android:
     # if you need to run emulator(s) during your tests
     - sys-img-x86-android-26
     - sys-img-armeabi-v7a-android-17
+
 notifications:
   slack: brute-force-workspace:92Ym0s6dAX8K2zByShEuFcuy

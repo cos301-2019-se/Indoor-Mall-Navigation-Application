@@ -14,10 +14,10 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class SearchTest {
+public class NavigateTest {
     @Test
     public void searchList_NeedleExistsInHaystack_ReturnsTrue() {
-        Search search = new Search();
+        Navigate search = new Navigate();
         ArrayList<String> list = new ArrayList<String>();
         list.add("Apple");
         list.add("Pear");
@@ -26,7 +26,7 @@ public class SearchTest {
     }
     @Test
     public void searchList_NeedleFuzzyExistsInHaystack_ReturnsTrue() {
-        Search search = new Search();
+        Navigate search = new Navigate();
         ArrayList<String> list = new ArrayList<String>();
         list.add("Apple");
         list.add("Pear");
@@ -35,7 +35,7 @@ public class SearchTest {
     }
     @Test
     public void searchList_NeedleNotExistsInHaystack_ReturnsFalse() {
-        Search search = new Search();
+        Navigate search = new Navigate();
         ArrayList<String> list = new ArrayList<String>();
         list.add("Apple");
         list.add("Pear");
@@ -44,7 +44,7 @@ public class SearchTest {
     }
     @Test
     public void searchList_NeedleNotFuzzyExistsInHaystack_ReturnsFalse() {
-        Search search = new Search();
+        Navigate search = new Navigate();
         ArrayList<String> list = new ArrayList<String>();
         list.add("Apple");
         list.add("Pear");

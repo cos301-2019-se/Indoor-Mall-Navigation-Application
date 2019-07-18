@@ -47,7 +47,7 @@ cache:
 before_script:
     - android list targets
     - echo no | android create avd --force -n test -t "android-"$ANDROID_EMULATOR_LEVEL --abi $ANDROID_ABI --tag google_apis
-    - emulator -avd test -no-audio -no-window &
+    - emulator -avd test -no-window &
     - android-wait-for-emulator
 
 script:

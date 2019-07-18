@@ -56,13 +56,13 @@
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rate"
+                    android:text="Unit Value"
                     android:textSize="20dip"
                     android:background="@color/white"
                     android:textColorHint="@color/black"
                     android:textColor="@color/black"/>
 
-                <TextView
+                <!--<TextView
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                     android:textSize="20dip"
                     android:background="@color/white"
                     android:textColorHint="@color/black"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"/>-->
 
 
 

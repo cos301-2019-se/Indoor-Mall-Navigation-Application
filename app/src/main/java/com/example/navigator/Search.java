@@ -66,6 +66,16 @@ public class Search extends Fragment {
      * populates the Database.
      *
      */
+    public boolean searchList(String needle, ArrayList<String> haystack)
+    {
+        for(int i = 0; i < haystack.size(); i++){
+            if(haystack.get(i).toLowerCase().contains(needle.toLowerCase())){
+
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -171,44 +181,35 @@ public class Search extends Fragment {
         listView.setAdapter(adapter);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+
+
             @Override
             public boolean onQueryTextSubmit(String query) {
 
-                for(int i = 0; i < list.size(); i++){
-                    if(list.get(i).toLowerCase().contains(query.toLowerCase())){
-                        adapter.getFilter().filter(query);
-                        listView.setAdapter(adapter);
-                        break;
-                    }
-                    else{
-                        listView.setAdapter(null);
-                        Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
-                    }
+                if(searchList(query, list))
+                {
+                    adapter.getFilter().filter(query);
+                    return true;
+                }else
+                {
+                    listView.setAdapter(null);
+                    return false;
                 }
 
-                /*if(list.contains(query)){
-                    adapter.getFilter().filter(query);
-                }else{
-                    Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
-                }*/
-                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //    adapter.getFilter().filter(newText);
-                for(int i = 0; i < list.size(); i++){
-                    if(list.get(i).toLowerCase().contains(newText.toLowerCase())){
-                        adapter.getFilter().filter(newText);
-                        listView.setAdapter(adapter);
-                        break;
-                    }
-                    else{
-                        listView.setAdapter(null);
-                        Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
-                    }
+                if(searchList(newText, list))
+                {
+                    adapter.getFilter().filter(newText);
+                    return true;
+                }else
+                {
+                    listView.setAdapter(null);
+                    return false;
                 }
-                return false;
             }
         });
 

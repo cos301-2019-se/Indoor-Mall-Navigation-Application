@@ -45,6 +45,7 @@ import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -227,6 +228,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     SensorManager mSensorManager;
     Sensor accSensor;
     Sensor magnetSensor;
+    String selectedShop = "";
 
     SearchView searchView;
     ListView listView;
@@ -354,7 +356,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
 
             if(votes == 270) {
-                gameOver();
+                reachedDestination();
             } else {
                 handler.postDelayed(countElectoralVotes, timeToNextVote);
             }*/
@@ -367,7 +369,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             /*daysToElection -= 1;
             ((TextView)rootView.findViewById(R.id.days_to_election)).setText(daysToElection + "m");
             if(daysToElection == 0) {
-                gameOver();
+                reachedDestination();
             } else {
                 handler.postDelayed(electionDayCountdown, TIME_TO_NEXT_ELECTION_DAY);
             }*/
@@ -451,6 +453,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
+        final Button navigateButton = rootView.findViewById(R.id.navigate_button);
+
 
         // Search Bar Implementation-------------------------------------------------------------
 
@@ -476,8 +480,21 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
         });
 
+        searchContainer = rootView.findViewById(R.id.search_container);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1,list);
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedShop = listView.getItemAtPosition(position).toString() ;
+                navigateButton.setVisibility(View.VISIBLE);
+                navigateButton.setText("Navigate to " + selectedShop);
+                searchContainer.setVisibility(View.GONE);
+
+            }
+        });
+
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -570,7 +587,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         inflateContainer = container;
         this.inflater = inflater;
         howToUseContainer = rootView.findViewById(R.id.how_to_use_container);
-        searchContainer = rootView.findViewById(R.id.search_container);
         mListener.timeEvent("App Opened to Play Game");
 
         configureGameWindow();
@@ -764,7 +780,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         super.onResume();
         Log.d(TAG,"onResume");
         rootView.findViewById(R.id.instructions_container).setVisibility(View.VISIBLE);
-        rootView.findViewById(R.id.win_container).setVisibility(View.GONE);
+        rootView.findViewById(R.id.arrived_at_destination).setVisibility(View.GONE);
         rootView.findViewById(R.id.ar_container).setVisibility(View.GONE);
         rootView.findViewById(R.id.camera_frame).setVisibility(View.GONE);
         rootView.findViewById(R.id.ar_content_overlay).setVisibility(View.GONE);
@@ -1104,7 +1120,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     }
 
-    private void gameOver() {
+    private void reachedDestination() {
 
         rootView.findViewById(R.id.stop_button).setVisibility(View.GONE);
         rootView.findViewById(R.id.crosshairs).setVisibility(View.GONE);
@@ -1119,9 +1135,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                rootView.findViewById(R.id.win_container).setVisibility(View.VISIBLE);
-                mListener.trackEvent("Game Won");
-                winMp.start();
+                rootView.findViewById(R.id.arrived_at_destination).setVisibility(View.VISIBLE);
             }
         }, 500);
 
@@ -1288,15 +1302,18 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         rootView.findViewById(R.id.instructions_container).setVisibility(View.GONE);
         rootView.findViewById(R.id.how_to_use_container).setVisibility(View.GONE);
-        rootView.findViewById(R.id.win_container).setVisibility(View.GONE);
+        rootView.findViewById(R.id.arrived_at_destination).setVisibility(View.GONE);
         rootView.findViewById(R.id.ar_container).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.crosshairs).setVisibility(View.VISIBLE);
-        ((TextView)rootView.findViewById(R.id.electoral_vote_counter)).setTextColor
+        ((TextView)rootView.findViewById(R.id.check_point_label)).setTextColor
                 (ContextCompat.getColor(getContext(), R.color.white));
 
         landingVideo.stopPlayback();
         landingVideo.setVisibility(View.GONE);
+
+        TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
+        checkPoint.setText(selectedShop);
 
         //generateArObjects();
         initializeGameTimers();
@@ -1533,23 +1550,27 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             String latitude = "Latitude: " + loc.getLatitude();
             Log.v(TAG, latitude);
 
-            /*------- To get city name from coordinates -------- */
-            String cityName = null;
-            Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
-            List<Address> addresses;
             try {
-                addresses = gcd.getFromLocation(loc.getLatitude(),
-                        loc.getLongitude(), 1);
-                if (addresses.size() > 0) {
-                    System.out.println(addresses.get(0).getLocality());
-                    cityName = addresses.get(0).getLocality();
+                /*------- To get city name from coordinates -------- */
+                String cityName = null;
+                Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
+                List<Address> addresses;
+                try {
+                    addresses = gcd.getFromLocation(loc.getLatitude(),
+                            loc.getLongitude(), 1);
+                    if (addresses.size() > 0) {
+                        System.out.println(addresses.get(0).getLocality());
+                        cityName = addresses.get(0).getLocality();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                String s = longitude + "\n" + latitude + "\n\nMy Current City is: "
+                        + cityName;
             }
-            catch (IOException e) {
-                e.printStackTrace();
+            catch (Exception ex){
+
             }
-            String s = longitude + "\n" + latitude + "\n\nMy Current City is: "
-                    + cityName;
         }
 
         @Override
@@ -1607,6 +1628,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                         }
                         String distanceLabel = "Distance from " + beaconName;
                         ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
+
+                        if(distance < 1.00){
+                            reachedDestination();
+                        }
 
                         Log.i(TAG,distance_str);
                     }

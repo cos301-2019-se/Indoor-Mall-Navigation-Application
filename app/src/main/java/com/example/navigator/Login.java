@@ -18,8 +18,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static android.widget.Toast.LENGTH_LONG;
 
@@ -30,9 +33,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private EditText editTextEmail;
     private EditText editTextPassword;
     private TextView textViewSignup;
+    private DatabaseReference ref;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
-    DatabaseReference rootRef,demoRef;
+    private DatabaseReference rootRef,demoRef;
+    private Product objProduct;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,7 +104,29 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             //start profile activity
                            // startActivity(new Intent(getApplicationContext(),MainActivity.class));
                             //Fragment fragment = CustomFragment.newInstance();
-                            demoRef.push().setValue(sessionId);
+
+                            //demoRef.push().setValue(sessionId);
+
+                            ref = FirebaseDatabase.getInstance().getReference().child("Cart");
+                            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if(sessionId.equals("5060466519077")){
+                                        objProduct = new Product("5060466519077","Power Play",19.50);
+                                        ref.push().setValue(objProduct);
+                                    }
+                                    else if(sessionId.equals("8718114642871")){
+                                        objProduct = new Product("5060466519077","Power Play",19.50);
+                                        ref.push().setValue(objProduct);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
                             Toast.makeText(getApplicationContext(),"Item added to cart", Toast.LENGTH_LONG).show();
 
                            //startActivity(new Intent(getApplicationContext(),MainActivity.class));

@@ -80,7 +80,7 @@ public class Cart extends Fragment {
             }
         });*/
         //database reference pointing to Product node
-        demoRef = rootRef.child("Product");
+        demoRef = rootRef.child("Cart");
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
 
         final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);

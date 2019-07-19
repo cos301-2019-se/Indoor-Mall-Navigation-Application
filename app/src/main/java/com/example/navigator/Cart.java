@@ -68,11 +68,12 @@ public class Cart extends Fragment {
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int count = 0;
+                int count = 1;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String productName = snapshot.child("name").getValue().toString();
                     String price = snapshot.child("price").getValue().toString();
                     String priceProduct = productName + " R"+ price;
+                    price = "R " + price;
                     //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     //list.add(priceProduct);
 
@@ -91,7 +92,7 @@ public class Cart extends Fragment {
 
                         // Add a TextView in the first column.
                         TextView aPrice = new TextView(getContext());
-                        aPrice.setText(priceProduct);
+                        aPrice.setText(price);
                         tableRow.addView(aPrice);
 
                         // Add a button in the second column

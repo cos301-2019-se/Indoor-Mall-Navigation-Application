@@ -24,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.security.cert.PolicyNode;
@@ -96,6 +97,7 @@ public class Cart extends Fragment {
                     //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     //list.add(priceProduct);
                     final int curr = count;
+                    final String currProductName = productName;
                     //for (int i = 0; i <2; i++) {
 
                         TableRow tableRow = new TableRow(getContext());
@@ -120,8 +122,20 @@ public class Cart extends Fragment {
                         button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
                                 myTable.removeViewAt(curr);
+
+                                /*Query query = rootRef.child("Cart").orderByChild("name").equalTo(currProductName);
+                                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        dataSnapshot.getRef().removeValue();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });*/
                             }
                         });
                         tableRow.addView(button);

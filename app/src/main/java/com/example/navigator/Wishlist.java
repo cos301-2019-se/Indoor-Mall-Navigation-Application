@@ -52,7 +52,7 @@ public class Wishlist extends Fragment {
     Button sub;
     DatabaseReference ref;
     Product objProduct;
-    //Shop ObjShop, ObjShop1,ObjShop2,ObjShop3,ObjShop4,ObjShop5,ObjShop6,ObjShop7,ObjShop8,ObjShop9,ObjShop10,ObjShop11,ObjShop12,ObjShop13,ObjShop14,ObjShop15,ObjShop16,ObjShop17,ObjShop18,ObjShop19,ObjShop20,ObjShop21;
+    Shop ObjShop, ObjShop1,ObjShop2,ObjShop3,ObjShop4,ObjShop5,ObjShop6,ObjShop7,ObjShop8,ObjShop9,ObjShop10,ObjShop11,ObjShop12,ObjShop13,ObjShop14,ObjShop15,ObjShop16,ObjShop17,ObjShop18,ObjShop19,ObjShop20,ObjShop21;
 
 
     public Wishlist() {
@@ -69,12 +69,74 @@ public class Wishlist extends Fragment {
 
 
     //WRITING TO DATABASE
-        /*ref.addListenerForSingleValueEvent(new ValueEventListener() {
+
+    //READING FROM DATABASE
+       /*ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                String ShopName = snapshot.child("name").getValue().toString();
+                //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
+                list.add(ShopName);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    });
+    **/
+    /**
+     * purpose: This function add's a product to the Database.
+     * */
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_wishlist, container, false);
+        ref = FirebaseDatabase.getInstance().getReference().child("Shop");
+/*
+        ref = FirebaseDatabase.getInstance().getReference().child("Product");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    objProduct = new Product("5060466519077","Power Play",19.50);
+                    ref.push().setValue(objProduct);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+*/
+
+        //READING FROM DATABASE
+       /*ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                String ShopName = snapshot.child("name").getValue().toString();
+                //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
+                list.add(ShopName);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    });*/
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //String shopId = "";
 
-                /*ObjShop = new Shop("Clothing","Exact",60);
+                ObjShop = new Shop("Clothing","Exact",60);
                 ObjShop1 = new Shop("Books","Exclusive Books",61);
                 ObjShop2 = new Shop("Optometrists","EyeQ Optometrists",62);
                 ObjShop3 = new Shop("Clothing","Fabiani",63);
@@ -125,67 +187,8 @@ public class Wishlist extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });*/
-
-    //READING FROM DATABASE
-       /*ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                String ShopName = snapshot.child("name").getValue().toString();
-                //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
-                list.add(ShopName);
-            }
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    });
-    **/
-    /**
-     * purpose: This function add's a product to the Database.
-     * */
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_wishlist, container, false);
-/*
-        ref = FirebaseDatabase.getInstance().getReference().child("Product");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    objProduct = new Product("5060466519077","Power Play",19.50);
-                    ref.push().setValue(objProduct);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
 
-*/
-
-        //READING FROM DATABASE
-       /*ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                String ShopName = snapshot.child("name").getValue().toString();
-                //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
-                list.add(ShopName);
-            }
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    });*/
 
         return view;
     }

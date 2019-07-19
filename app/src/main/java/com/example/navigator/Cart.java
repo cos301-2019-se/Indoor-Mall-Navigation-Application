@@ -1,7 +1,9 @@
 package com.example.navigator;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,8 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.cert.PolicyNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +38,7 @@ import static com.example.navigator.MainActivity.TAG;
  */
 
 public class Cart extends Fragment {
-
+    private Context context = null;
     Button  fetch;
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
@@ -52,10 +58,62 @@ public class Cart extends Fragment {
         fetch = (Button) view.findViewById(R.id.fetch);
         demoValue = (TextView) view.findViewById(R.id.tvValue);
         rootRef = FirebaseDatabase.getInstance().getReference();
-        cartList = view.findViewById(R.id.cartList);
+        //cartList = view.findViewById(R.id.cartList);
 
         //database reference pointing to Product node
         demoRef = rootRef.child("Product");
+        //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
+
+        final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
+        demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String productName = snapshot.child("name").getValue().toString();
+                    String price = snapshot.child("price").getValue().toString();
+                    String priceProduct = productName + " R"+ price;
+                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
+                    //list.add(priceProduct);
+
+                    for (int i = 0; i <2; i++) {
+
+                        TableRow tableRow = new TableRow(context);
+
+                        // Set new table row layout parameters.
+                        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+                        tableRow.setLayoutParams(layoutParams);
+
+                        // Add a TextView in the first column.
+                        TextView name = new TextView(context);
+                        name.setText(productName);
+                        myTable.addView(name, 0);
+
+                        // Add a TextView in the first column.
+                        TextView aPrice = new TextView(context);
+                        aPrice.setText(priceProduct);
+                        myTable.addView(aPrice, 1);
+
+                        // Add a button in the second column
+                        Button button = new Button(context);
+                        button.setText("Delete");
+                        myTable.addView(button, 2);
+
+                        // Add a checkbox in the third column.
+                        //CheckBox checkBox = new CheckBox(context);
+                        //checkBox.setText("Check it");
+                        //myTable.addView(checkBox, 2);
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         fetch.setOnClickListener(new View.OnClickListener() {
             @Override

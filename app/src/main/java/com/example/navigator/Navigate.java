@@ -1136,8 +1136,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             @Override
             public void run() {
                 rootView.findViewById(R.id.arrived_at_destination).setVisibility(View.VISIBLE);
-                mListener.trackEvent("Game Won");
-                winMp.start();
             }
         }, 500);
 
@@ -1552,23 +1550,27 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             String latitude = "Latitude: " + loc.getLatitude();
             Log.v(TAG, latitude);
 
-            /*------- To get city name from coordinates -------- */
-            String cityName = null;
-            Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
-            List<Address> addresses;
             try {
-                addresses = gcd.getFromLocation(loc.getLatitude(),
-                        loc.getLongitude(), 1);
-                if (addresses.size() > 0) {
-                    System.out.println(addresses.get(0).getLocality());
-                    cityName = addresses.get(0).getLocality();
+                /*------- To get city name from coordinates -------- */
+                String cityName = null;
+                Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
+                List<Address> addresses;
+                try {
+                    addresses = gcd.getFromLocation(loc.getLatitude(),
+                            loc.getLongitude(), 1);
+                    if (addresses.size() > 0) {
+                        System.out.println(addresses.get(0).getLocality());
+                        cityName = addresses.get(0).getLocality();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                String s = longitude + "\n" + latitude + "\n\nMy Current City is: "
+                        + cityName;
             }
-            catch (IOException e) {
-                e.printStackTrace();
+            catch (Exception ex){
+
             }
-            String s = longitude + "\n" + latitude + "\n\nMy Current City is: "
-                    + cityName;
         }
 
         @Override
@@ -1628,7 +1630,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                         ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
 
                         if(distance < 1.00){
-
+                            reachedDestination();
                         }
 
                         Log.i(TAG,distance_str);

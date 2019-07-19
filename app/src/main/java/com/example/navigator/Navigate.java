@@ -507,7 +507,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 }else
                 {
                     listView.setAdapter(null);
-                    Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -521,7 +521,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 }else
                 {
                     listView.setAdapter(null);
-                    Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
                     return false;
                 }
             }

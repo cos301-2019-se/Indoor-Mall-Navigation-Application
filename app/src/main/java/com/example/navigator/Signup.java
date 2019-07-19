@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseUser;
 
-public class  Signup extends AppCompatActivity implements View.OnClickListener {
+public class Signup extends AppCompatActivity implements View.OnClickListener {
     private Button buttonSignUp;
     private EditText editTextEmail;
     private EditText editTextPassword;
@@ -56,30 +56,83 @@ public class  Signup extends AppCompatActivity implements View.OnClickListener {
 
     }
 
+    public void toastWrapper(String message)
+    {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean validateEmail(String email)
+    {
+        if(email.isEmpty()){
+            //email is empty
+            toastWrapper("Please Enter Email");
+            //stop the function
+            return false;
+        }
+
+        if(email.indexOf('@') == -1)
+        {
+            toastWrapper("That email is not valid");
+            //stop the function
+            return false;
+        }
+        if(email.lastIndexOf('.') < email.indexOf('@'))
+        {
+            toastWrapper("That email is not valid");
+            //stop the function
+            return false;
+        }
+
+        return true;
+
+    }
+
+    public boolean validatePassword(String password)
+    {
+        int length = password.length();
+
+        if(password.isEmpty()){
+            //password is empty
+            toastWrapper("Please enter password");
+            //stop the function
+            return false;
+        }
+
+        if(length<6){
+            toastWrapper("Password must be at least 6 characters long");
+            return false;
+        }
+        if(!password.matches(".*\\d.*"))
+        {
+            toastWrapper("Password must contain at least 1 number");
+            return false;
+        }
+        if(!password.matches(".*[A-Z].*"))
+        {
+            toastWrapper("Password must contain at least 1 uppercase letter");
+            return false;
+        }
+        if(!password.matches(".*[a-z].*"))
+        {
+            toastWrapper("Password must contain at least 1 lowercase letter");
+            return false;
+        }
+
+        return true;
+    }
+
 
     private void registerUser(){
 
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
-        int length = editTextPassword.getText().length();
-
-
-        if(TextUtils.isEmpty(email)){
-            //email is empty
-            Toast.makeText(this, "Please Enter Email", Toast.LENGTH_SHORT).show();
-            //stop the function
+        //int length = password.length();
+        if(!validateEmail(email))
+        {
             return;
         }
-
-        if(TextUtils.isEmpty(password)){
-            //password is empty
-            Toast.makeText(this,"Please Enter Password",Toast.LENGTH_SHORT).show();
-            //stop the function
-            return;
-        }
-
-        if(length<6){
-            Toast.makeText(this,"Password atleast 6 character or more",Toast.LENGTH_SHORT).show();
+        if(!validatePassword(password))
+        {
             return;
         }
 

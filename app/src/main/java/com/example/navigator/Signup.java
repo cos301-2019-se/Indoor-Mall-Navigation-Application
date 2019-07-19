@@ -76,7 +76,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
             //stop the function
             return false;
         }
-        if(email.indexOf('.') < email.indexOf('@'))
+        if(email.lastIndexOf('.') < email.indexOf('@'))
         {
             toastWrapper("That email is not valid");
             //stop the function

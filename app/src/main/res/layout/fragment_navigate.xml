@@ -9,6 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/instructions_container"
+        android:visibility="gone"
         android:layout_height="match_parent">
 
         <VideoView
@@ -28,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_centerInParent="true"
             android:text="Navigate"
+            android:visibility="invisible"
             android:id="@+id/navigate_button"
             android:textSize="@dimen/text_large"
             android:background="@drawable/pressable_primary_to_primary_light_rounded"
@@ -35,7 +37,7 @@
             android:padding="@dimen/small"
             android:layout_height="wrap_content"/>
 
-        <TextView
+        <!--<TextView
             android:layout_width="wrap_content"
             android:text="@string/app_name"
             android:id="@+id/app_title"
@@ -44,7 +46,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/text_huge"
             android:paddingTop="@dimen/huge"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"/>-->
 
         <TextView
             android:layout_width="wrap_content"
@@ -210,16 +212,16 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:id="@+id/win_container"
-        android:visibility="gone"
+        android:id="@+id/arrived_at_destination"
         android:background="@color/light_gray_transparent"
         android:layout_height="match_parent">
 
         <ImageView
-            android:layout_width="500dp"
+            android:id="@+id/location_icon"
+            android:layout_width="200dp"
             android:src="@drawable/location"
             android:layout_centerInParent="true"
-            android:layout_height="500dp"/>
+            android:layout_height="200dp"/>
 
 
         <RelativeLayout
@@ -244,7 +246,7 @@
                     android:text="Navigate"
                     android:id="@+id/play_again_win"
                     android:elevation="14dp"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     android:layout_marginEnd="@dimen/medium"
                     android:layout_marginRight="@dimen/medium"
                     android:layout_marginTop="@dimen/medium"
@@ -267,6 +269,7 @@
                 android:textSize="@dimen/text_xlarge"
                 android:text="You have reached your destination!"
                 android:layout_height="wrap_content"/>
+
 
 
         </RelativeLayout>
@@ -296,7 +299,7 @@
             android:layout_marginStart="3dp"
             android:layout_marginLeft="3dp"
             android:layout_marginBottom="18dp"
-            android:text="TextView" />
+            android:text="Loading Latitude..." />
 
         <TextView
             android:id="@+id/longitude"
@@ -308,7 +311,7 @@
             android:layout_marginBottom="18dp"
             android:layout_toEndOf="@+id/latitude"
             android:layout_toRightOf="@+id/latitude"
-            android:text="TextView" />
+            android:text="Loading Longitude..." />
 
         <TextView
             android:id="@+id/text"
@@ -355,7 +358,7 @@
             android:layout_alignParentTop="true"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentLeft="true"
-            android:id="@+id/electoral_vote_counter"
+            android:id="@+id/check_point_label"
             android:textColor="@color/white"
             android:gravity="center"
             android:textSize="@dimen/text_xxlarge"
@@ -365,19 +368,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:text="- -"
-            android:layout_below="@id/electoral_vote_counter"
+            android:layout_below="@id/check_point_label"
             android:background="@color/light_gray_transparent"
             android:layout_alignParentLeft="true"
-            android:layout_alignRight="@id/electoral_vote_counter"
-            android:id="@+id/electoral_vote_text"
+            android:layout_alignRight="@id/check_point_label"
+            android:id="@+id/check_point"
             android:textColor="@color/white"
             android:gravity="center"
-            android:paddingStart="@dimen/xlarge"
-            android:paddingLeft="@dimen/xlarge"
-            android:paddingEnd="@dimen/large"
-            android:paddingRight="@dimen/large"
             android:paddingBottom="@dimen/large"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
 
         <TextView
@@ -386,18 +385,18 @@
             android:background="@color/light_gray_transparent"
             android:layout_alignParentRight="true"
             android:id="@+id/distance_label"
-            android:layout_alignBottom="@id/electoral_vote_text"
+            android:layout_alignBottom="@id/check_point"
             android:paddingStart="@dimen/large"
             android:paddingEnd="@dimen/large"
             android:paddingBottom="@dimen/large"
             android:textColor="@color/white"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="wrap_content"
             android:text="- -"
             android:background="@color/light_gray_transparent"
-            android:layout_above="@id/electoral_vote_text"
+            android:layout_above="@id/check_point"
             android:layout_alignEnd="@id/distance_label"
             android:layout_alignRight="@id/distance_label"
             android:layout_alignStart="@id/distance_label"

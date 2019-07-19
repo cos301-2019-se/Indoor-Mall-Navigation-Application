@@ -105,7 +105,9 @@ public class Cart extends Fragment {
                         //myTable.addView(checkBox, 2);
 
                         myTable.addView(tableRow,count);
+                        //increment counter
                         count++;
+
                     //}
 
 

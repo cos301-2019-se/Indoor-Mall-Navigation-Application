@@ -222,6 +222,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private Drawable arrowRight = null;
     private Drawable arrowUp = null;
     private Drawable arrowDown = null;
+    Button navigateButton = null;
 
     private BeaconManager beaconManager;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
@@ -453,7 +454,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
-        final Button navigateButton = rootView.findViewById(R.id.navigate_button);
+        navigateButton = rootView.findViewById(R.id.navigate_button);
 
 
         // Search Bar Implementation-------------------------------------------------------------
@@ -507,7 +508,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 }else
                 {
                     listView.setAdapter(null);
-                    Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -521,7 +522,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 }else
                 {
                     listView.setAdapter(null);
-                    Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -827,6 +828,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 onResume();
+                navigateButton.setVisibility(View.GONE);
                 return false;
             }
         });
@@ -1124,6 +1126,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         rootView.findViewById(R.id.stop_button).setVisibility(View.GONE);
         rootView.findViewById(R.id.crosshairs).setVisibility(View.GONE);
+        rootView.findViewById(R.id.compass).setVisibility(View.GONE);
+        rootView.findViewById(R.id.check_point_label).setVisibility(View.GONE);
+        rootView.findViewById(R.id.check_point).setVisibility(View.GONE);
+        rootView.findViewById(R.id.distance_label).setVisibility(View.GONE);
+        rootView.findViewById(R.id.distance_from_beacon).setVisibility(View.GONE);
         /*for(int i = 0; i < btcShot.size(); i++) {
             arLeftTrackerObjects.get(i).setVisibility(View.GONE);
             arRightTrackerObjects.get(i).setVisibility(View.GONE);

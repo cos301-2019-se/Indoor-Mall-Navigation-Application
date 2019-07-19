@@ -44,16 +44,16 @@ cache:
         - "$HOME/.android/build-caches/"
 
 # Emulator Management: Create, Start and Wait
-before_script:
-    - android list targets
-    - echo no | android create avd --force -n test -t "android-"$ANDROID_EMULATOR_LEVEL --abi $ANDROID_ABI --tag google_apis
-    - emulator -avd test -no-window &
-    - android-wait-for-emulator
+#before_script:
+#    - android list targets
+#    - echo no | android create avd --force -n test -t "android-"$ANDROID_EMULATOR_LEVEL --abi $ANDROID_ABI --tag google_apis
+#    - emulator -avd test -no-window &
+#    - android-wait-for-emulator
 
-script:
-    - ./gradlew dependencyCheckAnalyze build
-    - adb shell input keyevent 82
-    - ./gradlew connectedCheck -PdisablePreDex --stacktrace
+#script:
+    #- ./gradlew dependencyCheckAnalyze build
+    #- adb shell input keyevent 82
+    #- ./gradlew connectedCheck -PdisablePreDex --stacktrace
 
 notifications:
   slack: brute-force-workspace:92Ym0s6dAX8K2zByShEuFcuy

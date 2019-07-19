@@ -50,7 +50,8 @@ cache:
 #    - emulator -avd test -no-window &
 #    - android-wait-for-emulator
 
-#script:
+script:
+    ./gradlew test
     #- ./gradlew dependencyCheckAnalyze build
     #- adb shell input keyevent 82
     #- ./gradlew connectedCheck -PdisablePreDex --stacktrace

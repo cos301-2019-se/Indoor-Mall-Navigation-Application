@@ -364,20 +364,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         }
     };
 
-    final Runnable electionDayCountdown = new Runnable() {
+    final Runnable distanceFromBeaconProcess = new Runnable() {
         @Override
         public void run() {
-            /*daysToElection -= 1;
-            ((TextView)rootView.findViewById(R.id.days_to_election)).setText(daysToElection + "m");
-            if(daysToElection == 0) {
-                reachedDestination();
-            } else {
-                handler.postDelayed(electionDayCountdown, TIME_TO_NEXT_ELECTION_DAY);
-            }*/
-
             onBeaconServiceConnect();
-
-
         }
     };
 
@@ -697,7 +687,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         stopAllRunnables();
 
         handler.removeCallbacks(countElectoralVotes);
-        handler.removeCallbacks(electionDayCountdown);
+        handler.removeCallbacks(distanceFromBeaconProcess);
         handler.removeCallbacks(autoGenerateArObjects);
 
         if(winMp != null) winMp.stop();
@@ -1100,7 +1090,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         daysToElection = 30;
         votes = 0;
         countElectoralVotes.run();
-        electionDayCountdown.run();
+        distanceFromBeaconProcess.run();
     }
 
     private void initializeSound() {
@@ -1137,7 +1127,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         }*/
         handler.removeCallbacks(autoGenerateArObjects);
         handler.removeCallbacks(countElectoralVotes);
-        handler.removeCallbacks(electionDayCountdown);
+        handler.removeCallbacks(distanceFromBeaconProcess);
 
         handler.postDelayed(new Runnable() {
             @Override

@@ -68,6 +68,7 @@ public class Cart extends Fragment {
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int count = 0;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String productName = snapshot.child("name").getValue().toString();
                     String price = snapshot.child("price").getValue().toString();
@@ -75,34 +76,39 @@ public class Cart extends Fragment {
                     //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     //list.add(priceProduct);
 
-                    for (int i = 0; i <2; i++) {
+                    //for (int i = 0; i <2; i++) {
 
-                        TableRow tableRow = new TableRow(context);
+                        TableRow tableRow = new TableRow(getContext());
 
                         // Set new table row layout parameters.
                         TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                         tableRow.setLayoutParams(layoutParams);
 
                         // Add a TextView in the first column.
-                        TextView name = new TextView(context);
+                        TextView name = new TextView(getContext());
                         name.setText(productName);
-                        myTable.addView(name, 0);
+                        tableRow.addView(name);
 
                         // Add a TextView in the first column.
-                        TextView aPrice = new TextView(context);
+                        TextView aPrice = new TextView(getContext());
                         aPrice.setText(priceProduct);
-                        myTable.addView(aPrice, 1);
+                        tableRow.addView(aPrice);
 
                         // Add a button in the second column
-                        Button button = new Button(context);
+                        Button button = new Button(getContext());
                         button.setText("Delete");
-                        myTable.addView(button, 2);
+                        tableRow.addView(button);
 
                         // Add a checkbox in the third column.
                         //CheckBox checkBox = new CheckBox(context);
                         //checkBox.setText("Check it");
                         //myTable.addView(checkBox, 2);
-                    }
+
+                        myTable.addView(tableRow,count);
+                        count++;
+                    //}
+
+
 
                 }
 

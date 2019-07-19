@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -94,7 +95,7 @@ public class Cart extends Fragment {
                     price = "R " + price;
                     //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     //list.add(priceProduct);
-
+                    final int curr = count;
                     //for (int i = 0; i <2; i++) {
 
                         TableRow tableRow = new TableRow(getContext());
@@ -114,8 +115,15 @@ public class Cart extends Fragment {
                         tableRow.addView(aPrice);
 
                         // Add a button in the second column
-                        Button button = new Button(getContext());
-                        button.setText("Delete");
+                        ImageButton button = new ImageButton(getContext());
+                        button.setImageResource(R.drawable.ic_delete_black_24dp);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                myTable.removeViewAt(curr);
+                            }
+                        });
                         tableRow.addView(button);
 
                         // Add a checkbox in the third column.

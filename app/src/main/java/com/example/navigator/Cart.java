@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import static com.example.navigator.MainActivity.TAG;
 public class Cart extends Fragment {
 
     Button  fetch;
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
     ListView cartList;
@@ -54,6 +56,22 @@ public class Cart extends Fragment {
         rootRef = FirebaseDatabase.getInstance().getReference();
         cartList = view.findViewById(R.id.cartList);
 
+        /*
+        * ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String ShopName = snapshot.child("name").getValue().toString();
+                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
+                    list.add(ShopName);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });*/
         //database reference pointing to Product node
         demoRef = rootRef.child("Product");
 
@@ -65,12 +83,20 @@ public class Cart extends Fragment {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         List list = new ArrayList<>();
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            String productName = snapshot.child("name").getValue().toString();
+                            String price = snapshot.child("price").getValue().toString();
+                            String priceProduct = productName + " R"+ price;
+                            //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
+                            list.add(priceProduct);
+                        }
+
+                       /* Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
                         for(int i = 0; i < map.size(); i++){
                             list.add(map);
                             i++;
-                        }
+                        }*/
 
 
 

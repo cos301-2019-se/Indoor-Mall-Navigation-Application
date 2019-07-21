@@ -127,6 +127,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final String GO_TO = getIntent().getStringExtra("GO_TO");
+
         bottomNavigationView = findViewById(R.id.nav_view);
 
         if (!havePermissions()) {
@@ -149,8 +151,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
                 .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         //        setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
         beaconManager.bind(this);
-
-
 
         BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
                 = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -177,7 +177,15 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
 
 
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+
+        if(GO_TO != null){
+            if(GO_TO.equals("scanFragment")) {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_scan);
+            }
+        }
+        else {
+            bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        }
 
 
     }

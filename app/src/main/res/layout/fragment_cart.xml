@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true"
+    android:fadeScrollbars="false"
+    android:scrollbars="vertical" >
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_height="fill_parent"
+        android:layout_width="fill_parent" android:background="@color/white">
+
+
+        <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:textColorHint="@color/black"
+            android:textColor="@color/black"
+            android:textSize="24dip"
+            android:layout_margin="5dip"
+            android:layout_gravity="center"
+            android:text="Shopping Cart"
+            >
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/GrandTotal"
+            android:textSize="20dip"
+            android:background="@color/white"
+            android:textColorHint="@color/black"
+            android:textColor="@color/black"
+            android:layout_gravity="right"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <!-- Removed from TableLayout
+                android:layout_above="@+id/textView"
+                android:layout_below="@+id/TextView01"-->
+            <TableLayout
+                android:id="@+id/myTableLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="503dp"
+                android:layout_weight="0.28"
+                android:clickable="true"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:paddingLeft="@dimen/activity_vertical_margin"
+                android:paddingRight="@dimen/activity_vertical_margin"
+                android:stretchColumns="*">
+
+
+                <TableRow
+                    android:id="@+id/tablerow1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:text="Products"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/black"
+                        android:textSize="20dip" />
+
+                    <!--<TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:text="Unit Value"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/black"
+                        android:textSize="20dip" />-->
+
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:text="Item Price"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/black"
+                        android:textSize="20dip" />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="20dip"
+                        android:background="@color/white"
+                        android:textColorHint="@color/black"
+                        android:textColor="@color/black"/>
+
+
+                </TableRow>
+            </TableLayout>
+            <!--
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/fetch"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="78dp"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginEnd="74dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/white"
+                android:text="Click the product to do changes in Cart"
+                android:textColor="@color/black"
+                android:textSize="15dip" />
+            -->
+
+            <Button
+                android:id="@+id/fetch"
+                android:layout_width="270dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="center"
+                android:layout_marginStart="78dp"
+                android:layout_marginEnd="63dp"
+                android:layout_marginBottom="36dp"
+                android:background="@drawable/buttonshape"
+                android:text="Checkout"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="30sp"
+                android:textStyle="normal|bold">
+
+            </Button>
+
+
+
+            <!-- Removed from Textview
+                android:layout_below="@+id/btnFetch"
+            -->
+            <TextView
+                android:id="@+id/tvValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textSize="16dp" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+</ScrollView>

@@ -1,6 +1,6 @@
 /**
  *
- *  File Name: Navigation.js (path: component/app/navigation.js)
+ *  File Name: WishList.js (path: app/src/main/java/com.example.navigator/utils/wishList.js)
  *  Version: 1.0
  *  Author: Brute Force - Database Management
  *  Project: Indoor Mall Navigation
@@ -12,10 +12,10 @@
  *  --------------------------------------------
  *  09/07/2019  Thabo Ntsoane    Original
  *
- *  Functional Description: This program file searches and navigates user to a specific shop
- *  Error Messages: Shop does not exist
- *  Constraints: Can only be used to navigate
- *  Assumptions: It is assumed that the user will be navigated to destination appropriately
+ *  Functional Description: This program file add's a product to the wishlist.
+ *  Error Messages: None
+ *  Constraints: Can only be used if Items are available
+ *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
  *
 */
 package com.example.navigator;
@@ -136,7 +136,7 @@ public class Wishlist extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //String shopId = "";
 
-                ObjShop = new Shop("Clothing","Exact",60);
+               /* ObjShop = new Shop("Clothing","Exact",60);
                 ObjShop1 = new Shop("Books","Exclusive Books",61);
                 ObjShop2 = new Shop("Optometrists","EyeQ Optometrists",62);
                 ObjShop3 = new Shop("Clothing","Fabiani",63);
@@ -180,7 +180,7 @@ public class Wishlist extends Fragment {
                 ref.push().setValue(ObjShop18);
                 ref.push().setValue(ObjShop19);
                 ref.push().setValue(ObjShop20);
-                ref.push().setValue(ObjShop21);
+                ref.push().setValue(ObjShop21);*/
             }
 
             @Override

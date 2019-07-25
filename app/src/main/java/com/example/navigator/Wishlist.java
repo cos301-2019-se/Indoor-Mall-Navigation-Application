@@ -21,6 +21,7 @@
 package com.example.navigator;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -28,16 +29,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.ArrayAdapter;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 
@@ -52,58 +59,94 @@ public class Wishlist extends Fragment {
     Button sub;
     DatabaseReference ref;
     Product objProduct;
-    Shop ObjShop, ObjShop1,ObjShop2,ObjShop3,ObjShop4,ObjShop5,ObjShop6,ObjShop7,ObjShop8,ObjShop9,ObjShop10,ObjShop11,ObjShop12,ObjShop13,ObjShop14,ObjShop15,ObjShop16,ObjShop17,ObjShop18,ObjShop19,ObjShop20,ObjShop21;
+    private Context context = null;
 
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
+    private FirebaseAuth firebaseAuth;
+    TextView demoValue;
+    ListView cartList;
 
+    DatabaseReference rootRef,demoRef;
     public Wishlist() {
         // Required empty public constructor
     }
 
-    /**
-     * Purpose: onCreateView is a function that is created when the search view is loaded
-     *
-     * Description: When the page is loaded, the function pushes all the shop names to the Database and
-     * populates the Database.
-     *
-     */
-
-
-    //WRITING TO DATABASE
-
-    //READING FROM DATABASE
-       /*ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                String ShopName = snapshot.child("name").getValue().toString();
-                //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
-                list.add(ShopName);
-            }
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    });
-    **/
-    /**
-     * purpose: This function add's a product to the Database.
-     * */
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wishlist, container, false);
-        ref = FirebaseDatabase.getInstance().getReference().child("Shop");
-/*
-        ref = FirebaseDatabase.getInstance().getReference().child("Product");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        demoValue = (TextView) view.findViewById(R.id.tvValue);
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        //database reference pointing to Product node
+        demoRef = rootRef.child("Cart");
+        //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
+
+        final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
+        demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    objProduct = new Product("5060466519077","Power Play",19.50);
-                    ref.push().setValue(objProduct);
+                int count = 1;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String productName = snapshot.child("name").getValue().toString();
+                    String price = snapshot.child("price").getValue().toString();
+                    String priceProduct = productName + " R"+ price;
+                    price = "R " + price;
+                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
+                    //list.add(priceProduct);
+                    final int curr = count;
+                    final String currProductName = productName;
+                    //for (int i = 0; i <2; i++) {
+
+                    TableRow tableRow = new TableRow(getContext());
+
+                    // Set new table row layout parameters.
+                    TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+                    tableRow.setLayoutParams(layoutParams);
+
+                    // Add a TextView in the first column.
+                    TextView name = new TextView(getContext());
+                    name.setText(productName);
+                    tableRow.addView(name);
+
+                    // Add a TextView in the first column.
+                    TextView aPrice = new TextView(getContext());
+                    aPrice.setText(price);
+                    tableRow.addView(aPrice);
+
+                    // Add a button in the second column
+                    ImageButton button1 = new ImageButton(getContext());
+                    button1.setImageResource(R.drawable.ic_add_black_24dp);
+                    button1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //myTable.removeViewAt(curr);
+
+                            //CODE THAT ADDS TO CART FROM WISHLIST GOES HERE
+                        }
+                    });
+                    tableRow.addView(button1);
+
+                    ImageButton button = new ImageButton(getContext());
+                    button.setImageResource(R.drawable.ic_delete_black_24dp);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            myTable.removeViewAt(curr);
+
+                            //CODE THAT REMOVES PRODUCT FROM DB GOES HERE
+                        }
+                    });
+                    tableRow.addView(button);
+
+
+
+                    myTable.addView(tableRow,count);
+                    //increment counter
+                    count++;
+                }
+
             }
 
             @Override
@@ -111,87 +154,11 @@ public class Wishlist extends Fragment {
 
             }
         });
-
-*/
-
-        //READING FROM DATABASE
-       /*ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                String ShopName = snapshot.child("name").getValue().toString();
-                //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
-                list.add(ShopName);
-            }
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    });*/
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //String shopId = "";
-
-               /* ObjShop = new Shop("Clothing","Exact",60);
-                ObjShop1 = new Shop("Books","Exclusive Books",61);
-                ObjShop2 = new Shop("Optometrists","EyeQ Optometrists",62);
-                ObjShop3 = new Shop("Clothing","Fabiani",63);
-                ObjShop4 = new Shop("Clothing","Factorie",64);
-                ObjShop5 = new Shop("Clothing","Falco Milano",65);
-                ObjShop6 = new Shop("Bank","FNB",66);
-                ObjShop7 = new Shop("Food","Food Lover's Market",67);
-                ObjShop8 = new Shop("Jewellery","Fossil",68);
-                ObjShop9 = new Shop("Clothing","G Star",69);
-                ObjShop10 = new Shop("Jewellery","Galaxy & Co",70);
-                ObjShop11 = new Shop("Electronics","Game",71);
-                ObjShop12 = new Shop("Liquor","Game Liquor",72);
-                ObjShop13 = new Shop("Clothing","Gant",73);
-                ObjShop14 = new Shop("Clothing","Guess",74);
-                ObjShop15 = new Shop("Clothing","H&M",54);
-                ObjShop16 = new Shop("Electronics","House & Home",75);
-                ObjShop17 = new Shop("Electronics","HP Store",76);
-                ObjShop18 = new Shop("Clothing","Identity",77);
-                ObjShop19 = new Shop("Electronics","iStore",78);
-                ObjShop20 = new Shop("Clothing","Jeep",79);
-                ObjShop21 = new Shop("Clothing","Jet",80);
-
-                ref.push().setValue(ObjShop);
-                ref.push().setValue(ObjShop1);
-                ref.push().setValue(ObjShop2);
-                ref.push().setValue(ObjShop3);
-                ref.push().setValue(ObjShop4);
-                ref.push().setValue(ObjShop5);
-                ref.push().setValue(ObjShop6);
-                ref.push().setValue(ObjShop7);
-                ref.push().setValue(ObjShop8);
-                ref.push().setValue(ObjShop9);
-                ref.push().setValue(ObjShop10);
-                ref.push().setValue(ObjShop11);
-                ref.push().setValue(ObjShop12);
-                ref.push().setValue(ObjShop13);
-                ref.push().setValue(ObjShop14);
-                ref.push().setValue(ObjShop15);
-                ref.push().setValue(ObjShop16);
-                ref.push().setValue(ObjShop17);
-                ref.push().setValue(ObjShop18);
-                ref.push().setValue(ObjShop19);
-                ref.push().setValue(ObjShop20);
-                ref.push().setValue(ObjShop21);*/
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
 
         return view;
     }
+
+
 }
 
 

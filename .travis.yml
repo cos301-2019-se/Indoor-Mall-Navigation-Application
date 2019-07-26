@@ -41,5 +41,7 @@ env:
 
 script:
     ./gradlew test
+    # Uncomment for instrumentation
+    # ./gradlew --no-daemon --parallel lintDebug testDebug
 notifications:
   slack: brute-force-workspace:92Ym0s6dAX8K2zByShEuFcuy

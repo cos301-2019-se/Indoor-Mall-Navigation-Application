@@ -83,7 +83,7 @@ public class SignupTest {
     {
         doNothing().when(spyItem).toastWrapper(anyString());
         String password = "Password";
-        assertWithMessage("NoNumsPassword").that(spyItem.validatePassword(password)).isTrue();
+        assertWithMessage("NoNumsPassword").that(spyItem.validatePassword(password)).isFalse();
     }
     @Test
     public void validatePassword_givenNoLowerPassword_returnsFalse()

@@ -42,6 +42,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
@@ -82,14 +83,17 @@ public class Wishlist extends Fragment {
         //database reference pointing to Product node
         demoRef = rootRef.child("Cart");
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
-
+        final ArrayList<String>  list = new ArrayList<>();
         final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int count = 1;
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String productName = snapshot.child("name").getValue().toString();
+                    String barCode  = snapshot.child("id").getValue().toString();
+                    list.add(barCode);
                     String price = snapshot.child("price").getValue().toString();
                     String priceProduct = productName + " R"+ price;
                     price = "R " + price;
@@ -133,8 +137,32 @@ public class Wishlist extends Fragment {
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            myTable.removeViewAt(curr);
+                            //myTable.removeViewAt(curr);
+                           // TableRow y = (TableLayout) myTable.getChildAt(curr);
+                            //String z = y.getText().toString();
+                            Query applesQuery = demoRef.orderByChild("id").equalTo(myTable.getChildAt(curr).toString());
 
+                            applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
+                                        appleSnapshot.getRef().removeValue();
+                                    }
+                                    //demoRef.getRef().removeValue();
+                                    /*for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                        if (snapshot.child("id").getValue().toString().equals(list.get(curr)) ) {
+                                            String x = snapshot.child("name").getValue().toString();
+                                            demoRef.child(x).removeValue();
+                                        }
+                                    }*/
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                            //demoRef.child("Cart").removeValue();
                             //CODE THAT REMOVES PRODUCT FROM DB GOES HERE
                         }
                     });

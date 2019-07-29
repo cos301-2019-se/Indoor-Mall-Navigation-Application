@@ -59,6 +59,7 @@ import android.widget.VideoView;
 import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
 import com.example.navigator.utils.AngleLowpassFilter;
 import com.example.navigator.utils.ArDisplayView;
+import com.example.navigator.utils.BeaconHandler;
 import com.example.navigator.utils.CompassView;
 import com.example.navigator.utils.LowPassFilter;
 import com.example.navigator.utils.RadarScanView;
@@ -90,10 +91,11 @@ import java.util.Locale;
  * A simple {@link Fragment} subclass.
  */
 
-public class Navigate extends Fragment implements BeaconConsumer, SensorEventListener,
+public class Navigate extends Fragment implements SensorEventListener,
         LocationListener{
 
 
+    private BeaconHandler beaconFinder;
     private RelativeLayout mContainer;
     private static final int PERMISSIONS_REQUEST_CODE = 1111;
     private AngleLowpassFilter angleLowpassFilter = new AngleLowpassFilter();
@@ -224,8 +226,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private Drawable arrowDown = null;
     Button navigateButton = null;
 
-    private BeaconManager beaconManager;
-    private static DecimalFormat df2 = new DecimalFormat("#.##");
+//    private BeaconManager beaconManager;
+//    private static DecimalFormat df2 = new DecimalFormat("#.##");
     SensorManager mSensorManager;
     Sensor accSensor;
     Sensor magnetSensor;
@@ -367,7 +369,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     final Runnable distanceFromBeaconProcess = new Runnable() {
         @Override
         public void run() {
-            onBeaconServiceConnect();
+            beaconFinder.onBeaconServiceConnect();
         }
     };
 
@@ -434,13 +436,14 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         // Inflate the layout for this fragment
         Log.d(TAG,"onCreateView");
 
-        beaconManager = BeaconManager.getInstanceForApplication(getContext());
+//        beaconManager = BeaconManager.getInstanceForApplication(getContext());
         // To detect proprietary beacons, you must add a line like below corresponding to your beacon
         // type.  Do a web search for "setBeaconLayout" to get the proper expression.
-        beaconManager.getBeaconParsers().add(new BeaconParser()
-                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+//        beaconManager.getBeaconParsers().add(new BeaconParser()
+//                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         //        setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
-        beaconManager.bind(this);
+//        beaconManager.bind(this);
+        beaconFinder = new BeaconHandler(getContext());
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
@@ -1580,77 +1583,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         public void onStatusChanged(String provider, int status, Bundle extras) {}
     }
 
-    @Override
-    public void onBeaconServiceConnect() {
-        beaconManager.removeAllMonitorNotifiers();
-        beaconManager.addMonitorNotifier(new MonitorNotifier() {
-            @Override
-            public void didEnterRegion(Region region) {
-                Log.i(TAG, "I just saw an beacon for the first time!");
-            }
 
-            @Override
-            public void didExitRegion(Region region) {
-                Log.i(TAG, "I no longer see an beacon");
-            }
-
-            @Override
-            public void didDetermineStateForRegion(int state, Region region) {
-                Log.i(TAG, "I have just switched from seeing/not seeing beacons: "+state);
-            }
-        });
-
-        try {
-            beaconManager.startMonitoringBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
-        } catch (RemoteException e) {    }
-
-        try {beaconManager.removeAllRangeNotifiers();
-            beaconManager.addRangeNotifier(new RangeNotifier() {
-                @Override
-                public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                    if (beacons.size() > 0) {
-                        Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
-
-                        double distance = beacons.iterator().next().getDistance();
-                        final String distance_str = df2.format(distance) + "m";
-                        ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText(distance_str);
-
-                        String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();
-                        String beaconName = beacons.iterator().next().getBluetoothAddress();
-                        if(bluetoothAddress.equals("51:0D:6F:72:E6:A0")){
-                            beaconName = "Edgars";
-                        }
-                        else if (bluetoothAddress.equals("72:92:CF:8E:05:68")){
-                            beaconName = "Spitz";
-                        }
-                        String distanceLabel = "Distance from " + beaconName;
-                        ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
-
-                        if(distance < 1.00){
-                            reachedDestination();
-                        }
-
-                        Log.i(TAG,distance_str);
-                    }
-                }
-            });
-            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-        } catch (RemoteException e) {    }
-    }
-
-    @Override
-    public Context getApplicationContext(){
-        return getContext();
-    }
-
-    @Override
-    public void unbindService(ServiceConnection serviceConnection){
-
-    }
-
-    @Override
-    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i){
-        return false;
-    }
 
 }

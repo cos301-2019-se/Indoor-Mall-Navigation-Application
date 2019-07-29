@@ -56,6 +56,7 @@ public class Wishlist extends Fragment {
     SearchView searchView;
     ListView listView;
     ArrayList<String> list;
+    ArrayList<String> listProductNames;
     ArrayAdapter<String > adapter;
     Button sub;
     DatabaseReference ref;
@@ -84,6 +85,7 @@ public class Wishlist extends Fragment {
         demoRef = rootRef.child("Cart");
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
         final ArrayList<String>  list = new ArrayList<>();
+        final ArrayList<String>  listProductNames = new ArrayList<>();
         final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -94,6 +96,7 @@ public class Wishlist extends Fragment {
                     String productName = snapshot.child("name").getValue().toString();
                     String barCode  = snapshot.child("id").getValue().toString();
                     list.add(barCode);
+                    listProductNames.add(productName);
                     String price = snapshot.child("price").getValue().toString();
                     String priceProduct = productName + " R"+ price;
                     price = "R " + price;
@@ -137,10 +140,11 @@ public class Wishlist extends Fragment {
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //myTable.removeViewAt(curr);
+                            myTable.removeViewAt(curr);
                            // TableRow y = (TableLayout) myTable.getChildAt(curr);
                             //String z = y.getText().toString();
-                            Query applesQuery = demoRef.orderByChild("id").equalTo(myTable.getChildAt(curr).toString());
+                            String y = listProductNames.get(curr-1);
+                            Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
 
                             applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override

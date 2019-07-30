@@ -20,7 +20,6 @@
 */
 package com.example.navigator;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -62,27 +61,25 @@ public class Wishlist extends Fragment {
     DatabaseReference ref;
     Product objProduct;
     private Context context = null;
-
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
     ListView cartList;
 
-    DatabaseReference rootRef,demoRef;
+    DatabaseReference rootRef,demoRef,wishToCart;
     public Wishlist() {
         // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wishlist, container, false);
-
         demoValue = (TextView) view.findViewById(R.id.tvValue);
         rootRef = FirebaseDatabase.getInstance().getReference();
         //database reference pointing to Product node
-        demoRef = rootRef.child("Cart");
+        demoRef = rootRef.child("Wishlist");
+        wishToCart = rootRef.child("Cart");
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
         final ArrayList<String>  list = new ArrayList<>();
         final ArrayList<String>  listProductNames = new ArrayList<>();
@@ -105,7 +102,6 @@ public class Wishlist extends Fragment {
                     final int curr = count;
                     final String currProductName = productName;
                     //for (int i = 0; i <2; i++) {
-
                     TableRow tableRow = new TableRow(getContext());
 
                     // Set new table row layout parameters.
@@ -116,7 +112,6 @@ public class Wishlist extends Fragment {
                     TextView name = new TextView(getContext());
                     name.setText(productName);
                     tableRow.addView(name);
-
                     // Add a TextView in the first column.
                     TextView aPrice = new TextView(getContext());
                     aPrice.setText(price);
@@ -128,21 +123,37 @@ public class Wishlist extends Fragment {
                     button1.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //myTable.removeViewAt(curr);
-
+                            myTable.removeViewAt(curr);
                             //CODE THAT ADDS TO CART FROM WISHLIST GOES HERE
+                            String y = listProductNames.get(curr-1);
+                            Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
+                            applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
+                                        Product addToCart = new Product();
+                                        addToCart.id = appleSnapshot.child("id").getValue().toString();
+                                        addToCart.name = appleSnapshot.child("name").getValue().toString();
+                                        addToCart.price = Double.parseDouble(appleSnapshot.child("price").getValue().toString());
+                                        wishToCart.push().setValue(addToCart);
+                                        appleSnapshot.getRef().removeValue();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         }
                     });
                     tableRow.addView(button1);
-
                     ImageButton button = new ImageButton(getContext());
                     button.setImageResource(R.drawable.ic_delete_black_24dp);
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             myTable.removeViewAt(curr);
-                           // TableRow y = (TableLayout) myTable.getChildAt(curr);
-                            //String z = y.getText().toString();
                             String y = listProductNames.get(curr-1);
                             Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
 
@@ -152,13 +163,6 @@ public class Wishlist extends Fragment {
                                     for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
                                         appleSnapshot.getRef().removeValue();
                                     }
-                                    //demoRef.getRef().removeValue();
-                                    /*for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                        if (snapshot.child("id").getValue().toString().equals(list.get(curr)) ) {
-                                            String x = snapshot.child("name").getValue().toString();
-                                            demoRef.child(x).removeValue();
-                                        }
-                                    }*/
                                 }
 
                                 @Override
@@ -166,14 +170,9 @@ public class Wishlist extends Fragment {
 
                                 }
                             });
-                            //demoRef.child("Cart").removeValue();
-                            //CODE THAT REMOVES PRODUCT FROM DB GOES HERE
                         }
                     });
                     tableRow.addView(button);
-
-
-
                     myTable.addView(tableRow,count);
                     //increment counter
                     count++;
@@ -185,11 +184,8 @@ public class Wishlist extends Fragment {
 
             }
         });
-
         return view;
     }
-
-
 }
 
 

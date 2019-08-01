@@ -431,15 +431,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         Log.d(TAG,"onCreateView");
 
         beaconManager = BeaconManager.getInstanceForApplication(getContext());
-        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
-        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
-        beaconManager.getBeaconParsers().add(new BeaconParser()
-                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
-        //        setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
@@ -447,12 +442,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         navigateButton = rootView.findViewById(R.id.navigate_button);
 
 
-        // Search Bar Implementation-------------------------------------------------------------
+        //-----------------Search Bar Implementation------------------------------------------------
 
         searchView = (SearchView) rootView.findViewById(R.id.searchView);
         listView = (ListView) rootView.findViewById(R.id.lv1);
         list = new ArrayList<>();
-        //list.add("Zara");
         ref = FirebaseDatabase.getInstance().getReference();
 
         ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -460,7 +454,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String ShopName = snapshot.child("name").getValue().toString();
-                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     list.add(ShopName);
                 }
             }
@@ -498,7 +491,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 }else
                 {
                     listView.setAdapter(null);
-                    //Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -512,13 +504,12 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 }else
                 {
                     listView.setAdapter(null);
-                    //Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
         });
 
-        //--------------------------------
+        //---------------------------------------------------------------------------------------
 
 
 

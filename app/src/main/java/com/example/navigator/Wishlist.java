@@ -118,7 +118,7 @@ public class Wishlist extends Fragment {
 
                     // Add a button in the second column
                     ImageButton button1 = new ImageButton(getContext());
-                    button1.setImageResource(R.drawable.ic_add_black_24dp);
+                    button1.setImageResource(R.drawable.ic_shopping_cart_black_24dp);
                     button1.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

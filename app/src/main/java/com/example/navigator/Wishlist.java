@@ -88,7 +88,6 @@ public class Wishlist extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int count = 1;
-
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String productName = snapshot.child("name").getValue().toString();
                     String barCode  = snapshot.child("id").getValue().toString();

@@ -41,7 +41,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.w3c.dom.Text;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
-
 /**
  * A simple {@link Fragment} subclass.
  */

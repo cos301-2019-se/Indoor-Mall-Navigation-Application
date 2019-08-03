@@ -11,7 +11,7 @@
  *  Date        Author           Changes
  *  --------------------------------------------
  *  08/07/2019  Mpho  Mashaba    Original
- *  01/08/2019  Thabo Ntsoane    Version 2
+ *  01/08/2019  Thabo Ntsoane    Version 1.0.1
  *
  *  Functional Description: This program file Scan's a product to a Cart or Wishlist.
  *  Error Messages: None

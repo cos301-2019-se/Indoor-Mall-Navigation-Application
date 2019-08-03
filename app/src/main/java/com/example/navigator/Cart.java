@@ -1,3 +1,24 @@
+/**
+ *
+ *  File Name: WishList.js (path: app/src/main/java/com.example.navigator/utils/wishList.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  09/07/2019  Mpho Mashaba    Original
+ *  01/08/2019  Thabo Ntsoane   version 1.0.1
+ *
+ *  Functional Description: This program file add's a product to the wishlist.
+ *  Error Messages: None
+ *  Constraints: Can only be used if Items are available
+ *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
+ *
+ */
 package com.example.navigator;
 
 

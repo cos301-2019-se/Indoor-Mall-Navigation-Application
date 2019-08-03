@@ -1,3 +1,23 @@
+/**
+ *
+ *  File Name: Signup.js (path: app/src/main/java/com.example.navigator/utils/Signup.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  09/07/2019  Mpho Mashaba    Original
+ *
+ *  Functional Description: This program file Creates USer Class
+ *  Error Messages: none
+ *  Constraints: none
+ *  Assumptions: none
+ *
+ */
 package com.example.navigator;
 
 

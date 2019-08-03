@@ -102,41 +102,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         if(task.isSuccessful()){
                             finish();
                             //start profile activity
-                           // startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                            //Fragment fragment = CustomFragment.newInstance();
-
-                            //demoRef.push().setValue(sessionId);
-
-                            ref = FirebaseDatabase.getInstance().getReference().child("Cart");
-                            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if(sessionId.equals("5060466519077")){
-                                        objProduct = new Product("5060466519077","Power Play",19.99);
-                                        ref.push().setValue(objProduct);
-                                    }
-                                    else if(sessionId.equals("8718114642871")){
-                                        objProduct = new Product("8718114642871","Vaseline Lip T",23.99);
-                                        ref.push().setValue(objProduct);
-                                    }
-                                    else if(sessionId.equals("6009635830536")){
-                                        objProduct = new Product("6009635830536","Manuscript Book",10.99);
-                                        ref.push().setValue(objProduct);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-                            Toast.makeText(getApplicationContext(),"Item added to cart", Toast.LENGTH_LONG).show();
-
-                           //startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                            Intent newIntent = new Intent(getBaseContext(), MainActivity.class);
-                            newIntent.putExtra("GO_TO", "scanFragment");
-                            startActivity(newIntent);
+                            startActivity(new Intent(getApplicationContext(),MainActivity.class)); //cant do new intent in OncompleteListner so getappli..context used
                         }
                         else{
                             Toast.makeText(getApplicationContext(), "Login Failed...Try Again", Toast.LENGTH_SHORT).show();

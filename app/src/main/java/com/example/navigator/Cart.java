@@ -1,3 +1,25 @@
+/**
+ *
+ *  File Name: Navigation.js (path: component/app/navigation.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  26/06/2019  Mpho Mashaba    Original
+ *  08/07/2019 Khodani Tshisimba Table Functionality
+ *
+ *
+ *  Functional Description: This program file searches and navigates user to a specific shop
+ *  Error Messages: Shop does not exist
+ *  Constraints: Can only be used to navigate
+ *  Assumptions: It is assumed that the user will be navigated to destination appropriately
+ *
+ */
 package com.example.navigator;
 
 
@@ -48,7 +70,7 @@ public class Cart extends Fragment {
     TextView demoValue;
     ListView cartList;
 
-    DatabaseReference rootRef,demoRef;
+    DatabaseReference rootRef,demoRef,cartRef;
     public Cart() {
         // Required empty public constructor
     }
@@ -62,24 +84,50 @@ public class Cart extends Fragment {
         demoValue = (TextView) view.findViewById(R.id.tvValue);
         rootRef = FirebaseDatabase.getInstance().getReference();
         //database reference pointing to Product node
-        demoRef = rootRef.child("Cart");
-        //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
+        final String[] just = {"Nothing Happened"};
+
+
+        cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+                    if(snapshot.child("name").equals("vix"))
+                        just[0] = snapshot.child("price").toString();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        System.out.println("R " + just[0]);
+
+
 
         final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int count = 1;
+                final List<Integer> quantities = null;
+                int quantitiesCount = 0;
+                int decreaseButtonID = 0;
+                int increaseButtonID = 0;
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String productName = snapshot.child("name").getValue().toString();
                     String price = snapshot.child("price").getValue().toString();
-                    String priceProduct = productName + " R"+ price;
+                    String priceProduct = productName + " R "+ price;
                     price = "R " + price;
-                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
-                    //list.add(priceProduct);
+
                     final int curr = count;
                     final String currProductName = productName;
-                    //for (int i = 0; i <2; i++) {
+
 
                         TableRow tableRow = new TableRow(getContext());
 
@@ -92,15 +140,52 @@ public class Cart extends Fragment {
                         name.setText(productName);
                         tableRow.addView(name);
 
-                        // Add a TextView in the first column.
+                        //Add a an image in the second column which only has a general image  for now
+                        ImageButton button = new ImageButton(getContext());
+                        button.setImageResource(R.drawable.ic_image_black_24dp);
+                        tableRow.addView(button);
+
+                        // Add a TextView in the third column for Price.
                         TextView aPrice = new TextView(getContext());
                         aPrice.setText(price);
                         tableRow.addView(aPrice);
 
+                        //Add a an image in the second column which only has a general image  for now
+                        final ImageButton decreaseButton = new ImageButton(getContext());
+                        decreaseButton.setImageResource(R.drawable.ic_indeterminate_check_box_black_24dp);
+                        decreaseButton.setId(decreaseButtonID);
+                        decreaseButtonID++;
+                        decreaseButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                quantities.set(decreaseButton.getId(),quantities.get(decreaseButton.getId())-1);
+                            }
+                        });
+                        tableRow.addView(button);
+
+                        // Add a TextView in the fifth column for Quantity.
+                        TextView aQuantity = new TextView(getContext());
+                        quantities.add(1);
+                        aQuantity.setText(quantities.get(quantitiesCount));
+                        tableRow.addView(aQuantity);
+
+                        //Add a an image in the second column which only has a general image  for now
+                        final ImageButton increaseButton = new ImageButton(getContext());
+                        increaseButton.setImageResource(R.drawable.ic_add_box_black_24dp);
+                        increaseButton.setId(decreaseButtonID);
+                        increaseButtonID++;
+                        increaseButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                quantities.set(increaseButton.getId(),quantities.get(increaseButton.getId())+1);
+                            }
+                        });
+                        tableRow.addView(button);
+
                         // Add a button in the second column
-                        ImageButton button = new ImageButton(getContext());
-                        button.setImageResource(R.drawable.ic_delete_black_24dp);
-                        button.setOnClickListener(new View.OnClickListener() {
+                        ImageButton deleteButton = new ImageButton(getContext());
+                        deleteButton.setImageResource(R.drawable.ic_delete_black_24dp);
+                        deleteButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 myTable.removeViewAt(curr);
@@ -110,10 +195,7 @@ public class Cart extends Fragment {
                         });
                         tableRow.addView(button);
 
-                        // Add a checkbox in the third column.
-                        //CheckBox checkBox = new CheckBox(context);
-                        //checkBox.setText("Check it");
-                        //myTable.addView(checkBox, 2);
+
 
                         myTable.addView(tableRow,count);
                         //increment counter

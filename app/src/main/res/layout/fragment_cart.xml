@@ -76,19 +76,19 @@
                         android:textColorHint="@color/black"
                         android:textSize="20dip" />
 
-                    <!--<TextView
+                    <TextView
                         android:id="@+id/textView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/white"
-                        android:text="Unit Value"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textColorHint="@color/black"
-                        android:textSize="20dip" />-->
+                        android:textSize="20dip" />
 
 
                     <TextView
-                        android:id="@+id/textView4"
+                        android:id="@+id/textView3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/white"
@@ -98,7 +98,27 @@
                         android:textSize="20dip" />
 
                     <TextView
-                        android:id="@+id/textView3"
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="20dip"
+                        android:background="@color/white"
+                        android:textColorHint="@color/black"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/textView6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quantity"
+                        android:textSize="20dip"
+                        android:background="@color/white"
+                        android:textColorHint="@color/black"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/textView7"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=""

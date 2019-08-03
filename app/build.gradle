@@ -47,7 +47,6 @@ dependencies {
     implementation "com.mixpanel.android:mixpanel-android:4.+"
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-rc3'
 
-
 }
 
 apply plugin: 'com.google.gms.google-services'

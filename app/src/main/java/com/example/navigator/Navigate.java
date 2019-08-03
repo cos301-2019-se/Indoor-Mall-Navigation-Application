@@ -1,6 +1,6 @@
 /**
  *
- *  File Name: WishList.js (path: app/src/main/java/com.example.navigator/utils/wishList.js)
+ *  File Name: Naivgate.js (path: app/src/main/java/com.example.navigator/utils/Naivgate.js)
  *  Version: 1.0
  *  Author: Brute Force - Database Management
  *  Project: Indoor Mall Navigation
@@ -13,10 +13,10 @@
  *  20/06/2019  Bandile Dlamini Original
  *
  *
- *  Functional Description: This program file add's a product to the wishlist.
+ *  Functional Description: This program file helps the user to Navigate.
  *  Error Messages: None
- *  Constraints: Can only be used if Items are available
- *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
+ *  Constraints: None
+ *  Assumptions: It is assumed that the user knows how to navigate.
  *
  */
 package com.example.navigator;

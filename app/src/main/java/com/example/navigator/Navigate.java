@@ -18,7 +18,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
@@ -31,7 +30,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -50,7 +48,6 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
-
 import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
 import com.example.navigator.utils.AngleLowpassFilter;
 import com.example.navigator.utils.ArDisplayView;
@@ -62,7 +59,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -70,7 +66,6 @@ import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
-
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -88,12 +83,10 @@ import java.util.Locale;
 public class Navigate extends Fragment implements BeaconConsumer, SensorEventListener,
         LocationListener{
 
-
     private RelativeLayout mContainer;
     private static final int PERMISSIONS_REQUEST_CODE = 1111;
     private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
     private AngleLowpassFilter angleLowpassFilter = new AngleLowpassFilter();
-
     public static final String NA = "N/A";
     public static final String FIXED = "FIXED";
     private static final int LOCATION_MIN_TIME = 30 * 1000;
@@ -110,77 +103,37 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private GeomagneticField geomagneticField;
     private TextView textDirection, textLat, textLong;
     private CompassView compassView;
-
-
-
     private String TAG = "NavigationFragment";
     public static final float MOVE_FACTOR_X = 50f;
     public static final float MOVE_FACTOR_Y = MOVE_FACTOR_X * .8f;
     public static final float MOVE_THRESHOLD_GYRO = 0.01f;
-    private List<View> arObjects;
-    public static final int BTC_SIZE = 200;
-
     private NavigationFragmentInteractionListener mListener;
     private View rootView;
-    private LayoutInflater inflater;
     private VideoView landingVideo;
     private View howToUseContainer;
     private View searchContainer;
-
-    private List<Integer> lastLeftMargins;
-    private List<Integer> lastTopMargins;
-
-    private View laserView = null;
     private FrameLayout arContentOverlay = null;
-
-    private boolean arActive = false;
-    private boolean gamePaused = false;
-    private int votes;
-    private int daysToElection;
-
-    private float accelX;
-    private float accelY;
-    private float accelZ;
-
-    private float gyroX;
-    private float gyroY;
-    private float gyroZ;
-
-    public Vibrator vibe;
-
+    private boolean navigationPaused = false;
     private Handler handler = new Handler();
-
-    private Drawable arrowLeft = null;
-    private Drawable arrowRight = null;
-    private Drawable arrowUp = null;
-    private Drawable arrowDown = null;
-    Button navigateButton = null;
-
+    private Button navigateButton = null;
     private BeaconManager beaconManager;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
-    SensorManager mSensorManager;
-    Sensor accSensor;
-    Sensor magnetSensor;
-    String selectedShop = "";
-
-    SearchView searchView;
-    ListView listView;
-    ArrayList<String> list;
-    ArrayAdapter<String > adapter;
-    Button sub;
-    DatabaseReference ref;
-
-    RadarScanView mRadar;
-
-    int PERMISSION_ALL = 1;
-    String[] PERMISSIONS = {
+    private SensorManager mSensorManager;
+    private Sensor accSensor;
+    private Sensor magnetSensor;
+    private String selectedShop = "";
+    private ListView listView;
+    private ArrayList<String> list;
+    private ArrayAdapter<String > adapter;
+    private RadarScanView mRadar;
+    private String[] PERMISSIONS = {
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA
     };
 
-    private boolean havePermissions() {
 
+    private boolean havePermissions() {
         if (getContext() != null && PERMISSIONS != null) {
             for (String permission : PERMISSIONS) {
                 if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
@@ -192,7 +145,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     }
 
     private void requestPermissions() {
-        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
+        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
     }
 
     private void showLinkToSettingsSnackbar() {
@@ -260,26 +213,16 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         }
     }
 
-    LocationListener locationListener;
-
     final Runnable distanceFromBeaconProcess = new Runnable() {
         @Override
         public void run() {
             onBeaconServiceConnect();
         }
     };
-
-    final Runnable calculateArMoves = new Runnable() {
-        @Override
-        public void run() {
-
-        }
-    };
-
     final Runnable moveArBtc = new Runnable() {
         @Override
         public void run() {
-            if(gamePaused) return;
+            if(navigationPaused) return;
         }
     };
 
@@ -287,7 +230,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     public Navigate() {
         // Required empty public constructor
     }
-
 
     public boolean searchList(String needle, ArrayList<String> haystack)
     {
@@ -302,36 +244,29 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.d(TAG,"onCreateView");
 
+        Log.d(TAG,"onCreateView");
         beaconManager = BeaconManager.getInstanceForApplication(getContext());
         // To detect proprietary beacons, you must add a line like below corresponding to your beacon
         // type.  Do a web search for "setBeaconLayout" to get the proper expression.
-        beaconManager.getBeaconParsers().add(new BeaconParser()
-                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
-        //        setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
-
         navigateButton = rootView.findViewById(R.id.navigate_button);
 
 
-        // Search Bar Implementation-------------------------------------------------------------
-
-        searchView = (SearchView) rootView.findViewById(R.id.searchView);
+        //------------------------ Search Bar Implementation--------------------------------------
+        SearchView searchView = (SearchView) rootView.findViewById(R.id.searchView);
         listView = (ListView) rootView.findViewById(R.id.lv1);
         list = new ArrayList<>();
-        //list.add("Zara");
-        ref = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
         ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String ShopName = snapshot.child("name").getValue().toString();
-                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     list.add(ShopName);
                 }
             }
@@ -345,7 +280,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         searchContainer = rootView.findViewById(R.id.search_container);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1,list);
         listView.setAdapter(adapter);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -357,7 +291,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
         });
 
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -366,10 +299,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 {
                     listView.setAdapter(adapter);
                     return true;
-                }else
+                }
+                else
                 {
                     listView.setAdapter(null);
-                    //Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -380,16 +313,16 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 {
                     listView.setAdapter(adapter);
                     return true;
-                }else
+                }
+                else
                 {
                     listView.setAdapter(null);
-                    //Toast.makeText(getContext(), "No Match found", Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
         });
 
-        //--------------------------------
+        //--------------- End of Search Implimentation --------------------------------------------
 
 
 
@@ -397,14 +330,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         textLong = (TextView) rootView.findViewById(R.id.longitude);
         textDirection = (TextView) rootView.findViewById(R.id.text);
         compassView = (CompassView) rootView.findViewById(R.id.compass);
-        // keep screen light on (wake lock light)
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         mSensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
         accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-
-        //mRadar.setUseMetric(true);
 
         if (ContextCompat.checkSelfPermission( getContext() ,android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
         {
@@ -415,39 +344,26 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             );
         }
 
-        locationListener = new MyLocationListener();
-        locationManager = (LocationManager)
-                getContext().getSystemService(Context.LOCATION_SERVICE);
-
+        LocationListener locationListener;
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
 
         Boolean flag = displayGpsStatus();
         if (flag) {
-
             Log.v(TAG, "onClick");
-
-
-
             locationListener = new MyLocationListener();
 
             if(havePermissions()) {
-                locationManager.requestLocationUpdates(LocationManager
-                        .GPS_PROVIDER, 1000, 1, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
             }
             else {
                 requestPermissions();
             }
 
         } else {
-            Toast.makeText(
-                    getContext(),
-                    "Your GPS is: OFF", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(),"Your GPS is: OFF", Toast.LENGTH_LONG).show();
         }
 
-
-
-        ViewGroup inflateContainer = container;
-        this.inflater = inflater;
         howToUseContainer = rootView.findViewById(R.id.how_to_use_container);
         mListener.timeEvent("App Opened to Play Game");
 
@@ -455,8 +371,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         return rootView;
     }
-
-    public void setUIArguments() {}
 
     @Override
     public void onAttach(Context context) {
@@ -473,11 +387,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG,"onCreate");
         super.onCreate(savedInstanceState);
-
-        arrowLeft = getResources().getDrawable(R.mipmap.arr_left);
-        arrowRight = getResources().getDrawable(R.mipmap.arr_right);
-        arrowUp = getResources().getDrawable(R.mipmap.arr_up);
-        arrowDown = getResources().getDrawable(R.mipmap.arr_down);
 
     }
 
@@ -815,13 +724,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     private void configureGameWindow() {
         arContentOverlay = (FrameLayout)rootView.findViewById(R.id.ar_content_overlay);
-        laserView = rootView.findViewById(R.id.laser);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
     }
 
     private void configureSensors()
     {
-        vibe = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
         sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
         Sensor gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -837,10 +744,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     }
 
     private void initializeAr() {
-        arActive = true;
-
         arContentOverlay.setVisibility(View.VISIBLE);
-
         FrameLayout arViewPane = (FrameLayout) rootView.findViewById(R.id.camera_frame);
         arViewPane.removeAllViews();
         ArDisplayView arDisplay = new ArDisplayView(getContext());
@@ -850,8 +754,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     }
 
     private void initializeGameTimers() {
-        daysToElection = 30;
-        votes = 0;
         distanceFromBeaconProcess.run();
     }
 
@@ -873,65 +775,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         }, 500);
 
 
-        gamePaused = true;
-    }
-
-    private void moveArFrameGyro(float x, float y, float z) {
-
-        if(x > MOVE_THRESHOLD_GYRO) {
-            ArrayList<Integer> newTopMargins = new ArrayList<>();
-
-            /*for(int i = 0; i < arObjects.size(); i++) {
-                int topMargin = lastTopMargins.get(i) + (int)(1 + MOVE_FACTOR_X * x);
-                newTopMargins.add(topMargin);
-            }*/
-            lastTopMargins = newTopMargins;
-
-            handler.post(moveArBtc);
-
-        }
-        if(x < MOVE_THRESHOLD_GYRO * -1) {
-
-            ArrayList<Integer> newTopMargins = new ArrayList<>();
-
-            /*for(int i = 0; i < arObjects.size(); i++) {
-                int topMargin = lastTopMargins.get(i) - (int)(1 + MOVE_FACTOR_X * x * -1);
-                newTopMargins.add(topMargin);
-            }*/
-            lastTopMargins = newTopMargins;
-
-            handler.post(moveArBtc);
-
-        }
-
-        if(y > MOVE_THRESHOLD_GYRO) {
-
-            ArrayList<Integer> newLeftMargins = new ArrayList<>();
-
-            /*for(int i = 0; i < arObjects.size(); i++) {
-                int leftMargin = lastLeftMargins.get(i) + (int)(1 + MOVE_FACTOR_Y * y);
-                newLeftMargins.add(leftMargin);
-            }*/
-            lastLeftMargins = newLeftMargins;
-
-            handler.post(moveArBtc);
-
-        }
-
-        if(y < MOVE_THRESHOLD_GYRO * -1) {
-
-            ArrayList<Integer> newLeftMargins = new ArrayList<>();
-
-           /* for(int i = 0; i < arObjects.size(); i++) {
-                int leftMargin = lastLeftMargins.get(i) - (int)(1 + MOVE_FACTOR_Y * y * -1);
-                newLeftMargins.add(leftMargin);
-            }*/
-            lastLeftMargins = newLeftMargins;
-
-            handler.post(moveArBtc);
-
-        }
-
+        navigationPaused = true;
     }
 
     private void moveArFrameAccel(float x, float y, float z) {
@@ -1020,6 +864,13 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        float accelX;
+        float accelY;
+        float accelZ;
+        float gyroX;
+        float gyroY;
+        float gyroZ;
+
         switch(sensorEvent.sensor.getType())
         {
             case Sensor.TYPE_LINEAR_ACCELERATION:
@@ -1034,7 +885,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 gyroY = sensorEvent.values[1];
                 gyroZ = sensorEvent.values[2];
 
-                if(arActive) moveArFrameGyro(gyroX, gyroY, gyroZ);
 
                 break;
         }

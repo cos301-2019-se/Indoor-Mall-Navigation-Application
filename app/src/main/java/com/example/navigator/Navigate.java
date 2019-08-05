@@ -35,7 +35,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -104,16 +103,12 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private TextView textDirection, textLat, textLong;
     private CompassView compassView;
     private String TAG = "NavigationFragment";
-    public static final float MOVE_FACTOR_X = 50f;
-    public static final float MOVE_FACTOR_Y = MOVE_FACTOR_X * .8f;
-    public static final float MOVE_THRESHOLD_GYRO = 0.01f;
     private NavigationFragmentInteractionListener mListener;
     private View rootView;
     private VideoView landingVideo;
     private View howToUseContainer;
     private View searchContainer;
     private FrameLayout arContentOverlay = null;
-    private boolean navigationPaused = false;
     private Handler handler = new Handler();
     private Button navigateButton = null;
     private BeaconManager beaconManager;
@@ -132,97 +127,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             android.Manifest.permission.CAMERA
     };
 
-
-    private boolean havePermissions() {
-        if (getContext() != null && PERMISSIONS != null) {
-            for (String permission : PERMISSIONS) {
-                if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
-    }
-
-    private void showLinkToSettingsSnackbar() {
-        if (mContainer == null) {
-            return;
-        }
-        Snackbar.make(mContainer,
-                R.string.permission_denied_explanation,
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.settings, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Build intent that displays the App settings screen.
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package",
-                                BuildConfig.APPLICATION_ID, null);
-                        intent.setData(uri);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                    }
-                }).show();
-    }
-
-    private void showRequestPermissionsSnackbar() {
-        if (mContainer == null) {
-            return;
-        }
-        Snackbar.make(mContainer, R.string.permission_rationale,
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.ok, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Request permission.
-                        ActivityCompat.requestPermissions(getActivity(),
-                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                PERMISSIONS_REQUEST_CODE);
-                    }
-                }).show();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[]permissions, @NonNull int[] grantResults) {
-        if (requestCode != PERMISSIONS_REQUEST_CODE) {
-            return;
-        }
-
-        for (int i = 0; i < permissions.length; i++) {
-            String permission = permissions[i];
-            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                if (shouldShowRequestPermissionRationale(permission)) {
-                    Log.i(TAG, "Permission denied without 'NEVER ASK AGAIN': "
-                            + permission);
-                    showRequestPermissionsSnackbar();
-                } else {
-                    Log.i(TAG, "Permission denied with 'NEVER ASK AGAIN': "
-                            + permission);
-                    showLinkToSettingsSnackbar();
-                }
-            } else {
-                Log.i(TAG, "Permission granted, building GoogleApiClient");
-            }
-        }
-    }
-
     final Runnable distanceFromBeaconProcess = new Runnable() {
         @Override
         public void run() {
             onBeaconServiceConnect();
-        }
-    };
-    final Runnable moveArBtc = new Runnable() {
-        @Override
-        public void run() {
-            if(navigationPaused) return;
         }
     };
 
@@ -244,16 +152,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        Log.d(TAG,"onCreateView");
-        beaconManager = BeaconManager.getInstanceForApplication(getContext());
-        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
-        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
-        beaconManager.bind(this);
-
-        rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
-        navigateButton = rootView.findViewById(R.id.navigate_button);
 
 
         //------------------------ Search Bar Implementation--------------------------------------
@@ -324,8 +222,15 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         //--------------- End of Search Implimentation --------------------------------------------
 
+        Log.d(TAG,"onCreateView");
+        beaconManager = BeaconManager.getInstanceForApplication(getContext());
+        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
+        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager.bind(this);
 
-
+        rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
+        navigateButton = rootView.findViewById(R.id.navigate_button);
         textLat = (TextView) rootView.findViewById(R.id.latitude);
         textLong = (TextView) rootView.findViewById(R.id.longitude);
         textDirection = (TextView) rootView.findViewById(R.id.text);
@@ -347,7 +252,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         LocationListener locationListener;
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
-
         Boolean flag = displayGpsStatus();
         if (flag) {
             Log.v(TAG, "onClick");
@@ -365,10 +269,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         }
 
         howToUseContainer = rootView.findViewById(R.id.how_to_use_container);
-        mListener.timeEvent("App Opened to Play Game");
-
-        configureGameWindow();
-
+        mListener.timeEvent("App Opened to Navigate");
+        configureOverlayWindow();
         return rootView;
     }
 
@@ -378,8 +280,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         if (context instanceof NavigationFragmentInteractionListener) {
             mListener = (NavigationFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -387,7 +288,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG,"onCreate");
         super.onCreate(savedInstanceState);
-
     }
 
 
@@ -398,10 +298,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         stopSensing();
         landingVideo.stopPlayback();
-
         mSensorManager.unregisterListener(mRadar, accSensor);
         mSensorManager.unregisterListener(mRadar, magnetSensor);
-
     }
 
     @Override
@@ -411,13 +309,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         sensorGravity = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorMagnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        // listen to these sensors
-        sensorManager.registerListener(this, sensorGravity,
-                SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, sensorMagnetic,
-                SensorManager.SENSOR_DELAY_NORMAL);
-
-        // I forgot to get location manager from system service ... Ooops <img draggable="false" class="emoji" alt="😀" src="https://s.w.org/images/core/emoji/12.0.0-1/svg/1f600.svg">
+        sensorManager.registerListener(this, sensorGravity, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorMagnetic, SensorManager.SENSOR_DELAY_NORMAL);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         if (!havePermissions()) {
@@ -438,21 +331,16 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                     if (gpsLocation != null) {
                         currentLocation = gpsLocation;
                     } else {
-                        // try with network provider
-                        Location networkLocation = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        Location networkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
                         if (networkLocation != null) {
                             currentLocation = networkLocation;
                         } else {
-                            // Fix a position
                             currentLocation = new Location(FIXED);
                             currentLocation.setAltitude(1);
                             currentLocation.setLatitude(43.296482);
                             currentLocation.setLongitude(5.36978);
                         }
-
-                        // set current location
                         onLocationChanged(currentLocation);
                     }
                 }
@@ -465,11 +353,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     public void onStop() {
         Log.d(TAG,"onStop");
         stopAllRunnables();
-
         handler.removeCallbacks(distanceFromBeaconProcess);
 
-        // remove listeners
-        //sensorManager.unregisterListener(this);
         sensorManager.unregisterListener(this, sensorGravity);
         sensorManager.unregisterListener(this, sensorMagnetic);
         locationManager.removeUpdates(this);
@@ -480,7 +365,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     @Override
     public void onLocationChanged(Location location) {
         currentLocation = location;
-        // used to update location info on screen
         updateLocation(location);
         geomagneticField = new GeomagneticField(
                 (float) currentLocation.getLatitude(),
@@ -495,7 +379,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             textLong.setText(NA);
         }
 
-        // better => make this creation outside method
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setDecimalSeparator('.');
         NumberFormat formatter = new DecimalFormat("#0.00", dfs);
@@ -549,7 +432,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         assignClickListeners();
         configureSensors();
 
-        //if (mBeaconManager.isBound(this)) mBeaconManager.setBackgroundMode(false);
         mSensorManager.registerListener(mRadar, accSensor, SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(mRadar, magnetSensor, SensorManager.SENSOR_DELAY_GAME);
 
@@ -563,7 +445,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             public void onClick(View view) {
 
                 Log.d(TAG, "onLongClick: ");
-                mListener.trackEvent("App Opened to Play Game");
+                mListener.trackEvent("App Opened to Navigate");
 
                 rootView.findViewById(R.id.instructions_container).setVisibility(View.GONE);
                 initializeAr();
@@ -722,25 +604,21 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         });
     }
 
-    private void configureGameWindow() {
+    private void configureOverlayWindow() {
         arContentOverlay = (FrameLayout)rootView.findViewById(R.id.ar_content_overlay);
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
     }
 
     private void configureSensors()
     {
-
         sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
         Sensor gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         Sensor accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         boolean isGyroAvailable = sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
-        boolean isAccelAvailable = sensorManager.registerListener(this, accelSensor, SensorManager
-                .SENSOR_DELAY_GAME);
+        boolean isAccelAvailable = sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_GAME);
 
         Log.d(TAG, "isGyroAvailable: " +isGyroAvailable);
         Log.d(TAG, "isAccelAvailable: " +isAccelAvailable);
-
     }
 
     private void initializeAr() {
@@ -753,7 +631,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     }
 
-    private void initializeGameTimers() {
+    private void initializeBeaconDistance() {
         distanceFromBeaconProcess.run();
     }
 
@@ -774,36 +652,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
         }, 500);
 
-
-        navigationPaused = true;
-    }
-
-    private void moveArFrameAccel(float x, float y, float z) {
-
-        if(x > MOVE_THRESHOLD_GYRO) {
-            Log.d(TAG, "Move down: " + String.format("%.4f", x));
-
-            handler.post(moveArBtc);
-
-        }
-        if(x < MOVE_THRESHOLD_GYRO * -1) {
-            Log.d(TAG, "Move up: " + String.format("%.4f", x));
-            handler.post(moveArBtc);
-
-        }
-
-        if(y > MOVE_THRESHOLD_GYRO) {
-            Log.d(TAG, "Move right: " + String.format("%.4f", y));
-            handler.post(moveArBtc);
-
-        }
-
-        if(y < MOVE_THRESHOLD_GYRO * -1) {
-            Log.d(TAG, "Move left: " + String.format("%.4f", y));
-
-
-            handler.post(moveArBtc);
-        }
     }
 
     private void prepareNavigation() {
@@ -815,8 +663,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         rootView.findViewById(R.id.ar_container).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.stop_button).setVisibility(View.VISIBLE);
         rootView.findViewById(R.id.crosshairs).setVisibility(View.VISIBLE);
-        ((TextView)rootView.findViewById(R.id.check_point_label)).setTextColor
-                (ContextCompat.getColor(getContext(), R.color.white));
+        ((TextView)rootView.findViewById(R.id.check_point_label)).setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
         landingVideo.stopPlayback();
         landingVideo.setVisibility(View.GONE);
@@ -824,21 +671,19 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
 
-        initializeGameTimers();
+        initializeBeaconDistance();
     }
 
     private void shareGeneral() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=" + getContext
-                ().getPackageName());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=" + getContext().getPackageName());
         startActivity(Intent.createChooser(shareIntent, "Share link using"));
     }
 
     private void startVideo() {
         landingVideo = (VideoView)rootView.findViewById(R.id.landing_video);
-        landingVideo.setVideoURI(Uri.parse("android.resource://" + getContext().getPackageName()
-                + "/" + R.raw.compass));
+        landingVideo.setVideoURI(Uri.parse("android.resource://" + getContext().getPackageName()+ "/" + R.raw.compass));
         landingVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
@@ -964,8 +809,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         if (range == 13 || range == 14)
             dirTxt = "NW";
 
-        textDirection.setText("" + ((int) bearing) + ((char) 176) + " "
-                + dirTxt); // char 176 ) = degrees ...
+        textDirection.setText("" + ((int) bearing) + ((char) 176) + " "+ dirTxt);
     }
 
     @Override
@@ -983,9 +827,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 break;
         }
 
-        if (sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD
-                && i == SensorManager.SENSOR_STATUS_UNRELIABLE) {
-            // manage fact that compass data are unreliable ...
+        if (sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD && i == SensorManager.SENSOR_STATUS_UNRELIABLE) {
+            // TODO manage fact that compass data are unreliable ...
             // toast ? display on screen ?
         }
 
@@ -993,14 +836,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     /*----Method to Check GPS is enable or disable ----- */
     private Boolean displayGpsStatus() {
-        ContentResolver contentResolver = getContext()
-                .getContentResolver();
-        boolean gpsStatus = Settings.Secure
-                .isLocationProviderEnabled(contentResolver,
-                        LocationManager.GPS_PROVIDER);
+        ContentResolver contentResolver = getContext().getContentResolver();
+        boolean gpsStatus = Settings.Secure.isLocationProviderEnabled(contentResolver, LocationManager.GPS_PROVIDER);
         if (gpsStatus) {
             return true;
-
         } else {
             return false;
         }
@@ -1031,11 +870,9 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                String s = longitude + "\n" + latitude + "\n\nMy Current City is: "
-                        + cityName;
+                String s = longitude + "\n" + latitude + "\n\nMy Current City is: " + cityName;
             }
             catch (Exception ex){
-
             }
         }
 
@@ -1120,6 +957,87 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     @Override
     public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i){
         return false;
+    }
+
+
+    private boolean havePermissions() {
+        if (getContext() != null && PERMISSIONS != null) {
+            for (String permission : PERMISSIONS) {
+                if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void requestPermissions() {
+        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
+    }
+
+    private void showLinkToSettingsSnackbar() {
+        if (mContainer == null) {
+            return;
+        }
+        Snackbar.make(mContainer,
+                R.string.permission_denied_explanation,
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.settings, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Build intent that displays the App settings screen.
+                        Intent intent = new Intent();
+                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package",
+                                BuildConfig.APPLICATION_ID, null);
+                        intent.setData(uri);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                }).show();
+    }
+
+    private void showRequestPermissionsSnackbar() {
+        if (mContainer == null) {
+            return;
+        }
+        Snackbar.make(mContainer, R.string.permission_rationale,
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.ok, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Request permission.
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                PERMISSIONS_REQUEST_CODE);
+                    }
+                }).show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[]permissions, @NonNull int[] grantResults) {
+        if (requestCode != PERMISSIONS_REQUEST_CODE) {
+            return;
+        }
+
+        for (int i = 0; i < permissions.length; i++) {
+            String permission = permissions[i];
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                if (shouldShowRequestPermissionRationale(permission)) {
+                    Log.i(TAG, "Permission denied without 'NEVER ASK AGAIN': "
+                            + permission);
+                    showRequestPermissionsSnackbar();
+                } else {
+                    Log.i(TAG, "Permission denied with 'NEVER ASK AGAIN': "
+                            + permission);
+                    showLinkToSettingsSnackbar();
+                }
+            } else {
+                Log.i(TAG, "Permission granted, building GoogleApiClient");
+            }
+        }
     }
 
 }

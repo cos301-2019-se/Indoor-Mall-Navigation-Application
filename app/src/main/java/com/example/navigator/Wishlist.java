@@ -35,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -144,6 +145,7 @@ public class Wishlist extends Fragment {
 
                                 }
                             });
+                            Toast.makeText(getContext(),"Item added to Cart", Toast.LENGTH_LONG).show();
                         }
                     });
                     tableRow.addView(button1);
@@ -169,6 +171,7 @@ public class Wishlist extends Fragment {
 
                                 }
                             });
+                            Toast.makeText(getContext(),"Item deleted from Wish list", Toast.LENGTH_LONG).show();
                         }
                     });
                     tableRow.addView(button);

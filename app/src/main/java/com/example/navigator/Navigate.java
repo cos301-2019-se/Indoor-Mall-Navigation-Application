@@ -1,3 +1,24 @@
+/**
+ *
+ *  File Name: Naivgate.js (path: app/src/main/java/com.example.navigator/utils/Naivgate.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  20/06/2019  Bandile Dlamini Original
+ *
+ *
+ *  Functional Description: This program file helps the user to Navigate.
+ *  Error Messages: None
+ *  Constraints: None
+ *  Assumptions: It is assumed that the user knows how to navigate.
+ *
+ */
 package com.example.navigator;
 
 

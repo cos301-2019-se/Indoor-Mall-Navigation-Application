@@ -14,7 +14,7 @@
  * Assumptions: It is assumed that the database class will be provided with a concrete class
  */
 
-package com.example.navigator;
+package com.example.navigator.utils;
 
 /**
  * Purpose: This class is an abstract database connection class
@@ -25,10 +25,14 @@ package com.example.navigator;
 public abstract class DatabaseConn {
 
 //    protected Object database;
-    protected String query;
-    protected String[] vars;
+    protected Object query;
+    protected Object[] vars;
 
-    public DatabaseConn(){};
+    public DatabaseConn(){
+        connect();
+    }
+
+
 
     /**
      * Open a database connection
@@ -49,14 +53,24 @@ public abstract class DatabaseConn {
      *
      * @param _query The query to be set
      */
-    public void setQuery(String _query){query = _query;}
+    public void setQuery(Object _query){query = _query;}
 
     /**
      * Sets the variable array to be used in queries
      *
      * @param _vars The variable array to set
      */
-    public void setVars(String[] _vars){vars = _vars;}
+    public void setVars(Object[] _vars){vars = _vars;}
+    /**
+     * Sets the variable array to be used in queries but allows single string input
+     *
+     * @param _vars The variable array to set
+     */
+    public void setVars(String _vars)
+    {
+        String[] varArray = {_vars};
+        setVars(varArray);
+    }
 
     /**
      * Unsets the variable array
@@ -69,7 +83,7 @@ public abstract class DatabaseConn {
      * @param _query The query string to be loaded
      * @param _vars The variable array to be loaded
      */
-    public void setQueryAndVars(String _query, String[] _vars)
+    public void setQueryAndVars(Object _query, Object[] _vars)
     {
         setQuery(_query);
         setVars(_vars);
@@ -80,7 +94,7 @@ public abstract class DatabaseConn {
      *
      * @param _query The query string to be loaded
      */
-    public void setQueryAndVars(String _query)
+    public void setQueryAndVars(Object _query)
     {
         setQuery(_query);
         unsetVars();
@@ -91,7 +105,7 @@ public abstract class DatabaseConn {
      *
      * @return An array of string values as returned from the database, null on failure
      */
-    protected abstract String[] query();
+    protected abstract Object[] query();
 
     /**
      * Runs a query using the loaded query and vars, specifically for Create/Update/Delete operations that don't provide output
@@ -106,11 +120,31 @@ public abstract class DatabaseConn {
      * @param _vars The variable array to load
      * @return A string array containing the query results
      */
-    public String[] query(String[] _vars)
+    public Object[] query(Object[] _vars)
     {
         setVars(_vars);
         return query();
     }
+
+    /**
+     * Runs an asynchronous query, using datacall object to provide output
+     *
+     * @param datacall An object containing a defined callback function
+     */
+    public abstract void asyncQuery(DatabaseCallback datacall);
+
+    /**
+     * Sets the active variables and then runs an asynchronous query
+     *
+     * @param _vars The vars to be set for the query
+     * @param datacall The object containing the callback function
+     */
+    public void asyncQuery(Object[] _vars, DatabaseCallback datacall)
+    {
+        setVars(_vars);
+        asyncQuery(datacall);
+    };
+
 
     /**
      * Deletes an item from the provided document, delete by ID supported only
@@ -119,7 +153,7 @@ public abstract class DatabaseConn {
      * @param item The item to be deleted
      * @return true on success, false on failure
      */
-    public abstract boolean delete(String document, String item);
+    public abstract boolean delete(String document, Object item);
 
     /**
      * Deletes all items from a given document
@@ -133,39 +167,50 @@ public abstract class DatabaseConn {
      * Inserts an element into the given document
      *
      * @param document The document/table to be inserted into
-     * @param item The array of element attributes to be inserted
+     * @param item The item to be inserted
      * @return true on success, false on failure
      */
-    public abstract boolean insert(String document, String[] item);
+    public abstract boolean insert(String document, Object item);
 
     /**
      * Inserts a collection of elements into the given document
      *
      * @param document The document/table to be inserted into
-     * @param items The multidimensional array of items. items[0] is the first item, items[3][0] is the first attribute of the fourth item
-     * @return true on success, false on failure
+     * @param items The array of items to be inserted.
+     * @return true on full success, false on failure
      */
-    public abstract boolean insert(String document, String[][] items);
+    public boolean insert(String document, Object[] items)
+    {
+        for(int i = 0; i < items.length; i++)
+        {
+            if(!insert(document, items[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * Updates an element within the given document with the values given
      *
      * @param document The document/table in which the item resides
      * @param id The id of the item to update
-     * @param item The new values for the item to be set to
+     * @param item The new values to be used
      * @return true on success, false on failure
      */
-    public abstract boolean update(String document, String id, String[] item);
+    public abstract boolean update(String document, String id, Object item);
 
     /**
      * Update multiple elements within a given document using the given ids
      *
      * @param document The document/table in which the items reside
      * @param ids The array of ids to be inserted
-     * @param items The multidimensional array of items. items[0] is the first item, items[3][0] is the first attribute of the fourth item
+     * @param items The new values to be used
      * @return true on full success, false on any failure
      */
-    public boolean update(String document, String[] ids, String[][] items)
+    public boolean update(String document, String[] ids, Object[] items)
     {
 //        boolean success = true;
         for (int i = 0; i < ids.length; i++)
@@ -178,7 +223,13 @@ public abstract class DatabaseConn {
         return true;
     }
 
-    
+    public interface DatabaseCallback
+    {
+        public void onCallback(Object results);
+    }
+
+
+
 
 
 

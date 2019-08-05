@@ -70,7 +70,7 @@ public class Cart extends Fragment {
     TextView demoValue;
     ListView cartList;
 
-    DatabaseReference rootRef,demoRef,cartRef;
+    DatabaseReference rootRef,demoRef;
     public Cart() {
         // Required empty public constructor
     }
@@ -84,28 +84,8 @@ public class Cart extends Fragment {
         demoValue = (TextView) view.findViewById(R.id.tvValue);
         rootRef = FirebaseDatabase.getInstance().getReference();
         //database reference pointing to Product node
-        final String[] just = {"Nothing Happened"};
+        demoRef = rootRef.child("Cart");
 
-
-        cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren())
-                {
-                    if(snapshot.child("name").equals("vix"))
-                        just[0] = snapshot.child("price").toString();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        System.out.println("R " + just[0]);
 
 
 
@@ -114,7 +94,7 @@ public class Cart extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int count = 1;
-                final List<Integer> quantities = null;
+                final ArrayList<Integer> quantities = new ArrayList<>();
                 int quantitiesCount = 0;
                 int decreaseButtonID = 0;
                 int increaseButtonID = 0;
@@ -161,12 +141,13 @@ public class Cart extends Fragment {
                                 quantities.set(decreaseButton.getId(),quantities.get(decreaseButton.getId())-1);
                             }
                         });
-                        tableRow.addView(button);
+                        tableRow.addView(decreaseButton);
 
                         // Add a TextView in the fifth column for Quantity.
                         TextView aQuantity = new TextView(getContext());
                         quantities.add(1);
-                        aQuantity.setText(quantities.get(quantitiesCount));
+                        String sQuantity = quantities.get(quantitiesCount++).toString();
+                        aQuantity.setText(sQuantity);
                         tableRow.addView(aQuantity);
 
                         //Add a an image in the second column which only has a general image  for now
@@ -180,7 +161,7 @@ public class Cart extends Fragment {
                                 quantities.set(increaseButton.getId(),quantities.get(increaseButton.getId())+1);
                             }
                         });
-                        tableRow.addView(button);
+                        tableRow.addView(increaseButton);
 
                         // Add a button in the second column
                         ImageButton deleteButton = new ImageButton(getContext());
@@ -193,7 +174,7 @@ public class Cart extends Fragment {
                                 //CODE THAT REMOVES PRODUCT FROM DB GOES HERE
                             }
                         });
-                        tableRow.addView(button);
+                        tableRow.addView(deleteButton);
 
 
 

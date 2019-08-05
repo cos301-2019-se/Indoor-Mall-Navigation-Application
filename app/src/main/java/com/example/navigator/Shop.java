@@ -1,6 +1,6 @@
 /**
  *
- *  File Name: Navigation.js (path: app/src/main/java/com.example.navigator/utils/Search.js)
+ *  File Name: Shop.js (path: app/src/main/java/com.example.navigator/utils/Shop.js)
  *  Version: 1.0
  *  Author: Brute Force - Database Management
  *  Project: Indoor Mall Navigation

@@ -40,11 +40,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -96,115 +91,52 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     private RelativeLayout mContainer;
     private static final int PERMISSIONS_REQUEST_CODE = 1111;
+    private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
     private AngleLowpassFilter angleLowpassFilter = new AngleLowpassFilter();
 
     public static final String NA = "N/A";
     public static final String FIXED = "FIXED";
-    // location min time
     private static final int LOCATION_MIN_TIME = 30 * 1000;
-    // location min distance
     private static final int LOCATION_MIN_DISTANCE = 10;
-    // Gravity for accelerometer data
     private float[] gravity = new float[3];
-    // magnetic data
     private float[] geomagnetic = new float[3];
-    // Rotation data
     private float[] rotation = new float[9];
-    // orientation (azimuth, pitch, roll)
     private float[] orientation = new float[3];
-    // smoothed values
-    private float[] smoothed = new float[3];
-    // sensor manager
     private SensorManager sensorManager;
-    // sensor gravity
     private Sensor sensorGravity;
     private Sensor sensorMagnetic;
     private LocationManager locationManager;
     private Location currentLocation;
     private GeomagneticField geomagneticField;
-    private double bearing = 0;
     private TextView textDirection, textLat, textLong;
     private CompassView compassView;
 
 
 
-    private String TAG = "GameFragment";
+    private String TAG = "NavigationFragment";
     public static final float MOVE_FACTOR_X = 50f;
     public static final float MOVE_FACTOR_Y = MOVE_FACTOR_X * .8f;
-
-    public static final float MOVE_THRESHOLD_ACCEL = 0.01f;
     public static final float MOVE_THRESHOLD_GYRO = 0.01f;
-
-    public static final int STARTING_AR_OBJECT_COUNT = 3;
-
-    private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
-
-    public static final int FIRING_RATE = 200;
-    public static final int IMPACT_VIBRATION = 50;
-    public static final int ANIMATION_DURATION = 200;
-    public static final int SHOT_DELAY = 200;
-    public static final int TIME_TO_NEXT_AR = 1000; // Decrease for more trump heads
-    public static final int TIME_TO_NEXT_VOTE = 200; // Decrease for faster electoral votes
-    public int TIME_TO_NEXT_ELECTION_DAY = 800; // Increase for longer games
-
-    // Decrease for faster electoral votes per trump head
-    public static final float AR_COUNT_TIME_FACTOR = 3.5f;
-
-    public static final int TRACKER_ARROW_SIZE = 80;
+    private List<View> arObjects;
     public static final int BTC_SIZE = 200;
-    public static final int BTC_SIZE_SPACING = BTC_SIZE + 50;
 
     private NavigationFragmentInteractionListener mListener;
     private View rootView;
-    private ViewGroup inflateContainer;
     private LayoutInflater inflater;
     private VideoView landingVideo;
     private View howToUseContainer;
     private View searchContainer;
 
-    private List<View> arObjects;
-    private List<View> arLeftTrackerObjects;
-    private List<View> arRightTrackerObjects;
-
     private List<Integer> lastLeftMargins;
     private List<Integer> lastTopMargins;
-    private List<Boolean> btcShot;
-
-    private AnimationSet laserAnimSet;
-
-    private int height;
-    private int width;
-    private int topHitThreshold;
-    private int bottomHitThreshold;
-    private int leftHitThreshold;
-    private int rightHitThreshold;
 
     private View laserView = null;
-
     private FrameLayout arContentOverlay = null;
-
-    String accelData = "Accelerometer Data";
-    String compassData = "Compass Data";
-    String gyroData = "Gyro Data";
-
-    private MediaPlayer laserMp;
-    private MediaPlayer coinMp;
-    private MediaPlayer winMp;
-    private MediaPlayer chinaMp;
-    private MediaPlayer firedMp;
-    private MediaPlayer oyayeMp;
-    private MediaPlayer richMp;
-    private MediaPlayer bombMp;
-    private MediaPlayer loseMp;
-    private MediaPlayer founderMp;
-    private MediaPlayer mexicansMp;
-    private MediaPlayer tittiesMp;
 
     private boolean arActive = false;
     private boolean gamePaused = false;
     private int votes;
     private int daysToElection;
-    private int visibleArObjects;
 
     private float accelX;
     private float accelY;
@@ -330,70 +262,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     LocationListener locationListener;
 
-    final Runnable autoGenerateArObjects = new Runnable() {
-        @Override
-        public void run() {
-            createArObjectWithTrackers();
-            calculateVisibleArObjects();
-            int timeUntilNextArObject = Math.min(visibleArObjects * 100 + TIME_TO_NEXT_AR / 2,
-                    TIME_TO_NEXT_AR);
-            Log.d(TAG, "timeUntilNextArObject: " + timeUntilNextArObject);
-
-            handler.postDelayed(autoGenerateArObjects, timeUntilNextArObject);
-        }
-    };
-
-    final Runnable countElectoralVotes = new Runnable() {
-        @Override
-        public void run() {
-            /*votes += 1;
-            ((TextView)rootView.findViewById(R.id.electoral_vote_counter)).setText(votes + " / 270");
-            int timeToNextVote = (int)Math.round((double)TIME_TO_NEXT_VOTE / (1 +
-                    (visibleArObjects / AR_COUNT_TIME_FACTOR)));
-
-            if(votes > 200) {
-                ((TextView)rootView.findViewById(R.id.electoral_vote_counter)).setTextColor
-                        (ContextCompat.getColor(getContext(), R.color.primary));
-            }
-
-            if(votes == 270) {
-                reachedDestination();
-            } else {
-                handler.postDelayed(countElectoralVotes, timeToNextVote);
-            }*/
-        }
-    };
-
     final Runnable distanceFromBeaconProcess = new Runnable() {
         @Override
         public void run() {
             onBeaconServiceConnect();
-        }
-    };
-
-    final Runnable startFiring = new Runnable() {
-        @Override
-        public void run() {
-            laserView.setVisibility(View.VISIBLE);
-
-            laserView.startAnimation(laserAnimSet);
-            vibe.vibrate(5);
-
-            if(laserMp.isPlaying()) {
-                laserMp.seekTo(0);
-                laserMp.start();
-            } else {
-                laserMp.start();
-            }
-            handler.postDelayed(shotImpact, ANIMATION_DURATION);
-            handler.postDelayed(startFiring, FIRING_RATE);
-        }
-    };
-
-    final Runnable shotImpact = new Runnable() {
-        @Override
-        public void run() {
-            checkForImpact();
         }
     };
 
@@ -408,7 +280,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         @Override
         public void run() {
             if(gamePaused) return;
-            setNewMargins();
         }
     };
 
@@ -575,7 +446,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
 
 
-        inflateContainer = container;
+        ViewGroup inflateContainer = container;
         this.inflater = inflater;
         howToUseContainer = rootView.findViewById(R.id.how_to_use_container);
         mListener.timeEvent("App Opened to Play Game");
@@ -686,19 +557,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         Log.d(TAG,"onStop");
         stopAllRunnables();
 
-        handler.removeCallbacks(countElectoralVotes);
         handler.removeCallbacks(distanceFromBeaconProcess);
-        handler.removeCallbacks(autoGenerateArObjects);
-
-        if(winMp != null) winMp.stop();
-        if(richMp != null) richMp.stop();
-        if(loseMp != null) loseMp.stop();
-        if(laserMp != null) laserMp.stop();
-        if(chinaMp != null) chinaMp.stop();
-        if(oyayeMp != null) oyayeMp.stop();
-        if(founderMp != null) founderMp.stop();
-        if(mexicansMp != null) mexicansMp.stop();
-        if(tittiesMp != null) tittiesMp.stop();
 
         // remove listeners
         //sensorManager.unregisterListener(this);
@@ -779,7 +638,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         startVideo();
 
         assignClickListeners();
-        applyCustomStyles();
         configureSensors();
 
         //if (mBeaconManager.isBound(this)) mBeaconManager.setBackgroundMode(false);
@@ -788,13 +646,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     }
 
-    private void applyCustomStyles()
-    {
-
-        //((ImageView)rootView.findViewById(R.id.crosshairs)).setImageDrawable(arrowUp);
-        laserAnimSet = generateLaserAnimation();
-
-    }
 
     private void assignClickListeners()
     {
@@ -802,12 +653,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             @Override
             public void onClick(View view) {
 
-
                 Log.d(TAG, "onLongClick: ");
                 mListener.trackEvent("App Opened to Play Game");
 
                 rootView.findViewById(R.id.instructions_container).setVisibility(View.GONE);
-                initializeSound();
                 initializeAr();
                 prepareNavigation();
             }
@@ -960,57 +809,14 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
                     }
                 });
-
             }
         });
-
     }
-
-    private void calculateVisibleArObjects() {
-        int numberOfBtcShot = 0;
-
-        for(int i = 0; i < btcShot.size(); i++) {
-            if(btcShot.get(i)) numberOfBtcShot++;
-        }
-
-        visibleArObjects = btcShot.size() - numberOfBtcShot;
-    }
-
-    private void checkForImpact() {
-        /*for(int i = 0; i < btcShot.size(); i++) {
-            int leftMargin = lastLeftMargins.get(i);
-            int topMargin = lastTopMargins.get(i);
-
-            if(!btcShot.get(i) && topMargin > topHitThreshold && topMargin < bottomHitThreshold &&
-                    leftMargin < rightHitThreshold && leftMargin > leftHitThreshold) {
-                final View arObject = arObjects.get(i);
-
-                ((ImageView)arObject.findViewById(R.id.ar_object_image)).setImageResource(R
-                        .mipmap.trumpexplode);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        arObject.setVisibility(View.GONE);
-                    }
-                }, SHOT_DELAY);
-                vibe.vibrate(IMPACT_VIBRATION);
-                playRandomQuote(i);
-                btcShot.set(i, true);
-            }
-        }*/
-    }
-
 
     private void configureGameWindow() {
         arContentOverlay = (FrameLayout)rootView.findViewById(R.id.ar_content_overlay);
         laserView = rootView.findViewById(R.id.laser);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
-        height = display.getHeight();
-        width = display.getWidth();
-        topHitThreshold = height/2 - (int)(BTC_SIZE*1.1);
-        bottomHitThreshold = height/2;
-        leftHitThreshold = width/2 - (int)(BTC_SIZE*.9);
-        rightHitThreshold = width/2;
     }
 
     private void configureSensors()
@@ -1030,49 +836,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     }
 
-    private void createArObjectWithTrackers() {
-        /*btcShot.add(false);
-
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams
-                .WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        int leftMargin = BTC_SIZE_SPACING + (int)(Math.random() * 1500 * (Math.random() >
-                0.5 ? -1 : 1));
-        int topMargin = BTC_SIZE_SPACING + (int)(Math.random() * 500 * (Math.random() > 0.5
-                ? -1 : 1) + (height / 4));
-        lastLeftMargins.add(leftMargin);
-        lastTopMargins.add(topMargin);
-
-        View arLayout = inflater.inflate(R.layout.ar_object_trump_view, inflateContainer, false);
-
-        params.setMargins(leftMargin, topMargin, 0, 0);
-        arLayout.setLayoutParams(params);
-        arContentOverlay.addView(arLayout);
-        arObjects.add(arLayout);
-
-
-        View leftTracker = inflater.inflate(R.layout.ar_object_left_tracker_view, inflateContainer,
-                false);
-        View rightTracker = inflater.inflate(R.layout.ar_object_right_tracker_view, inflateContainer,
-                false);
-        ((ImageView)leftTracker.findViewById(R.id.ar_left_tracker_arrow_image)).setImageDrawable(new
-                IconicsDrawable(getContext())
-                .icon(FontAwesome.Icon.faw_angle_left)
-                .color(ContextCompat.getColor(getContext(), R.color.accent)));
-        ((ImageView)rightTracker.findViewById(R.id.ar_right_tracker_arrow_image)).setImageDrawable(new
-                IconicsDrawable(getContext())
-                .icon(FontAwesome.Icon.faw_angle_right)
-                .color(ContextCompat.getColor(getContext(), R.color.accent)));
-
-        FrameLayout.LayoutParams arrowParams = new FrameLayout.LayoutParams(ViewGroup
-                .LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        leftTracker.setLayoutParams(arrowParams);
-        rightTracker.setLayoutParams(arrowParams);
-        arContentOverlay.addView(leftTracker);
-        arContentOverlay.addView(rightTracker);
-        arLeftTrackerObjects.add(leftTracker);
-        arRightTrackerObjects.add(rightTracker);*/
-    }
-
     private void initializeAr() {
         arActive = true;
 
@@ -1089,31 +852,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private void initializeGameTimers() {
         daysToElection = 30;
         votes = 0;
-        countElectoralVotes.run();
         distanceFromBeaconProcess.run();
     }
 
-    private void initializeSound() {
-        laserMp = MediaPlayer.create(getContext(), R.raw.laser);
-        coinMp = MediaPlayer.create(getContext(), R.raw.coin);
-        winMp = MediaPlayer.create(getContext(), R.raw.win);
-        chinaMp = MediaPlayer.create(getContext(), R.raw.bigchina);
-        firedMp = MediaPlayer.create(getContext(), R.raw.fired);
-        oyayeMp = MediaPlayer.create(getContext(), R.raw.oyaye);
-        richMp = MediaPlayer.create(getContext(), R.raw.rich);
-        bombMp = MediaPlayer.create(getContext(), R.raw.bomb);
-        loseMp = MediaPlayer.create(getContext(), R.raw.lose);
-        founderMp = MediaPlayer.create(getContext(), R.raw.founder);
-        mexicansMp = MediaPlayer.create(getContext(), R.raw.mexicans);
-        tittiesMp = MediaPlayer.create(getContext(), R.raw.titties);
-
-        laserMp.setVolume(0.07f, 0.07f);
-
-
-    }
-
     private void reachedDestination() {
-
         rootView.findViewById(R.id.stop_button).setVisibility(View.GONE);
         rootView.findViewById(R.id.crosshairs).setVisibility(View.GONE);
         rootView.findViewById(R.id.compass).setVisibility(View.GONE);
@@ -1121,12 +863,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         rootView.findViewById(R.id.check_point).setVisibility(View.GONE);
         rootView.findViewById(R.id.distance_label).setVisibility(View.GONE);
         rootView.findViewById(R.id.distance_from_beacon).setVisibility(View.GONE);
-        /*for(int i = 0; i < btcShot.size(); i++) {
-            arLeftTrackerObjects.get(i).setVisibility(View.GONE);
-            arRightTrackerObjects.get(i).setVisibility(View.GONE);
-        }*/
-        handler.removeCallbacks(autoGenerateArObjects);
-        handler.removeCallbacks(countElectoralVotes);
         handler.removeCallbacks(distanceFromBeaconProcess);
 
         handler.postDelayed(new Runnable() {
@@ -1138,51 +874,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
 
         gamePaused = true;
-    }
-
-    private void generateArObjects() {
-
-        arObjects = new ArrayList<>();
-        arLeftTrackerObjects = new ArrayList<>();
-        arRightTrackerObjects = new ArrayList<>();
-        lastLeftMargins = new ArrayList<>();
-        lastTopMargins = new ArrayList<>();
-        btcShot = new ArrayList<>();
-
-        for(int i = 0; i < STARTING_AR_OBJECT_COUNT; i++) {
-            createArObjectWithTrackers();
-        }
-
-        autoGenerateArObjects.run();
-
-        gamePaused = false;
-
-    }
-
-    private AnimationSet generateLaserAnimation() {
-        AnimationSet animSet = new AnimationSet(true);
-
-        ScaleAnimation scaleAnimationShrink = new ScaleAnimation(10f, 0, 20f, 0, Animation
-                .RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        scaleAnimationShrink.setFillAfter(true);
-
-        scaleAnimationShrink.setDuration(ANIMATION_DURATION);
-
-        TranslateAnimation transAnim = new TranslateAnimation(
-                Animation.RELATIVE_TO_PARENT, 0f,
-                Animation.RELATIVE_TO_PARENT, 0f,
-                Animation.RELATIVE_TO_PARENT, 0.45f,
-                Animation.RELATIVE_TO_PARENT, 0.025f);
-        transAnim.setFillAfter(true);
-        transAnim.setInterpolator(new DecelerateInterpolator(1000f));
-
-        transAnim.setDuration(ANIMATION_DURATION);
-
-        animSet.addAnimation(transAnim);
-        animSet.addAnimation(scaleAnimationShrink);
-        animSet.setFillAfter(true);
-        animSet.setInterpolator(new DecelerateInterpolator(1f));
-        return animSet;
     }
 
     private void moveArFrameGyro(float x, float y, float z) {
@@ -1268,29 +959,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
 
             handler.post(moveArBtc);
-
-        }
-
-    }
-
-    private void playRandomQuote(int index) {
-        switch (index % 8) {
-            case 0:
-                chinaMp.start(); break;
-            case 1:
-                richMp.start(); break;
-            case 2:
-                oyayeMp.start(); break;
-            case 3:
-                firedMp.start(); break;
-            case 4:
-                bombMp.start(); break;
-            case 5:
-                founderMp.start(); break;
-            case 6:
-                mexicansMp.start(); break;
-            case 7:
-                tittiesMp.start(); break;
         }
     }
 
@@ -1312,44 +980,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
 
-        //generateArObjects();
         initializeGameTimers();
-    }
-
-    private void setNewMargins() {
-        /*for(int i = 0; i < arObjects.size(); i++) {
-            View arView = arObjects.get(i);
-            int leftMargin = lastLeftMargins.get(i);
-            int topMargin =lastTopMargins.get(i);
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(arView.getLayoutParams());
-            params.setMargins(leftMargin, topMargin, 0, 0);
-            arView.setLayoutParams(params);
-            if(!btcShot.get(i)) {
-                View leftTrackerArrow = arLeftTrackerObjects.get(i);
-                View rightTrackerArrow = arRightTrackerObjects.get(i);
-
-                if(leftMargin < BTC_SIZE * -1) {
-                    leftTrackerArrow.setVisibility(View.VISIBLE);
-                    FrameLayout.LayoutParams leftTrackerArrowParams = new FrameLayout
-                            .LayoutParams(leftTrackerArrow.getLayoutParams());
-                    leftTrackerArrowParams.setMargins(0, Math.max(0, topMargin), 0, 0);
-                    leftTrackerArrow.setLayoutParams(leftTrackerArrowParams);
-                } else {
-                    leftTrackerArrow.setVisibility(View.INVISIBLE);
-                }
-                if(leftMargin > width) {
-                    rightTrackerArrow.setVisibility(View.VISIBLE);
-                    FrameLayout.LayoutParams rightTrackerArrowParams = new FrameLayout
-                            .LayoutParams(rightTrackerArrow.getLayoutParams());
-                    rightTrackerArrowParams.setMargins(width - TRACKER_ARROW_SIZE, Math.max
-                            (0, topMargin), 0, 0);
-                    rightTrackerArrow.setLayoutParams(rightTrackerArrowParams);
-
-                } else {
-                    rightTrackerArrow.setVisibility(View.INVISIBLE);
-                }
-            }
-        }*/
     }
 
     private void shareGeneral() {
@@ -1385,16 +1016,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         sensorManager.unregisterListener(this);
     }
 
-    private void updateSensorUi() {
 
-//        ((TextView)rootView.findViewById(R.id.accel_text_x)).setText(String.format("%.4f", accelX));
-//        ((TextView)rootView.findViewById(R.id.accel_text_y)).setText(String.format("%.4f", accelY));
-//        ((TextView)rootView.findViewById(R.id.accel_text_z)).setText(String.format("%.4f", accelZ));
-//
-//        ((TextView)rootView.findViewById(R.id.gyro_text_x)).setText(String.format("%.4f", gyroX));
-//        ((TextView)rootView.findViewById(R.id.gyro_text_y)).setText(String.format("%.4f", gyroY));
-//        ((TextView)rootView.findViewById(R.id.gyro_text_z)).setText(String.format("%.4f", gyroZ));
-    }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -1405,9 +1027,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 accelY = sensorEvent.values[1];
                 accelZ = sensorEvent.values[2];
 
-                updateSensorUi();
-//                if(arActive) moveArFrameAccel(accelX, accelY, accelZ);
-
                 break;
             case Sensor.TYPE_GYROSCOPE:
 
@@ -1415,7 +1034,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 gyroY = sensorEvent.values[1];
                 gyroZ = sensorEvent.values[2];
 
-                updateSensorUi();
                 if(arActive) moveArFrameGyro(gyroX, gyroY, gyroZ);
 
                 break;
@@ -1424,6 +1042,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         boolean accelOrMagnetic = false;
 
         // get accelerometer data
+        float[] smoothed;
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             // we need to use a low pass filter to make data smoothed
             smoothed = LowPassFilter.filter(sensorEvent.values, gravity);
@@ -1446,7 +1065,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         // get bearing to target
         SensorManager.getOrientation(rotation, orientation);
         // east degrees of true North
-        bearing = orientation[0];
+        double bearing = orientation[0];
 
         //angleLowpassFilter.add((float) bearing);
 

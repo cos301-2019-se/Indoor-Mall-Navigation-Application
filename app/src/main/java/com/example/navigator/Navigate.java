@@ -19,8 +19,9 @@
  *  Assumptions: It is assumed that the user knows how to navigate.
  *
  */
-package com.example.navigator;
 
+
+package com.example.navigator;
 
 import android.content.ServiceConnection;
 import android.hardware.GeomagneticField;
@@ -72,6 +73,7 @@ import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
 import com.example.navigator.utils.AngleLowpassFilter;
 import com.example.navigator.utils.ArDisplayView;
 import com.example.navigator.utils.CompassView;
+import com.example.navigator.utils.Installation;
 import com.example.navigator.utils.LowPassFilter;
 import com.example.navigator.utils.RadarScanView;
 import com.google.firebase.database.DataSnapshot;
@@ -174,6 +176,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
+
+        String deviceId = Installation.id(getContext());
+        Toast.makeText(getContext(),"Your Device ID is: " + deviceId, Toast.LENGTH_LONG).show();
+
 
         //------------------------ Search Bar Implementation--------------------------------------
         SearchView searchView = (SearchView) rootView.findViewById(R.id.searchView);
@@ -250,7 +257,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
 
-        rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
+
         navigateButton = rootView.findViewById(R.id.navigate_button);
         textLat = (TextView) rootView.findViewById(R.id.latitude);
         textLong = (TextView) rootView.findViewById(R.id.longitude);

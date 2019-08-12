@@ -9,7 +9,7 @@
 
     <!-- TODO: Update blank fragment layout -->
     <Button
-        android:text="SCAN"
+        android:text="SCAN PRODUCT"
         android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:layout_width="270dp"
@@ -24,12 +24,69 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Result"
+        android:text=""
         android:gravity="center"
         android:textSize="22sp"
         android:layout_marginTop="20dp"
         android:id="@+id/result_text"
         android:layout_marginBottom="120dp"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+    <Button
+        android:id="@+id/btn_Decrement_Quantity"
+        android:layout_width="63dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="-"
+        android:textColor="#FFFFFF"
+        android:textSize="40dp" />
+
+    <Button
+        android:id="@+id/btn_Increment_Quantity"
+        android:layout_width="68dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="+"
+        android:textColor="#FFFFFF"
+        android:textSize="40dp" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/edt_Quantity"
+        android:layout_width="93dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:text="1"
+        android:textAlignment="center"
+        android:background="@android:color/transparent"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center"
+        android:text="Quantity"
+        android:textAlignment="center"
+
+        />
 
     <Button
         android:layout_marginTop="20dp"
@@ -59,45 +116,5 @@
         android:shadowRadius="5"
         android:id="@+id/btn_addToWishlist"/>
 
-    <Button
-        android:id="@+id/btn_Decrement_Quantity"
-        android:layout_width="63dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="-"
-        android:textColor="#FFFFFF"
-        android:textSize="40dp" />
 
-    <Button
-        android:id="@+id/btn_Increment_Quantity"
-        android:layout_width="68dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="+"
-        android:textColor="#FFFFFF"
-        android:textSize="40dp" />
-
-    <EditText
-        android:id="@+id/edt_Quantity"
-        android:layout_width="93dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:text="1"
-        android:inputType="number" />
-
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Quantity" />
 </LinearLayout>

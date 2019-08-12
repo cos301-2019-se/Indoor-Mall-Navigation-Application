@@ -1,3 +1,24 @@
+/**
+ *
+ *  File Name: WishList.js (path: app/src/main/java/com.example.navigator/utils/wishList.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  02/07/2019  Thomas Honiball    Original
+ *
+ *
+ *  Functional Description: This program file Has the Navigation.
+ *  Error Messages: None
+ *  Constraints: None
+ *  Assumptions: It is assumed that the user knows how to use the App.
+ *
+ */
 package com.example.navigator;
 
 import android.Manifest;

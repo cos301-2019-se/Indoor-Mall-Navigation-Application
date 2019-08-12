@@ -34,12 +34,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
     <Button
         android:id="@+id/btn_Decrement_Quantity"
         android:layout_width="63dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:background="@drawable/buttonshape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
@@ -49,11 +49,21 @@
         android:textColor="#FFFFFF"
         android:textSize="40dp" />
 
+
+        <EditText
+            android:id="@+id/edt_Quantity"
+            android:layout_width="93dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="1"
+            android:textAlignment="center"
+            android:background="@android:color/transparent"
+            android:inputType="number" />
+
     <Button
         android:id="@+id/btn_Increment_Quantity"
         android:layout_width="68dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:background="@drawable/buttonshape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
@@ -65,15 +75,6 @@
 
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/edt_Quantity"
-        android:layout_width="93dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:text="1"
-        android:textAlignment="center"
-        android:background="@android:color/transparent"
-        android:inputType="number" />
 
     <EditText
         android:id="@+id/editText2"

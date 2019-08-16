@@ -37,6 +37,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.navigator.utils.DatabaseConn;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -83,6 +84,7 @@ public class Wishlist extends Fragment {
         wishToCart = rootRef.child("Cart");
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
         final ArrayList<String>  list = new ArrayList<>();
+        final ArrayList<String>  IDList = new ArrayList<>();
         final ArrayList<String>  listProductNames = new ArrayList<>();
         final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -92,6 +94,7 @@ public class Wishlist extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String productName = snapshot.child("name").getValue().toString();
                     String barCode  = snapshot.child("id").getValue().toString();
+                    IDList.add(snapshot.getKey());
                     list.add(barCode);
                     listProductNames.add(productName);
                     String price = snapshot.child("price").getValue().toString();
@@ -127,6 +130,8 @@ public class Wishlist extends Fragment {
                             //CODE THAT ADDS TO CART FROM WISHLIST GOES HERE
                             String y = listProductNames.get(curr-1);
                             Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
+                            DatabaseConn data = DatabaseConn.open();
+
                             applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -156,21 +161,13 @@ public class Wishlist extends Fragment {
                         public void onClick(View v) {
                             myTable.removeViewAt(curr);
                             String y = listProductNames.get(curr-1);
+                            String yID = list.get(curr-1);
+//                            Toast.makeText(getContext(),y + " has ID: " + yID + " and is element " + IDList.get(curr-1), Toast.LENGTH_LONG).show();
                             Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
 
-                            applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
-                                        appleSnapshot.getRef().removeValue();
-                                    }
-                                }
+                            DatabaseConn data = DatabaseConn.open();
+                            data.delete("Wishlist", IDList.get(curr-1));
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
                             Toast.makeText(getContext(),"Item deleted from Wish list", Toast.LENGTH_LONG).show();
                         }
                     });

@@ -182,5 +182,9 @@ public class Scan extends Fragment {
         objProduct = new Product("6009690380038","Oasis Still 500ml",9.99);
         ref.push().setValue(objProduct);
       }
+      else if(sessionId.equals("60018939")){
+        objProduct = new Product("60018939","Vaseline Blueseal",50.50);
+        ref.push().setValue(objProduct);
+      }
     }
 }

@@ -45,7 +45,7 @@
             android:iconifiedByDefault="false"
             android:focusableInTouchMode="true"
             android:focusable="false"
-            android:queryHint="Search Here"
+            android:queryHint="Search..."
             android:layout_above="@+id/navigate_button"/>
 
         <ListView

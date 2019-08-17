@@ -44,6 +44,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.example.navigator.utils.DatabaseConn;
+import com.example.navigator.utils.FirebaseConn;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
@@ -146,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DatabaseConn.open(new FirebaseConn());
+
         setContentView(R.layout.activity_main);
 
         final String GO_TO = getIntent().getStringExtra("GO_TO");

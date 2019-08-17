@@ -25,11 +25,35 @@ package com.example.navigator.utils;
 public abstract class DatabaseConn {
 
 //    protected Object database;
-    protected Object query;
-    protected Object[] vars;
+    protected Object query = null;
+    protected Object[] vars = null;
+    private static DatabaseConn connection = null;
+
 
     public DatabaseConn(){
         connect();
+    }
+
+    /**
+     * Singleton static access, this is entirely trust based
+     *
+     * @return The open connection to the database
+     */
+    public static DatabaseConn open()
+    {
+        return connection;
+    }
+
+    /**
+     * A singleton setter. Because abstract and static don't mix very well
+     *
+     * @param database The new database connection
+     * @return the opened connection
+     */
+    public static DatabaseConn open(DatabaseConn database)
+    {
+        connection = database;
+        return connection;
     }
 
 

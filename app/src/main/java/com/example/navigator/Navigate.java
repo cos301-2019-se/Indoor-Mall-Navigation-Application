@@ -178,8 +178,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
-        String deviceId = Installation.id(getContext());
-        Toast.makeText(getContext(),"Your Device ID is: " + deviceId, Toast.LENGTH_LONG).show();
+
 
 
         //------------------------ Search Bar Implementation--------------------------------------

@@ -1,3 +1,24 @@
+/**
+ *
+ *  File Name: WishList.js (path: app/src/main/java/com.example.navigator/utils/wishList.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  02/07/2019  Thomas Honiball    Original
+ *
+ *
+ *  Functional Description: This program file Has the Navigation.
+ *  Error Messages: None
+ *  Constraints: None
+ *  Assumptions: It is assumed that the user knows how to use the App.
+ *
+ */
 package com.example.navigator;
 
 import android.Manifest;
@@ -23,6 +44,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.example.navigator.utils.DatabaseConn;
+import com.example.navigator.utils.FirebaseConn;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
@@ -125,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DatabaseConn.open(new FirebaseConn());
+
         setContentView(R.layout.activity_main);
 
         final String GO_TO = getIntent().getStringExtra("GO_TO");

@@ -1,3 +1,24 @@
+/**
+ *
+ *  File Name: Product.js (path: app/src/main/java/com.example.navigator/utils/Product.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  09/07/2019  Mpho Mashaba    Original
+ *
+ *
+ *  Functional Description: This program file add's creates a Product class.
+ *  Error Messages: None
+ *  Constraints: field types
+ *  Assumptions: It is assumed that the user Knows how to ad a product.
+ *
+ */
 package com.example.navigator;
 
 

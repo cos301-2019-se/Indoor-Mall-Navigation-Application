@@ -1,6 +1,6 @@
 /**
  *
- *  File Name: Navigation.js (path: component/app/navigation.js)
+ *  File Name: WishList.js (path: app/src/main/java/com.example.navigator/utils/wishList.js)
  *  Version: 1.0
  *  Author: Brute Force - Database Management
  *  Project: Indoor Mall Navigation
@@ -10,14 +10,13 @@
  *
  *  Date        Author           Changes
  *  --------------------------------------------
- *  26/06/2019  Mpho Mashaba    Original
- *  08/07/2019 Khodani Tshisimba Table Functionality
+ *  09/07/2019  Mpho Mashaba    Original
+ *  01/08/2019  Thabo Ntsoane   version 1.0.1
  *
- *
- *  Functional Description: This program file searches and navigates user to a specific shop
- *  Error Messages: Shop does not exist
- *  Constraints: Can only be used to navigate
- *  Assumptions: It is assumed that the user will be navigated to destination appropriately
+ *  Functional Description: This program file add's a product to the wishlist.
+ *  Error Messages: None
+ *  Constraints: Can only be used if Items are available
+ *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
  *
  */
 package com.example.navigator;

@@ -11,7 +11,7 @@
  *  Date        Author           Changes
  *  --------------------------------------------
  *  08/07/2019  Mpho  Mashaba    Original
- *  01/08/2019  Thabo Ntsoane    Version 2
+ *  01/08/2019  Thabo Ntsoane    Version 1.0.1
  *
  *  Functional Description: This program file Scan's a product to a Cart or Wishlist.
  *  Error Messages: None
@@ -29,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,9 +51,12 @@ public class Scan extends Fragment {
   private ZXingScannerView mScannerView;
   private DatabaseReference databaseReference1,databaseReference3,unameref;
   public static TextView resultTextView;
+  public EditText quantityValue;
   Button buttonScan;
   Button buttonAddToCart;
   Button addToWishList;
+  Button incrementQuantity;
+  Button decrementQuantity;
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
   private DatabaseReference rootRef,demoRef;
@@ -72,6 +76,30 @@ public class Scan extends Fragment {
       buttonScan = (Button) view.findViewById(R.id.btn_scan);
       buttonAddToCart = (Button) view.findViewById(R.id.btn_addToCart);
       addToWishList = (Button)  view.findViewById(R.id.btn_addToWishlist);
+      //Quantity to Cart.
+      quantityValue = (EditText) view.findViewById(R.id.edt_Quantity);
+      incrementQuantity = (Button) view.findViewById(R.id.btn_Increment_Quantity);
+      decrementQuantity = (Button)  view.findViewById(R.id.btn_Decrement_Quantity);
+
+
+      decrementQuantity.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          int  count = Integer.parseInt(quantityValue.getText().toString());
+          count--;
+          quantityValue.setText(String.valueOf(count));
+        }
+      });
+
+       //final int count = 0;
+      incrementQuantity.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+        int  count = Integer.parseInt(quantityValue.getText().toString());
+          count++;
+          quantityValue.setText(String.valueOf(count));
+        }
+      });
 
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -148,6 +176,14 @@ public class Scan extends Fragment {
       }
       else if(sessionId.equals("6003326009584")){
         objProduct = new Product("6003326009584","Flying Fish Pressed Lemmon",15.99);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6009690380038")){
+        objProduct = new Product("6009690380038","Oasis Still 500ml",9.99);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("60018939")){
+        objProduct = new Product("60018939","Vaseline Blueseal",50.50);
         ref.push().setValue(objProduct);
       }
     }

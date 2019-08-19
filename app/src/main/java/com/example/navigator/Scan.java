@@ -43,6 +43,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 /**
  * A simple {@link Fragment} subclass.
@@ -133,13 +136,21 @@ public class Scan extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+              Map<String, Object> updates = new HashMap<String,Object>();
               if(dataSnapshot.child(deviceId).exists()){
                 ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
                 AddProduct(sessionId,itemQuantity);
               }
               else {
-                ref.setValue(deviceId);
+                DatabaseReference updateData = FirebaseDatabase.getInstance().getReference();
+                updateData.child("Cart").setValue(deviceId);
+
+                ref = FirebaseDatabase.getInstance().getReference();
+                updates.put("Cart", deviceId);
+
+
+                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
                 AddProduct(sessionId,itemQuantity);
               }

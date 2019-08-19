@@ -11,21 +11,9 @@
         android:layout_width="fill_parent" android:background="@color/white">
 
 
-        <TextView
-            android:id="@+id/TextView01"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:textColorHint="@color/black"
-            android:textColor="@color/black"
-            android:textSize="24dip"
-            android:layout_margin="5dip"
-            android:layout_gravity="center"
-            android:text="Shopping Cart"
-            >
-        </TextView>
 
-        <TextView
+
+        <!--<TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/GrandTotal"
@@ -33,20 +21,52 @@
             android:background="@color/white"
             android:textColorHint="@color/black"
             android:textColor="@color/black"
-            android:layout_gravity="right"/>
+            android:layout_gravity="right"/>-->
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
+
+        <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="5dip"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="5dip"
+            android:background="@color/white"
+            android:text="Shopping Cart"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="24dip"></TextView>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/TextView01"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="-37dp"
+            android:layout_marginEnd="0dp"
+            android:orientation="vertical"
+            tools:context=".Cart">
+
+            <ListView
+                android:id="@+id/listViewProduct"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:orientation="vertical">
-
-
-
-
             <!-- Removed from TableLayout
                 android:layout_above="@+id/textView"
-                android:layout_below="@+id/TextView01"
+                android:layout_below="@+id/TextView01"-->
 
 
             <Button
@@ -55,7 +75,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
+
                 android:layout_gravity="center"
                 android:layout_marginStart="78dp"
                 android:layout_marginEnd="63dp"
@@ -69,16 +89,12 @@
 
             </Button>
 
+        </LinearLayout>
 
-
-             Removed from Textview
+           <!--  Removed from Textview
                 android:layout_below="@+id/btnFetch"
             -->
 
-
-
-
-        </RelativeLayout>
 
 
     </RelativeLayout>

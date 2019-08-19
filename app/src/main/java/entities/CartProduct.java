@@ -6,18 +6,18 @@ public class CartProduct implements Serializable{
     //Each CardView Product will have the following
     private String id;
     private String name;
-    private double price;
-    private String description;
+    private String price;
+    private String quantity;
     private int photo;
 
     public CartProduct() {
     }
 
-    public CartProduct(String id, String name, double price, String description, int photo) {
+    public CartProduct(String id, String name, String price, String quantity, int photo) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.description = description;
+        this.quantity = quantity;
         this.photo = photo;
     }
 
@@ -37,20 +37,20 @@ public class CartProduct implements Serializable{
         this.name = name;
     }
 
-    public double getPrice() {
+    public String getPrice() {
         return this.price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
-    public String getDescription() {
-        return this.description;
+    public String getQuantity() {
+        return this.quantity;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setQuantity(String description) {
+        this.quantity = quantity;
     }
 
     public int getPhoto() {

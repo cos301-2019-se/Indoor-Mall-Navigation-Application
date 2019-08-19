@@ -23,51 +23,154 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="163dp"
-                android:layout_height="79dp"
-                android:orientation="horizontal"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:scaleType="fitStart">
-
-                <ImageView
-                    android:id="@+id/imageViewPhoto"
-                    android:layout_width="163dp"
-                    android:layout_height="79dp"
+                <LinearLayout
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:layout_marginRight="5dp"
-                    android:layout_weight="1"
-                    android:scaleType="fitStart"
-                    app:srcCompat="@drawable/thumb1" />
+                    android:layout_weight="0.0"
+                    android:scaleType="fitStart">
 
-                <TextView
-                    android:id="@+id/textViewName"
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:textStyle="bold" />
+                    <ImageView
+                        android:id="@+id/imageViewPhoto"
+                        android:layout_width="65dp"
+                        android:layout_height="79dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="0.7"
+                        android:scaleType="fitStart"
+                        app:srcCompat="@drawable/thumb1" />
 
 
-            </LinearLayout>
+
+
+                </LinearLayout>
+
+                <!--
+
+                    <TextView
+                        android:id="@+id/textViewName"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:textStyle="bold"
+                        android:text="'Product Name'"/>
+
+                -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="2dp"
-                    android:layout_weight="1"
                     android:orientation="vertical">
 
-
-
                     <TextView
-                        android:id="@+id/textViewDescription"
+                        android:id="@+id/textViewName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:textStyle="bold"
+                        android:text="'Unknown Product'"/>
 
-                    <TextView
-                        android:id="@+id/textViewPrice"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="70dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+
+                            <TextView
+                                android:id="@+id/textViewPriceLabel"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Price:"/>
+
+                            <TextView
+                                android:id="@+id/textViewQuantityLabel"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="Quantity:"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textViewPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Unknown Value"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:background="@drawable/ic_indeterminate_check_box_black_24dp"
+                                    />
+
+                                <TextView
+                                    android:id="@+id/textQuantity"
+                                    android:layout_width="60dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="0"
+                                    android:textAlignment="center"/>
+
+                                <Button
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:background="@drawable/ic_add_box_black_24dp"
+                                    />
+
+                            </LinearLayout>
+
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:layout_width="40dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="10dp"
+                                android:background="@drawable/ic_delete_black_24dp"/>
+                            <Button
+                                android:layout_width="40dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="10dp"
+                                android:background="@drawable/ic_favorite_black_24dp"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+
                 </LinearLayout>
+
+
+                    <!--
+
+                    <TextView
+                            android:id="@+id/textViewPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    -->
+
             </LinearLayout>
         </android.support.v7.widget.CardView>
     </LinearLayout>

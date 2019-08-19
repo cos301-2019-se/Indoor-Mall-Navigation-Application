@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -40,6 +41,7 @@ import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -55,6 +57,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import adapters.CartProductListAdapter;
+import entities.CartProduct;
+
 import static android.app.Activity.DEFAULT_KEYS_DIALER;
 import static com.example.navigator.MainActivity.TAG;
 
@@ -64,6 +69,7 @@ import static com.example.navigator.MainActivity.TAG;
 
 public class Cart extends Fragment {
     private Context context = null;
+    private ListView listViewProduct;
 
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private FirebaseAuth firebaseAuth;
@@ -75,6 +81,21 @@ public class Cart extends Fragment {
         // Required empty public constructor
     }
 
+    private void listViewProduct_onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Product product = (Product) adapterView.getItemAtPosition(i);
+        Toast.makeText(getContext(), product.getName(), Toast.LENGTH_LONG).show();
+    }
+
+    /*private void initView() {
+        listViewProduct = findViewById(R.id.listViewProduct);
+        listViewProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                listViewProduct_onItemClick(adapterView, view, i, l);
+            }
+        });
+    }*/
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -84,12 +105,14 @@ public class Cart extends Fragment {
         demoValue = (TextView) view.findViewById(R.id.tvValue);
         rootRef = FirebaseDatabase.getInstance().getReference();
         //database reference pointing to Product node
-        demoRef = rootRef.child("Cart");
+        demoRef = rootRef.child("Wishlist");
+
+        listViewProduct = view.findViewById(R.id.listViewProduct);
+
+        final List<CartProduct> products = new ArrayList<CartProduct>();
 
 
-
-
-        final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
+        //final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -102,9 +125,16 @@ public class Cart extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String productName = snapshot.child("name").getValue().toString();
                     String price = snapshot.child("price").getValue().toString();
+                    String id = snapshot.child("id").getValue().toString();
+                    String quantity = "1";
                     String priceProduct = productName + " R "+ price;
                     price = "R " + price;
 
+                    //Load Elements from DB to product list
+                    products.add(new CartProduct(id,productName, price, quantity, R.drawable.thumb1));
+
+
+                    /*
                     final int curr = count;
                     final String currProductName = productName;
 
@@ -181,7 +211,12 @@ public class Cart extends Fragment {
                         myTable.addView(tableRow,count);
                         //increment counter
                         count++;
+                        */
                 }
+
+                CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);
+
+                listViewProduct.setAdapter(productListAdapter);
             }
 
             @Override

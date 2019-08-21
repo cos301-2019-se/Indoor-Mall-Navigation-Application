@@ -1,5 +1,6 @@
 package entities;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 public class CartProduct implements Serializable{
 
@@ -9,6 +10,7 @@ public class CartProduct implements Serializable{
     private String price;
     private String quantity;
     private int photo;
+    private String totalPrice;
 
     public CartProduct() {
     }
@@ -16,9 +18,15 @@ public class CartProduct implements Serializable{
     public CartProduct(String id, String name, String price, String quantity, int photo) {
         this.id = id;
         this.name = name;
-        this.price = price;
+        this.price = "R " + price;
         this.quantity = quantity;
         this.photo = photo;
+
+        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = Double.parseDouble(decimal.format(tPrice));
+        this.totalPrice = Double.toString(tPrice);
+
     }
 
     public String getId() {
@@ -59,6 +67,21 @@ public class CartProduct implements Serializable{
 
     public void setPhoto(int photo) {
         this.photo = photo;
+    }
+
+    public String getTotalPrice(){return this.totalPrice;}
+
+    public void setTotalPrice(String totalPrice)
+    {
+        this.totalPrice = totalPrice;
+    }
+
+    public void setTotalPrice(String quantity, String price)
+    {
+        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+        //DecimalFormat decimal = new DecimalFormat("#.##");
+        //tPrice = Double.parseDouble(decimal.format(tPrice));
+        this.totalPrice = Double.toString(tPrice);
     }
 
 

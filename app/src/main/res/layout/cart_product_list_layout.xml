@@ -90,6 +90,10 @@
                                 android:text="Price:"/>
 
                             <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="10dp" />
+
+                            <TextView
                                 android:id="@+id/textViewQuantityLabel"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
@@ -108,27 +112,31 @@
                                 android:layout_height="wrap_content"
                                 android:text="Unknown Value"/>
 
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="10dp" />
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
 
                                 <Button
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
                                     android:background="@drawable/ic_indeterminate_check_box_black_24dp"
                                     />
 
                                 <TextView
                                     android:id="@+id/textQuantity"
-                                    android:layout_width="60dp"
+                                    android:layout_width="30dp"
                                     android:layout_height="wrap_content"
                                     android:text="0"
                                     android:textAlignment="center"/>
 
                                 <Button
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
                                     android:background="@drawable/ic_add_box_black_24dp"
                                     />
 
@@ -140,19 +148,49 @@
 
                         <LinearLayout
                             android:layout_width="100dp"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
-                            <Button
-                                android:layout_width="40dp"
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="55dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="5dp"
+                                    android:text="Total: R "/>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:id="@+id/totalPrice"
+                                    android:text="0.00"/>
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="5dp" />
+
+                            <LinearLayout
+                                android:layout_width="100dp"
                                 android:layout_height="match_parent"
-                                android:layout_marginLeft="10dp"
-                                android:background="@drawable/ic_delete_black_24dp"/>
-                            <Button
-                                android:layout_width="40dp"
-                                android:layout_height="match_parent"
-                                android:layout_marginLeft="10dp"
-                                android:background="@drawable/ic_favorite_black_24dp"/>
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginLeft="15dp"
+                                    android:background="@drawable/ic_delete_black_24dp"/>
+                                <Button
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:background="@drawable/ic_favorite_black_24dp"/>
+                            </LinearLayout>
+
                         </LinearLayout>
 
                     </LinearLayout>

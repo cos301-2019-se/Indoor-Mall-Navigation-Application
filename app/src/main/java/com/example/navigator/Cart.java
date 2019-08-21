@@ -125,12 +125,12 @@ public class Cart extends Fragment {
                     String productName = snapshot.child("name").getValue().toString();
                     String price = snapshot.child("price").getValue().toString();
                     String id = snapshot.child("id").getValue().toString();
-                    String quantity = "1";
+                    String quantity = snapshot.child("quantity").getValue().toString();
                     String priceProduct = productName + " R "+ price;
-                    price = "R " + price;
+                    //price = "R " + price;
 
                     //Load Elements from DB to product list
-                    products.add(new CartProduct(id,productName, price, quantity, R.drawable.thumb1));
+                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
 
 
                     /*

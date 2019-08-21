@@ -38,6 +38,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             viewHolder.textViewPrice = view.findViewById(R.id.textViewPrice);
             viewHolder.textViewQuantity = view.findViewById(R.id.textQuantity);
             viewHolder.imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
+            viewHolder.totalPrice = view.findViewById(R.id.totalPrice);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -47,6 +48,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.textViewQuantity.setText(product.getQuantity());
         viewHolder.textViewPrice.setText(String.valueOf(product.getPrice()));
         viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
+        viewHolder.totalPrice.setText(product.getTotalPrice());
         return view;
     }
 
@@ -55,5 +57,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         public static TextView textViewQuantity;
         public static TextView textViewPrice;
         public static ImageView imageViewPhoto;
+        public static TextView totalPrice;
     }
 }

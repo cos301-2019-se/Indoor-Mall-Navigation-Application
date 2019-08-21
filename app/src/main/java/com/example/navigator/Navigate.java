@@ -75,6 +75,7 @@ import com.example.navigator.utils.ArDisplayView;
 import com.example.navigator.utils.CompassView;
 import com.example.navigator.utils.Installation;
 import com.example.navigator.utils.LowPassFilter;
+import com.example.navigator.utils.MapPoint;
 import com.example.navigator.utils.RadarScanView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -149,6 +150,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA
     };
+
 
     final Runnable distanceFromBeaconProcess = new Runnable() {
         @Override
@@ -299,6 +301,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         howToUseContainer = rootView.findViewById(R.id.how_to_use_container);
         mListener.timeEvent("App Opened to Navigate");
         configureOverlayWindow();
+
         return rootView;
     }
 

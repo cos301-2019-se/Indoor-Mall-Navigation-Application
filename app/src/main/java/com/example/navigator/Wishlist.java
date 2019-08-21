@@ -21,6 +21,7 @@
 package com.example.navigator;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -68,6 +69,8 @@ public class Wishlist extends Fragment {
     TextView demoValue;
     ListView cartList;
 
+    Button buttonCheckout;
+
     DatabaseReference rootRef,demoRef,wishToCart;
     public Wishlist() {
         // Required empty public constructor
@@ -79,6 +82,7 @@ public class Wishlist extends Fragment {
         View view = inflater.inflate(R.layout.fragment_wishlist, container, false);
         demoValue = (TextView) view.findViewById(R.id.tvValue);
         rootRef = FirebaseDatabase.getInstance().getReference();
+        buttonCheckout = (Button) view.findViewById(R.id.checkout);
         //database reference pointing to Product node
         demoRef = rootRef.child("Wishlist");
         wishToCart = rootRef.child("Cart");
@@ -183,7 +187,16 @@ public class Wishlist extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+
+
         });
+        buttonCheckout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(),Payment.class));
+            }
+        });
+
         return view;
     }
 }

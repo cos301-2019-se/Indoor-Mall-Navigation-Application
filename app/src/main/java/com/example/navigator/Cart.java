@@ -23,6 +23,7 @@ package com.example.navigator;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -61,13 +62,15 @@ import static com.example.navigator.MainActivity.TAG;
  * A simple {@link Fragment} subclass.
  */
 
-public class Cart extends Fragment {
+public class
+Cart extends Fragment {
     private Context context = null;
 
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
     ListView cartList;
+    Button buttonCheckout;
 
     DatabaseReference rootRef,demoRef;
     public Cart() {
@@ -85,6 +88,7 @@ public class Cart extends Fragment {
         //database reference pointing to Product node
         demoRef = rootRef.child("Cart");
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
+        buttonCheckout = (Button) view.findViewById(R.id.checkout);
 
         final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -146,7 +150,18 @@ public class Cart extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+
+           /* public void onClick(View v) {
+
+                if(v == buttonCheckout){
+
+                    startActivity(new Intent(this, Payment.class));
+                }
+
+            }*/
         });
+
+
 
         return view;
     }

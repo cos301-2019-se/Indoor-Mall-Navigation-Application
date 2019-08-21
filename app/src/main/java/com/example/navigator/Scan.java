@@ -126,7 +126,6 @@ public class Scan extends Fragment {
       //database reference pointing to demo node
       demoRef = rootRef.child("Product");
 
-
       buttonAddToCart.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -166,16 +165,19 @@ public class Scan extends Fragment {
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
               if(dataSnapshot.child(deviceId).exists()){
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
                 AddProduct(sessionId,itemQuantity);
               }
               else {
-                ref.setValue(deviceId);
+                ref.push().setValue(deviceId);
+                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
                 AddProduct(sessionId,itemQuantity);
               }
+
             }
 
             @Override
@@ -228,6 +230,10 @@ public class Scan extends Fragment {
       }
       else if(sessionId.equals("6001007091521")){
         objProduct = new Product("6001007091521","Cream Soda",15.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6007652000574")){
+        objProduct = new Product("6007652000574","Hand book",12.99,itemQty);
         ref.push().setValue(objProduct);
       }
     }

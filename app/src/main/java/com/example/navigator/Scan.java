@@ -136,20 +136,13 @@ public class Scan extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-              Map<String, Object> updates = new HashMap<String,Object>();
               if(dataSnapshot.child(deviceId).exists()){
                 ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
                 AddProduct(sessionId,itemQuantity);
               }
               else {
-                DatabaseReference updateData = FirebaseDatabase.getInstance().getReference();
-                updateData.child("Cart").setValue(deviceId);
-
-                ref = FirebaseDatabase.getInstance().getReference();
-                updates.put("Cart", deviceId);
-
-
+                ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
                 AddProduct(sessionId,itemQuantity);
@@ -231,6 +224,10 @@ public class Scan extends Fragment {
       }
       else if(sessionId.equals("6001120624972")){
         objProduct = new Product("6001120624972","Sour Jelly Beans",22.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6001007091521")){
+        objProduct = new Product("6001007091521","Cream Soda",15.99,itemQty);
         ref.push().setValue(objProduct);
       }
     }

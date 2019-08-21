@@ -163,13 +163,22 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     public boolean searchList(String needle, ArrayList<String> haystack)
     {
+        boolean foundNeedle = false;
+        ArrayList<String> needleStack = new ArrayList<>();
+
         for(int i = 0; i < haystack.size(); i++){
             if(haystack.get(i).toLowerCase().contains(needle.toLowerCase())){
 
-                return true;
+                if(!needleStack.contains(haystack.get(i))){
+                    needleStack.add(haystack.get(i));
+                }
+                foundNeedle = true;
             }
         }
-        return false;
+
+        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, needleStack);
+
+        return foundNeedle;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -178,6 +187,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         beaconManager = BeaconManager.getInstanceForApplication(getContext());
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
+
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 

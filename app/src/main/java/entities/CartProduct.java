@@ -18,7 +18,7 @@ public class CartProduct implements Serializable{
     public CartProduct(String id, String name, String price, String quantity, int photo) {
         this.id = id;
         this.name = name;
-        this.price = "R " + price;
+        this.price = price;
         this.quantity = quantity;
         this.photo = photo;
 
@@ -57,6 +57,25 @@ public class CartProduct implements Serializable{
         return this.quantity;
     }
 
+    public String increaseQuantity()
+    {
+        int temp = Integer.parseInt(quantity);
+        temp++;
+        quantity = Integer.toString(temp);
+        setTotalPrice(quantity,price);
+        return quantity;
+    }
+
+    public String decreaseQuantity()
+    {
+        int temp = Integer.parseInt(quantity);
+        if(temp>0)
+            temp--;
+        quantity = Integer.toString(temp);
+        setTotalPrice(quantity,price);
+        return quantity;
+    }
+
     public void setQuantity(String description) {
         this.quantity = quantity;
     }
@@ -79,8 +98,8 @@ public class CartProduct implements Serializable{
     public void setTotalPrice(String quantity, String price)
     {
         Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        //DecimalFormat decimal = new DecimalFormat("#.##");
-        //tPrice = Double.parseDouble(decimal.format(tPrice));
+        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = Double.parseDouble(decimal.format(tPrice));
         this.totalPrice = Double.toString(tPrice);
     }
 

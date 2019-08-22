@@ -236,5 +236,13 @@ public class Scan extends Fragment {
         objProduct = new Product("6007652000574","Hand book",12.99,itemQty);
         ref.push().setValue(objProduct);
       }
+      else if(sessionId.equals("9780842371513")){
+        objProduct = new Product("9780842371513","Reading Book",59.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("9781936141364")){
+        objProduct = new Product("9781936141364","Another Reading Book",99.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
     }
 }

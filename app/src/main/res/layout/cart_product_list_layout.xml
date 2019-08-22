@@ -125,6 +125,7 @@
                                     android:layout_width="25dp"
                                     android:layout_height="25dp"
                                     android:background="@drawable/ic_indeterminate_check_box_black_24dp"
+                                    android:id="@+id/decrementQuantity"
                                     />
 
                                 <TextView
@@ -138,6 +139,7 @@
                                     android:layout_width="25dp"
                                     android:layout_height="25dp"
                                     android:background="@drawable/ic_add_box_black_24dp"
+                                    android:id="@+id/incrementQuantity"
                                     />
 
                             </LinearLayout>
@@ -183,12 +185,15 @@
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
                                     android:layout_marginLeft="15dp"
-                                    android:background="@drawable/ic_delete_black_24dp"/>
+                                    android:background="@drawable/ic_delete_black_24dp"
+                                    android:id="@+id/deleteCartItem"/>
                                 <Button
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
                                     android:layout_marginLeft="10dp"
-                                    android:background="@drawable/ic_favorite_black_24dp"/>
+                                    android:background="@drawable/ic_favorite_black_24dp"
+                                    android:id="@+id/addToWishlist"/>
+
                             </LinearLayout>
 
                         </LinearLayout>

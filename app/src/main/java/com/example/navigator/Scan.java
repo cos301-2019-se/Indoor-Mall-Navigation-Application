@@ -174,6 +174,8 @@ public class Scan extends Fragment {
               if(dataSnapshot.child(deviceId).exists()){
                 ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
+
+                //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
                 AddProduct(sessionId,itemQuantity);
               }
               else {

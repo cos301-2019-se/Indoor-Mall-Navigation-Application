@@ -129,10 +129,9 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private String TAG = "NavigationFragment";
     private NavigationFragmentInteractionListener mListener;
     private View rootView;
-    private VideoView landingVideo;
-    private View howToUseContainer;
-    private View searchContainer;
     private FrameLayout arContentOverlay = null;
+    private Double currentLat;
+    private Double currentLong;
     private Handler handler = new Handler();
     private Button navigateButton = null;
     private BeaconManager beaconManager;
@@ -166,28 +165,40 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     public boolean searchList(String needle, ArrayList<String> haystack)
     {
+        boolean foundNeedle = false;
+        ArrayList<String> needleStack = new ArrayList<>();
+
         for(int i = 0; i < haystack.size(); i++){
             if(haystack.get(i).toLowerCase().contains(needle.toLowerCase())){
 
-                return true;
+                if(!needleStack.contains(haystack.get(i))){
+                    needleStack.add(haystack.get(i));
+                }
+                foundNeedle = true;
             }
         }
-        return false;
+
+        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, needleStack);
+
+        return foundNeedle;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
+        beaconManager = BeaconManager.getInstanceForApplication(getContext());
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager.bind(this);
 
-        String deviceId = Installation.id(getContext());
-        Toast.makeText(getContext(),"Your Device ID is: " + deviceId, Toast.LENGTH_LONG).show();
+
+        rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
 
         //------------------------ Search Bar Implementation--------------------------------------
         SearchView searchView = (SearchView) rootView.findViewById(R.id.searchView);
         listView = (ListView) rootView.findViewById(R.id.lv1);
         list = new ArrayList<>();
+
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
         ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -205,7 +216,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
         });
 
-        searchContainer = rootView.findViewById(R.id.search_container);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1,list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -214,7 +224,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 selectedShop = listView.getItemAtPosition(position).toString() ;
                 navigateButton.setVisibility(View.VISIBLE);
                 navigateButton.setText("Navigate to " + selectedShop);
-                searchContainer.setVisibility(View.GONE);
 
             }
         });
@@ -298,7 +307,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             Toast.makeText(getContext(),"Your GPS is: OFF", Toast.LENGTH_LONG).show();
         }
 
-        howToUseContainer = rootView.findViewById(R.id.how_to_use_container);
         mListener.timeEvent("App Opened to Navigate");
         configureOverlayWindow();
 
@@ -328,7 +336,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         Log.d(TAG,"onPause");
 
         stopSensing();
-        landingVideo.stopPlayback();
         mSensorManager.unregisterListener(mRadar, accSensor);
         mSensorManager.unregisterListener(mRadar, magnetSensor);
     }
@@ -458,7 +465,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         rootView.findViewById(R.id.camera_frame).setVisibility(View.GONE);
         rootView.findViewById(R.id.ar_content_overlay).setVisibility(View.GONE);
 
-        startVideo();
 
         assignClickListeners();
         configureSensors();
@@ -512,127 +518,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
         };
 
-        rootView.findViewById(R.id.search_destination).setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    searchContainer.setVisibility(View.VISIBLE);
-                    mListener.trackEvent("How to Play Clicked");
-
-                    searchContainer.animate().alpha(1f).setListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animator) {
-                            searchContainer.setVisibility(View.VISIBLE);
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
-
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animator) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animator) {
-
-                        }
-                    });
-                }
-                return false;
-            }
-        });
-        rootView.findViewById(R.id.dismiss_search).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                searchContainer.animate().alpha(0f).setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        searchContainer.setVisibility(View.GONE);
-
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
-
-                    }
-                });
-
-            }
-        });
-
-
-        rootView.findViewById(R.id.how_to_use).setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    howToUseContainer.setVisibility(View.VISIBLE);
-                    mListener.trackEvent("How to Play Clicked");
-
-                    howToUseContainer.animate().alpha(1f).setListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animator) {
-                            howToUseContainer.setVisibility(View.VISIBLE);
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
-
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animator) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animator) {
-
-                        }
-                    });
-                }
-                return false;
-            }
-        });
-        rootView.findViewById(R.id.dismiss_how_to_play).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                howToUseContainer.animate().alpha(0f).setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        howToUseContainer.setVisibility(View.GONE);
-
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
-
-                    }
-                });
-            }
-        });
     }
 
     private void configureOverlayWindow() {
@@ -696,8 +581,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         rootView.findViewById(R.id.crosshairs).setVisibility(View.VISIBLE);
         ((TextView)rootView.findViewById(R.id.check_point_label)).setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
-        landingVideo.stopPlayback();
-        landingVideo.setVisibility(View.GONE);
 
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
@@ -712,21 +595,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         startActivity(Intent.createChooser(shareIntent, "Share link using"));
     }
 
-    private void startVideo() {
-        landingVideo = (VideoView)rootView.findViewById(R.id.landing_video);
-        landingVideo.setVideoURI(Uri.parse("android.resource://" + getContext().getPackageName()+ "/" + R.raw.compass));
-        landingVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayer.setLooping(true);
-                mediaPlayer.setVolume(0, 0);
-                landingVideo.start();
-            }
-        });
-        landingVideo.setVisibility(View.VISIBLE);
-
-    }
-
 
     private void stopAllRunnables()
     {
@@ -737,9 +605,93 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     }
 
 
+    protected double bearing(double startLat, double startLng, double endLat, double endLng){
+        double longitude1 = startLng;
+        double longitude2 = endLng;
+        double latitude1 = Math.toRadians(startLat);
+        double latitude2 = Math.toRadians(endLat);
+        double longDiff= Math.toRadians(longitude2-longitude1);
+        double y= Math.sin(longDiff)*Math.cos(latitude2);
+        double x=Math.cos(latitude1)*Math.sin(latitude2)-Math.sin(latitude1)*Math.cos(latitude2)*Math.cos(longDiff);
+
+        return (Math.toDegrees(Math.atan2(y, x))+360)%360;
+    }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+
+        /*final float alpha = 0.97f;
+
+        synchronized (this) {
+            boolean accelOrMagnetic = false;
+
+            // get accelerometer data
+            float[] smoothed;
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                // we need to use a low pass filter to make data smoothed
+                smoothed = LowPassFilter.filter(sensorEvent.values, gravity);
+                gravity[0] = smoothed[0];
+                gravity[1] = smoothed[1];
+                gravity[2] = smoothed[2];
+                accelOrMagnetic = true;
+
+            } else if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                smoothed = LowPassFilter.filter(sensorEvent.values, geomagnetic);
+                geomagnetic[0] = smoothed[0];
+                geomagnetic[1] = smoothed[1];
+                geomagnetic[2] = smoothed[2];
+                accelOrMagnetic = true;
+
+            }
+
+
+
+            boolean success = SensorManager.getRotationMatrix(rotation, null, gravity, geomagnetic);
+            if (success) {
+                Toast.makeText(getContext(),"A", Toast.LENGTH_LONG).show();
+                SensorManager.getOrientation(rotation, orientation);
+                // Log.d(TAG, "azimuth (rad): " + azimuth);
+                float azimuth = (float) Math.toDegrees(orientation[0]); // orientation
+                azimuth = (azimuth + 360) % 360;
+
+                azimuth -= (float) bearing(-25.755742299999998, 28.232664699999997, -26.145576207592264, 28.179931640625004);
+                // Log.d(TAG, "azimuth (deg): " + azimuth);
+                compassView.setBearing(azimuth);
+                updateTextDirection(azimuth);
+            }
+            else{
+                Toast.makeText(getContext(),"B", Toast.LENGTH_LONG).show();
+                SensorManager.getOrientation(rotation, orientation);
+                // east degrees of true North
+                double bearing = orientation[0];
+
+                //angleLowpassFilter.add((float) bearing);
+
+                // convert from radians to degrees
+                //bearing = (Math.toDegrees(angleLowpassFilter.average()) + 360) % 360;
+                bearing = Math.toDegrees(bearing);
+
+                // fix difference between true North and magnetical North
+                if (geomagneticField != null) {
+                    bearing += geomagneticField.getDeclination();
+                }
+
+                // bearing must be in 0-360
+                if (bearing < 0) {
+                    bearing += 360;
+                }
+
+                // update compass view
+                compassView.setBearing((float) bearing);
+
+                updateTextDirection(bearing); // display text direction on screen
+            }
+        }*/
+
+
+
+
+
         float accelX;
         float accelY;
         float accelZ;
@@ -817,6 +769,9 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         }
 
         updateTextDirection(bearing); // display text direction on screen
+
+
+
     }
 
     private void updateTextDirection(double bearing) {
@@ -886,6 +841,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             String latitude = "Latitude: " + loc.getLatitude();
             Log.v(TAG, latitude);
 
+            currentLat = loc.getLatitude();
+            currentLong = loc.getLongitude();
+
+            //bearing(loc.getLongitude(), loc.getLatitude(), 0.0, 0.0);
+
             try {
                 /*------- To get city name from coordinates -------- */
                 String cityName = null;
@@ -923,12 +883,12 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         beaconManager.addMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
-                Log.i(TAG, "I just saw an beacon for the first time!");
+                Log.i(TAG, "I just saw a beacon for the first time!");
             }
 
             @Override
             public void didExitRegion(Region region) {
-                Log.i(TAG, "I no longer see an beacon");
+                Log.i(TAG, "I no longer see a beacon");
             }
 
             @Override

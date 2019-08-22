@@ -40,6 +40,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.example.navigator.utils.Installation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,7 +64,7 @@ import static com.example.navigator.MainActivity.TAG;
 
 public class Cart extends Fragment {
     private Context context = null;
-
+//
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
@@ -79,11 +80,11 @@ public class Cart extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
-
+        final String deviceId = Installation.id(getContext());
         demoValue = (TextView) view.findViewById(R.id.tvValue);
         rootRef = FirebaseDatabase.getInstance().getReference();
         //database reference pointing to Product node
-        demoRef = rootRef.child("Cart");
+        demoRef = rootRef.child("Cart").child(deviceId);
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
 
         final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);

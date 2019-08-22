@@ -7,10 +7,10 @@ import java.util.List;
  * A class created in order to handle maplistings for beacons. This just allows us to build a pseudo graph in order to find all nearby elements to one another
  */
 public class MapPoint {
-    protected MapPoint[] nearby = null;// List of nearby MapPoints
-    protected double[] distancesNearby = null;// Distances to the listed MapPoints
-    protected int points = 0; //Number of points
-    protected String name = null, id=null;//Name and ID of this MapPoint
+    private MapPoint[] nearby = null;// List of nearby MapPoints
+    private double[] distancesNearby = null, bearingNearby = null;// Distances to the listed MapPoints
+    private int points = 0; //Number of points
+    private String name = null, id=null;//Name and ID of this MapPoint
 
 
     /**
@@ -20,6 +20,7 @@ public class MapPoint {
     {
         nearby = new MapPoint[points];
         distancesNearby = new double[points];
+        bearingNearby = new double[points];
     }
 
     /**
@@ -33,6 +34,7 @@ public class MapPoint {
         id = _id;
         nearby = new MapPoint[points];
         distancesNearby = new double[points];
+        bearingNearby = new double[points];
     }
 
     /**
@@ -42,14 +44,14 @@ public class MapPoint {
      * @param _points MapPoints to set
      * @param distances Distances to set
      */
-    public MapPoint(String _name, String _id, MapPoint[] _points, double[] distances)
+    public MapPoint(String _name, String _id, MapPoint[] _points, double[] distances, double[] bearings)
     {
         name = _name;
         id = _id;
         clearPoints();
         for (int i = 0; i < distances.length; i++)
         {
-            addPoint(_points[i], distances[i]);
+            addPoint(_points[i], distances[i], bearings[i]);
         }
 
     }
@@ -60,20 +62,24 @@ public class MapPoint {
      * @param point Point to add
      * @param distance Distance to the specified point
      */
-    public void addPoint(MapPoint point, double distance)
+    public void addPoint(MapPoint point, double distance, double bearing)
     {
         points ++;
         MapPoint[] temp = new MapPoint[points];
         double[] tempDist = new double[points];
+        double[] tempBearing = new double[points];
         for(int i = 0; i < nearby.length; i ++)
         {
             temp[i] = nearby[i];
             tempDist[i] = distancesNearby[i];
+            tempBearing[i] = bearingNearby[i];
         }
         temp[points-1] = point;
         tempDist[points-1] = distance;
+        tempBearing[points-1] = bearing;
         nearby = temp;
         distancesNearby = tempDist;
+        bearingNearby = tempBearing;
     }
 
     /**
@@ -82,10 +88,10 @@ public class MapPoint {
      * @param point Point to add
      * @param distance Distance to the specified point
      */
-    public void addTwoWayPoint(MapPoint point, double distance)
+    public void addTwoWayPoint(MapPoint point, double distance, double bearing)
     {
-        this.addPoint(point, distance);
-        point.addPoint(this, distance);
+        this.addPoint(point, distance, bearing);
+        point.addPoint(this, distance, 180+bearing);
     }
 
     /**
@@ -96,6 +102,7 @@ public class MapPoint {
         points = 0;
         nearby = new MapPoint[0];
         distancesNearby = new double[0];
+        bearingNearby = new double[0];
     }
 
     /**
@@ -249,6 +256,23 @@ public class MapPoint {
             if(nearby[i].getId().equals(targetID))
             {
                 return distancesNearby[i];
+            }
+        }
+        return -1.0;
+    }
+
+    /**
+     * Returns the bearing to a specified ID if it exists in the nearby list
+     * @param targetID The ID to be checked for
+     * @return The bearing to the target, -1 if the target doesn't exist
+     */
+    public double bearingTo(String targetID)
+    {
+        for(int i = 0; i < points; i++)
+        {
+            if(nearby[i].getId().equals(targetID))
+            {
+                return bearingNearby[i];
             }
         }
         return -1.0;

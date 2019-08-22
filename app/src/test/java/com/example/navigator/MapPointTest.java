@@ -34,36 +34,36 @@ public class MapPointTest {
         point_d = new MapPoint("POINT D", "10");
 
         //Add points to End
-        end.addTwoWayPoint(not_quite, 9.5);
-        end.addTwoWayPoint(almost_there, 7.8);
+        end.addTwoWayPoint(not_quite, 9.5, 120);
+        end.addTwoWayPoint(almost_there, 7.8, 240);
 
         //Add points to Almost_There
-        almost_there.addTwoWayPoint(midpoint, 8.3);
+        almost_there.addTwoWayPoint(midpoint, 8.3, 150);
 
         //Add points to Midpoint
-        midpoint.addTwoWayPoint(little_further, 9.6);
+        midpoint.addTwoWayPoint(little_further, 9.6, 250);
 
         //Add points to Little Further
-        little_further.addTwoWayPoint(another_point, 5.7);
+        little_further.addTwoWayPoint(another_point, 5.7, 250);
 
         //Add points to Another Point
-        another_point.addTwoWayPoint(point_a, 8.6);
-        another_point.addTwoWayPoint(point_c, 10.1);
+        another_point.addTwoWayPoint(point_a, 8.6, 90);
+        another_point.addTwoWayPoint(point_c, 10.1, 120);
 
         //Add points to Point A
-        point_a.addTwoWayPoint(point_b, 9.3);
+        point_a.addTwoWayPoint(point_b, 9.3, 90);
 
         //Add points to Point C
-        point_c.addTwoWayPoint(point_d, 20.2);
+        point_c.addTwoWayPoint(point_d, 20.2, 90);
 
         //Add points to Point B
-        point_b.addTwoWayPoint(point_d, 3.5);
+        point_b.addTwoWayPoint(point_d, 3.5, 180);
 
         //Add points to root
-        root.addTwoWayPoint(almost_there, 21.5);
-        root.addTwoWayPoint(not_quite, 10.5);
-        root.addTwoWayPoint(midpoint, 7.2);
-        root.addTwoWayPoint(little_further, 30.6);
+        root.addTwoWayPoint(almost_there, 21.5, 30);
+        root.addTwoWayPoint(not_quite, 10.5, 330);
+        root.addTwoWayPoint(midpoint, 7.2, 120);
+        root.addTwoWayPoint(little_further, 30.6, 180);
 //        System.out.println("Setup Done!");
 
     }
@@ -116,6 +116,20 @@ public class MapPointTest {
     {
         MapPoint[] directions = root.getDirectionsTo("30", 10);
         assertWithMessage("Directions to 30 are null").that(directions).isEqualTo(null);
+
+    }
+    @Test
+    public void getDirectionsTo_GivenFullTree_ReturnsDirectionArray()
+    {
+        MapPoint[] directions = end.getDirectionsTo("30", 10);
+        assertWithMessage("Directions to 30 are null").that(directions).isEqualTo(null);
+
+    }
+    @Test
+    public void bearingTo_GivenTwoPoints_ReturnsBearing()
+    {
+        assertWithMessage("BearingFrom Root To AT is 21.5").that(root.bearingTo("8")).isEqualTo(30);
+        assertWithMessage("BearingFrom AT To Root is 21.5").that(almost_there.bearingTo("0")).isEqualTo(210);
 
     }
 

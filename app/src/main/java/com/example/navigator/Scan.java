@@ -244,5 +244,21 @@ public class Scan extends Fragment {
         objProduct = new Product("9781936141364","Another Reading Book",99.99,itemQty);
         ref.push().setValue(objProduct);
       }
+      else if(sessionId.equals("6009677500053")){
+        objProduct = new Product("6009677500053","Bene Water",9.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("9781433506321")){
+        objProduct = new Product("9781433506321","Don't Waste Your Life",74.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("9780805016888")){
+        objProduct = new Product("9780805016888","A & E",49.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("9781259080791")){
+        objProduct = new Product("9781259080791","OO Software Eng",849.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
     }
 }

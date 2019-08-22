@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -76,28 +77,26 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="60dp"
+                            android:layout_width="78dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:layout_weight="1"
                             android:orientation="vertical">
 
 
-                            <TextView
-                                android:id="@+id/textViewPriceLabel"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Price:"/>
+
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="10dp" />
 
                             <TextView
-                                android:id="@+id/textViewQuantityLabel"
+                                android:id="@+id/textViewPriceLabel"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:text="Quantity:"/>
+                                android:layout_height="wrap_content"
+                                android:text="Unit Price:"/>
+
+
 
                         </LinearLayout>
 
@@ -105,6 +104,10 @@
                             android:layout_width="85dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="10dp" />
 
                             <TextView
                                 android:id="@+id/textViewPrice"
@@ -121,26 +124,7 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
 
-                                <Button
-                                    android:layout_width="25dp"
-                                    android:layout_height="25dp"
-                                    android:background="@drawable/ic_indeterminate_check_box_black_24dp"
-                                    android:id="@+id/decrementQuantity"
-                                    />
 
-                                <TextView
-                                    android:id="@+id/textQuantity"
-                                    android:layout_width="30dp"
-                                    android:layout_height="wrap_content"
-                                    android:text="0"
-                                    android:textAlignment="center"/>
-
-                                <Button
-                                    android:layout_width="25dp"
-                                    android:layout_height="25dp"
-                                    android:background="@drawable/ic_add_box_black_24dp"
-                                    android:id="@+id/incrementQuantity"
-                                    />
 
                             </LinearLayout>
 
@@ -153,24 +137,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
 
-                                <TextView
-                                    android:layout_width="55dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginLeft="0dp"
-                                    android:text="Total: R "/>
-
-                                <TextView
-                                    android:layout_width="60dp"
-                                    android:layout_height="match_parent"
-                                    android:id="@+id/totalPrice"
-                                    android:text="0.00"/>
-
-                            </LinearLayout>
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -182,17 +149,18 @@
                                 android:orientation="horizontal">
 
                                 <Button
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
-                                    android:layout_marginLeft="15dp"
-                                    android:background="@drawable/ic_delete_black_24dp"
-                                    android:id="@+id/deleteCartItem"/>
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginLeft="1dp"
+                                    android:background="@drawable/ic_shopping_cart_black_24dp"
+                                    android:id="@+id/addToCart"
+                                    />
                                 <Button
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
-                                    android:layout_marginLeft="10dp"
-                                    android:background="@drawable/ic_favorite_black_24dp"
-                                    android:id="@+id/addToWishlist"/>
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginLeft="20dp"
+                                    android:background="@drawable/ic_delete_black_24dp"
+                                    android:id="@+id/deleteWishListItem"/>
 
                             </LinearLayout>
 
@@ -205,14 +173,7 @@
                 </LinearLayout>
 
 
-                    <!--
 
-                    <TextView
-                            android:id="@+id/textViewPrice"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    -->
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

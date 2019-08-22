@@ -130,91 +130,10 @@ public class Cart extends Fragment {
                     String price = snapshot.child("price").getValue().toString();
                     String id = snapshot.child("id").getValue().toString();
                     String quantity = snapshot.child("quantity").getValue().toString();
-                    String priceProduct = productName + " R "+ price;
-                    //price = "R " + price;
 
                     //Load Elements from DB to product list
                     products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
 
-
-                    /*
-                    final int curr = count;
-                    final String currProductName = productName;
-
-
-                        TableRow tableRow = new TableRow(getContext());
-
-                        // Set new table row layout parameters.
-                        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-                        tableRow.setLayoutParams(layoutParams);
-
-                        // Add a TextView in the first column.
-                        TextView name = new TextView(getContext());
-                        name.setText(productName);
-                        tableRow.addView(name);
-
-                        //Add a an image in the second column which only has a general image  for now
-                        ImageButton button = new ImageButton(getContext());
-                        button.setImageResource(R.drawable.ic_image_black_24dp);
-                        tableRow.addView(button);
-
-                        // Add a TextView in the third column for Price.
-                        TextView aPrice = new TextView(getContext());
-                        aPrice.setText(price);
-                        tableRow.addView(aPrice);
-
-                        //Add a an image in the second column which only has a general image  for now
-                        final ImageButton decreaseButton = new ImageButton(getContext());
-                        decreaseButton.setImageResource(R.drawable.ic_indeterminate_check_box_black_24dp);
-                        decreaseButton.setId(decreaseButtonID);
-                        decreaseButtonID++;
-                        decreaseButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                quantities.set(decreaseButton.getId(),quantities.get(decreaseButton.getId())-1);
-                            }
-                        });
-                        tableRow.addView(decreaseButton);
-
-                        // Add a TextView in the fifth column for Quantity.
-                        TextView aQuantity = new TextView(getContext());
-                        quantities.add(1);
-                        String sQuantity = quantities.get(quantitiesCount++).toString();
-                        aQuantity.setText(sQuantity);
-                        tableRow.addView(aQuantity);
-
-                        //Add a an image in the second column which only has a general image  for now
-                        final ImageButton increaseButton = new ImageButton(getContext());
-                        increaseButton.setImageResource(R.drawable.ic_add_box_black_24dp);
-                        increaseButton.setId(decreaseButtonID);
-                        increaseButtonID++;
-                        increaseButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                quantities.set(increaseButton.getId(),quantities.get(increaseButton.getId())+1);
-                            }
-                        });
-                        tableRow.addView(increaseButton);
-
-                        // Add a button in the second column
-                        ImageButton deleteButton = new ImageButton(getContext());
-                        deleteButton.setImageResource(R.drawable.ic_delete_black_24dp);
-                        deleteButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                myTable.removeViewAt(curr);
-
-                                //CODE THAT REMOVES PRODUCT FROM DB GOES HERE
-                            }
-                        });
-                        tableRow.addView(deleteButton);
-
-
-
-                        myTable.addView(tableRow,count);
-                        //increment counter
-                        count++;
-                        */
                 }
 
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);

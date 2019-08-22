@@ -22,6 +22,9 @@
 package com.example.navigator;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -30,19 +33,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.navigator.utils.Installation;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +65,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
 public class Scan extends Fragment {
+  private StorageReference mStorageRef; //Retrieving images from DB.
   private ZXingScannerView mScannerView;
   private DatabaseReference databaseReference1,databaseReference3,unameref;
   public static TextView resultTextView;
@@ -62,13 +75,16 @@ public class Scan extends Fragment {
   Button addToWishList;
   Button incrementQuantity;
   Button decrementQuantity;
+  public ImageView scanImage;
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
   private DatabaseReference rootRef,demoRef;
   private Product objProduct;
   private DatabaseReference ref;
   int itemQuantity;
-
+  //Retrieve images from DB
+  FirebaseStorage storage = FirebaseStorage.getInstance();
+  StorageReference storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("vaseline_blue_seal.jpg");
     public Scan() {
         // Required empty public constructor
     }
@@ -76,7 +92,10 @@ public class Scan extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+     // mStorageRef = FirebaseStorage.getInstance();//Retrieving From DB
+      //StorageReference storageRef = mStorageRef.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("android.jpg");
+
+      // Inflate the layout for this fragment
       View view = inflater.inflate(R.layout.fragment_scan, container, false);
       resultTextView = (TextView) view.findViewById(R.id.result_text);
       buttonScan = (Button) view.findViewById(R.id.btn_scan);
@@ -86,12 +105,29 @@ public class Scan extends Fragment {
       quantityValue = (EditText) view.findViewById(R.id.edt_Quantity);
       incrementQuantity = (Button) view.findViewById(R.id.btn_Increment_Quantity);
       decrementQuantity = (Button)  view.findViewById(R.id.btn_Decrement_Quantity);
+      scanImage = (ImageView) view.findViewById(R.id.img_scanned_product);
 
       /*
       *   PHONE ID
       * */
       final String deviceId = Installation.id(getContext());
       //Toast.makeText(getContext(),"Your Device ID is: " + deviceId, Toast.LENGTH_LONG).show();
+
+      try {
+        final File localFile = File.createTempFile("images", "jpg");
+        storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+          @Override
+          public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+            Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+            scanImage.setImageBitmap(bitmap);
+
+          }
+        }).addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception exception) {
+          }
+        });
+      } catch (IOException e ) {}
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override

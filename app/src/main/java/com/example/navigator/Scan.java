@@ -84,7 +84,7 @@ public class Scan extends Fragment {
   int itemQuantity;
   //Retrieve images from DB
   FirebaseStorage storage = FirebaseStorage.getInstance();
-  StorageReference storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("vaseline_blue_seal.jpg");
+  StorageReference storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("vaseline_blue_seal.jpg");//remember to remove .child when working
     public Scan() {
         // Required empty public constructor
     }
@@ -154,7 +154,28 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View view) {
           startActivity(new Intent(getContext(),ScanCodeActivity.class));
+
+          //CHECK!
+         /* String barCode = resultTextView.getText().toString();
+          storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(barCode);
+          try {
+            final File localFile = File.createTempFile("images", "jpg");
+            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+              @Override
+              public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                scanImage.setImageBitmap(bitmap);
+
+              }
+            }).addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception exception) {
+              }
+            });
+          } catch (IOException e ) {}*/
         }
+
+
       });
 
 
@@ -176,6 +197,9 @@ public class Scan extends Fragment {
                 String sessionId = resultTextView.getText().toString();
 
                 //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
+
+
+
                 AddProduct(sessionId,itemQuantity);
               }
               else {

@@ -113,18 +113,18 @@ public class MapPoint {
      */
     public MapPoint[] getDirectionsTo(String target_id, int numHops)
     {
-        List<String> hasVisited = new ArrayList<String>();
-        return getDirectionsTo(target_id,numHops, hasVisited);
+
+        return getDirectionsTo(target_id,numHops, this.getId());
     }
 
     /**
      * Recursive function to find a list of MapPoints leading from this MapPoint to a MapPoint with a specified ID
      * @param target_id The ID of the target MapPoint
      * @param numHops The maximum number of times to recur before assuming failure
-     * @param hasVisited A list of IDs that have already been recursed
+     * @param callerID ID of calling point to prevent recursing backwards
      * @return A list of MapPoints between this one and the target, or null on failure
      */
-    private MapPoint[] getDirectionsTo(String target_id, int numHops, List<String> hasVisited)
+    private MapPoint[] getDirectionsTo(String target_id, int numHops, String callerID)
     {
 
         if(target_id.equals(this.id))
@@ -136,19 +136,36 @@ public class MapPoint {
             return null;
         }else
         {
-            if(hasVisited.contains(this.id))
-            {
-//                return null;
-            }else
-            {
-                hasVisited.add(this.id);
-            }
+
+//            if(hasVisited.contains(this.id))
+//            {
+////                return null;
+//            }else
+//            {
+//                hasVisited.add(this.id);
+//            }
+
             MapPoint[][] directions = new MapPoint[points][];
             boolean found = false;
             boolean conflict =false;
             for(int i = 0; i < points; i++)
             {
-                directions[i] = nearby[i].getDirectionsTo(target_id, numHops-1, hasVisited);
+//                System.out.println(hasVisited.toString() + " AT NODE " + this.getName() + " POLLING " + nearby[i].getName());
+//                if(hasVisited.contains(nearby[i].getId()))
+//                {
+//                    directions[i] = null;
+//                }else
+//                {
+//                    directions[i] = nearby[i].getDirectionsTo(target_id, numHops-1, hasVisited);
+//                }
+                if(nearby[i].getId().equals(callerID))
+                {
+                    directions[i] = null;
+                }else
+                {
+                    directions[i] = nearby[i].getDirectionsTo(target_id, numHops-1, this.getId());
+                }
+
                 if(directions[i] != null)
                 {
                     if(found)

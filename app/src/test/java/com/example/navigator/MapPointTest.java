@@ -80,7 +80,9 @@ public class MapPointTest {
     public void getDirectionsTo_GivenTwoPoints_ReturnsDirectionArray()
     {
         MapPoint[] directions = root.getDirectionsTo("2", 10);
+        System.out.println("Test is: getDirectionsTo_GivenTwoPoints_ReturnsDirectionArray");
         System.out.println(MapPoint.flattenDirections(directions));
+        System.out.println("");
         assertWithMessage("NumberPointsFrom Root to Midpoint").that(directions.length).isEqualTo(2);
         assertWithMessage("NextPointFrom Root to Midpoint Index = 0").that(directions[0].getName()).isEqualTo("STARTING POINT");
         assertWithMessage("NextPointFrom Root to Midpoint Index = 1").that(directions[1].getName()).isEqualTo("MIDPOINT");
@@ -90,8 +92,10 @@ public class MapPointTest {
     public void getDirectionsTo_GivenThreePointsWithLongCircuit_ReturnsDirectionArray()
     {
         MapPoint[] directions = root.getDirectionsTo("6", 10);
+        System.out.println("Test is: getDirectionsTo_GivenThreePointsWithLongCircuit_ReturnsDirectionArray");
         System.out.println("Directions to 6 :" + MapPoint.flattenDirections(directions));
-        System.out.println(root.getNearbyLocations());
+//        System.out.println(root.getNearbyLocations());
+        System.out.println("");
         assertWithMessage("NumberPointsFrom Root to Little Further").that(directions.length).isEqualTo(3);
         assertWithMessage("NextPointFrom Root to Little Further Index = 0").that(directions[0].getName()).isEqualTo("STARTING POINT");
         assertWithMessage("NextPointFrom Root to Little Further Index = 1").that(directions[1].getName()).isEqualTo("MIDPOINT");
@@ -101,8 +105,10 @@ public class MapPointTest {
     public void getDirectionsTo_GivenFivePoints_ReturnsDirectionArray()
     {
         MapPoint[] directions = root.getDirectionsTo("5", 10);
+        System.out.println("Test is: getDirectionsTo_GivenFivePoints_ReturnsDirectionArray");
         System.out.println("Directions to 5 :" + MapPoint.flattenDirections(directions));
-        System.out.println(root.getNearbyLocations());
+//        System.out.println(root.getNearbyLocations());
+        System.out.println("");
         assertWithMessage("NumberPointsFrom Root to Point B").that(directions.length).isEqualTo(6);
         assertWithMessage("NextPointFrom Root to Point B Index = 0").that(directions[0].getName()).isEqualTo("STARTING POINT");
         assertWithMessage("NextPointFrom Root to Point B Index = 1").that(directions[1].getName()).isEqualTo("MIDPOINT");
@@ -121,8 +127,12 @@ public class MapPointTest {
     @Test
     public void getDirectionsTo_GivenFullTree_ReturnsDirectionArray()
     {
-        MapPoint[] directions = end.getDirectionsTo("30", 10);
-        assertWithMessage("Directions to 30 are null").that(directions).isEqualTo(null);
+        MapPoint[] directions = end.getDirectionsTo("10", 10);
+        System.out.println("Test is: getDirectionsTo_GivenFullTree_ReturnsDirectionArray");
+        System.out.println("Directions to 10 :" + MapPoint.flattenDirections(directions));
+//        System.out.println(end.getNearbyLocations());
+        System.out.println("");
+        assertWithMessage("Directions to 10 contains 8 nodes").that(directions.length).isEqualTo(8);
 
     }
     @Test

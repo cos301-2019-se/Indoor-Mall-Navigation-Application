@@ -582,6 +582,13 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         ((TextView)rootView.findViewById(R.id.check_point_label)).setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
 
+        for (int i = 0; i < MainActivity.map.length; i++)
+        {
+            if(MainActivity.map[i].getName().equals(selectedShop))
+            {
+//                compassView.setBearing();
+            }
+        }
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
 

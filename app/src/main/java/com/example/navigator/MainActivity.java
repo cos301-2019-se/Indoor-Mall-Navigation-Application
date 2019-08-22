@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     private RelativeLayout mContainer;
     public MixpanelAPI mixpanel;
     public BottomNavigationView bottomNavigationView;
+    public static MapPoint[] map = null;
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         DatabaseConn.open(new FirebaseConn());
-        buildTestMap();
+        map = buildTestMap();
         setContentView(R.layout.activity_main);
 
         final String GO_TO = getIntent().getStringExtra("GO_TO");
@@ -331,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         } catch (RemoteException e) {    }
     }
 
-    private void buildTestMap()
+    private MapPoint[] buildTestMap()
     {
         DatabaseConn data = DatabaseConn.open();
         data.truncate("Map");
@@ -383,6 +384,18 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         root.addTwoWayPoint(little_further, 30.6, 180);
 
         data.insert("Map", root);
+        data.insert("Map", almost_there);
+        data.insert("Map", not_quite);
+        data.insert("Map", midpoint);
+        data.insert("Map", little_further);
+        data.insert("Map", end);
+        data.insert("Map", another_point);
+        data.insert("Map", point_a);
+        data.insert("Map", point_b);
+        data.insert("Map", point_c);
+        data.insert("Map", point_d);
+        MapPoint[] mapList = {root, almost_there, not_quite, midpoint, little_further, end, another_point, point_a, point_b, point_c, point_d};
+        return mapList;
     }
 
 

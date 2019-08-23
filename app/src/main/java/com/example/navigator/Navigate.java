@@ -63,6 +63,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -132,11 +133,14 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private String TAG = "NavigationFragment";
     private NavigationFragmentInteractionListener mListener;
     private View rootView;
+    private ImageView green_dot;
     private FrameLayout arContentOverlay = null;
     private Double currentLat;
     private Double currentLong;
     private Handler handler = new Handler();
     private Button navigateButton = null;
+    private MapPoint[] directions = null;
+    private Beacon nearestBeacon = null;
     private BeaconManager beaconManager;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private SensorManager mSensorManager;
@@ -282,6 +286,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         mSensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
         accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        green_dot = rootView.findViewById(R.id.greenDot);
 
         if (ContextCompat.checkSelfPermission( getContext() ,android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
         {
@@ -478,6 +483,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     }
 
+    private void setNearestBeacon(Beacon beacon)
+    {
+        nearestBeacon = beacon;
+    }
+
 
     private void assignClickListeners()
     {
@@ -586,17 +596,43 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         ((TextView)rootView.findViewById(R.id.check_point_label)).setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
 
-        for (int i = 0; i < map.length; i++)
-        {
-            if(map[i].getName().equals(selectedShop))
-            {
+
+        if(nearestBeacon != null) {
+            Toast.makeText(getContext(),"Nearest Beacon Found", Toast.LENGTH_LONG).show();
+
+            for (int i = 0; i < map.length; i++) {
+                if (map[i].getName().equals(selectedShop)) {
 //                compassView.setBearing();
+                    for (int j = 0; j < map.length; j++) {
+                        if (map[j].getId().equals(nearestBeacon.getId1().toString())) {
+                            directions = map[j].getDirectionsTo(map[i].getId(), 4);
+
+                        }
+                    }
+                }
             }
+        }
+        else{
+            Toast.makeText(getContext(),"Nearest Beacon not Found", Toast.LENGTH_LONG).show();
         }
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
 
         initializeBeaconDistance();
+    }
+
+    private void setNextBeacon(MapPoint currPoint, MapPoint nextPoint){
+        compassView.setBearing((float) currPoint.getBearingTo(nextPoint.getId()));
+    }
+
+    private void popDirection(){
+        MapPoint[] newArray = new MapPoint[directions.length-1];
+
+        for (int i = 1; i < directions.length; i++) {
+            newArray[i-1] = directions[i];
+        }
+
+        directions = newArray;
     }
 
     private void shareGeneral() {
@@ -703,7 +739,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
 
 
-        float accelX;
+        /*float accelX;
         float accelY;
         float accelZ;
         float gyroX;
@@ -780,7 +816,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         }
 
         updateTextDirection(bearing); // display text direction on screen
-
+*/
 
 
     }
@@ -917,28 +953,41 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                 @Override
                 public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                     if (beacons.size() > 0) {
-                        Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
 
-                        Beacon nearestBeacon = beacons.iterator().next();
+
+//                        nearestBeacon = beacons.iterator().next();
+
+
                         Beacon currBeacon;
                         String beconsStr = "";
+
+                        beaconsInRange.clear();
 
                         Iterator iterator = beacons.iterator();
                         while (iterator.hasNext()) {
                             currBeacon = (Beacon) iterator.next();
                             //System.out.println(iterator.next());
+                            beaconsInRange.add(currBeacon);
                             beconsStr = beconsStr + " " + currBeacon.getDistance();
 
-                            if(nearestBeacon.getDistance() > currBeacon.getDistance()){
-                                nearestBeacon = currBeacon;
+
+                        }
+
+                        setNearestBeacon(beaconsInRange.get(0));
+                        Log.i(TAG, "The first beacon I see is about "+nearestBeacon.getDistance()+" meters away.");
+                        green_dot.setVisibility(View.VISIBLE);
+                        for (int i = 1; i < beaconsInRange.size(); i++) {
+                            if(nearestBeacon.getDistance() > beaconsInRange.get(i).getDistance()){
+                                setNearestBeacon(beaconsInRange.get(i));
                             }
                         }
 
-                        Toast.makeText(getContext(),"Beacons: " + beconsStr + "Nearest beacon: " + nearestBeacon.getDistance(), Toast.LENGTH_LONG).show();
-                        
+                        green_dot.setVisibility(View.VISIBLE);
+//                        Toast.makeText(getContext(),"Beacons: " + beconsStr + "Nearest beacon ID: " + nearestBeacon.getId1().toString(), Toast.LENGTH_LONG).show();
 
 
-                        double distance = beacons.iterator().next().getDistance();
+
+                        double distance = nearestBeacon.getDistance();
                         final String distance_str = df2.format(distance) + "m";
 
 
@@ -948,19 +997,24 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
                         ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText(distance_str);
 
-                        String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();
-                        String beaconName = beacons.iterator().next().getBluetoothAddress();
-                        if(bluetoothAddress.equals("51:0D:6F:72:E6:A0")){
-                            beaconName = "Edgars";
-                        }
-                        else if (bluetoothAddress.equals("72:92:CF:8E:05:68")){
-                            beaconName = "Spitz";
-                        }
-                        String distanceLabel = "Distance from " + beaconName;
+//                        String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();
+
+                        String distanceLabel = "Distance from " + nearestBeacon.getId1().toString();
                         ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
 
-                        if(distance < 1.00){
-                            reachedDestination();
+                        if(directions != null) {
+                            if (nearestBeacon.getId1().toString().equals(directions[directions.length - 1].getId())) {
+                                if (distance <= 0.20) {
+                                    reachedDestination();
+                                }
+                            } else if (nearestBeacon.getId1().toString().equals(directions[0].getId())) {
+                                if (distance <= 0.20) {
+                                    popDirection();
+                                    if (directions.length > 1) {
+                                        setNextBeacon(directions[0], directions[1]);
+                                    }
+                                }
+                            }
                         }
 
                         Log.i(TAG,distance_str);

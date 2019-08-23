@@ -1,6 +1,9 @@
 package com.example.navigator.utils;
 
+import com.google.android.gms.common.util.ArrayUtils;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -283,7 +286,7 @@ public class MapPoint {
      * @param targetID The ID to be checked for
      * @return The bearing to the target, -1 if the target doesn't exist
      */
-    public double bearingTo(String targetID)
+    public double getBearingTo(String targetID)
     {
         for(int i = 0; i < points; i++)
         {
@@ -320,6 +323,37 @@ public class MapPoint {
     public String toString()
     {
         return "[Name: " + name + ", ID: " + id + "]";
+    }
+
+    public List<String> getNearby() {
+        List<String> flattened = new ArrayList<String>();
+        for(int i = 0; i < nearby.length; i++)
+        {
+            flattened.add(nearby[i].getId());
+        }
+        return flattened;
+    }
+
+    public List<Double> getDistancesNearby() {
+        Double[] distanceDoubles = new Double[distancesNearby.length];
+        for (int i = 0; i < distancesNearby.length; i++)
+        {
+            distanceDoubles[i] = distancesNearby[i];
+        }
+        return Arrays.asList(distanceDoubles);
+    }
+//
+    public List<Double> getBearingNearby() {
+        Double[] bearingDoubles = new Double[bearingNearby.length];
+        for (int i = 0; i < bearingNearby.length; i++)
+        {
+            bearingDoubles[i] = bearingNearby[i];
+        }
+        return Arrays.asList(bearingDoubles);
+    }
+
+    public int getPoints() {
+        return points;
     }
 
     public String getNearbyLocations()

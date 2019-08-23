@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         DatabaseConn.open(new FirebaseConn());
-        map = buildTestMap();
+        map = buildMiniMap();
         setContentView(R.layout.activity_main);
 
         final String GO_TO = getIntent().getStringExtra("GO_TO");
@@ -395,6 +395,24 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         data.insert("Map", point_c);
         data.insert("Map", point_d);
         MapPoint[] mapList = {root, almost_there, not_quite, midpoint, little_further, end, another_point, point_a, point_b, point_c, point_d};
+        return mapList;
+    }
+
+    private MapPoint[] buildMiniMap()
+    {
+        DatabaseConn data = DatabaseConn.open();
+        data.truncate("Map");
+
+        MapPoint CNA, woolworths, pnp;
+
+        CNA = new MapPoint("CNA", "00f0c1d6-7539-4ca7-b676-2b9a1e352f24");
+        woolworths = new MapPoint("Woolworths", "921c9579-7b31-461e-97d7-404ac4877816");
+        pnp = new MapPoint("Pick 'n Pay", "9308d5ab-d583-4af1-97ac-5a3caa14a133");
+
+        CNA.addTwoWayPoint(woolworths, 2.0, 90);
+        woolworths.addTwoWayPoint(pnp, 4, 180);
+        MapPoint[] mapList = {CNA, woolworths, pnp};
+        data.insert("Map", mapList);
         return mapList;
     }
 

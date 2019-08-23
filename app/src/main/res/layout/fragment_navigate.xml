@@ -37,16 +37,16 @@
             android:id="@+id/searchView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/navigate_button"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_marginEnd="10dp"
-            android:iconifiedByDefault="false"
-            android:focusableInTouchMode="true"
+            android:layout_marginBottom="10dp"
             android:focusable="false"
-            android:queryHint="Search..."
-            android:layout_above="@+id/navigate_button"/>
+            android:focusableInTouchMode="true"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search..." />
 
         <ListView
             android:layout_width="match_parent"

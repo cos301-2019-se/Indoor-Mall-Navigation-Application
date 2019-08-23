@@ -508,8 +508,16 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         rootView.findViewById(R.id.stop_button).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                onResume();
-                navigateButton.setVisibility(View.GONE);
+
+                rootView.findViewById(R.id.instructions_container).setVisibility(View.VISIBLE);
+                rootView.findViewById(R.id.arrived_at_destination).setVisibility(View.GONE);
+                rootView.findViewById(R.id.ar_container).setVisibility(View.GONE);
+                rootView.findViewById(R.id.camera_frame).setVisibility(View.GONE);
+                rootView.findViewById(R.id.ar_content_overlay).setVisibility(View.GONE);
+
+
+                listView.setVisibility(View.VISIBLE);
+                navigateButton.setVisibility(View.INVISIBLE);
                 return false;
             }
         });

@@ -134,6 +134,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private NavigationFragmentInteractionListener mListener;
     private View rootView;
     private ImageView green_dot;
+    private ImageView arrowView;
     private FrameLayout arContentOverlay = null;
     private Double currentLat;
     private Double currentLong;
@@ -158,6 +159,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             android.Manifest.permission.CAMERA
     };
     private ArrayList<Beacon> beaconsInRange = new ArrayList<>();
+    private double bearing;
+    private double distance;
 
 
     final Runnable distanceFromBeaconProcess = new Runnable() {
@@ -288,6 +291,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         green_dot = rootView.findViewById(R.id.greenDot);
+        arrowView = rootView.findViewById(R.id.arrow);
+
 
         if (ContextCompat.checkSelfPermission( getContext() ,android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
         {
@@ -653,6 +658,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             updateTargetBeacon(newTarget);
         }
         compassView.setBearing((float) currPoint.getBearingTo(nextPoint.getId()));
+        arrowView.setRotation((float) (currPoint.getBearingTo(nextPoint.getId()) + trueNorth));
+        updateTextDirection((float) (currPoint.getBearingTo(nextPoint.getId()) + trueNorth));
     }
 
     private void updateTargetBeacon(Beacon target)
@@ -808,7 +815,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
 
 
-        /*float accelX;
+        float accelX;
         float accelY;
         float accelZ;
         float gyroX;
@@ -859,7 +866,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         // get bearing to target
         SensorManager.getOrientation(rotation, orientation);
         // east degrees of true North
-        double bearing = orientation[0];
+        bearing = orientation[0];
 
         //angleLowpassFilter.add((float) bearing);
 
@@ -884,8 +891,29 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             compassView.postInvalidate();
         }
 
-        updateTextDirection(bearing); // display text direction on screen
-*/
+        //updateTextDirection(bearing); // display text direction on screen
+
+        if(directions != null) {
+//                            Toast.makeText(getContext(),"Directions: " + MapPoint.flattenDirections(directions), Toast.LENGTH_LONG).show();
+
+            if (nearestBeacon.getId1().toString().equals(directions[directions.length - 1].getId())) {
+                if (distance <= 0.40) {
+                    reachedDestination();
+                }
+            } else if (nearestBeacon.getId1().toString().equals(directions[0].getId())) {
+                if (distance <= 0.40) {
+
+                    if (directions.length > 1) {
+                        setNextBeacon(directions[0], directions[1], bearing);
+                        Toast.makeText(getContext(),"Beacons set to: "+ directions[0].getName() + " => " + directions[1].getName(), Toast.LENGTH_LONG).show();
+                        popDirection();
+
+                    }
+//                                    Toast.makeText(getContext(),"POP DIRECTION!!!", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        }
 
 
     }
@@ -1081,7 +1109,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                                 if (distance <= 0.20) {
 
                                     if (directions.length > 1) {
-                                        setNextBeacon(directions[0], directions[1]);
+                                        setNextBeacon(directions[0], directions[1], bearing);
                                         Toast.makeText(getContext(),"Beacons set to: "+ directions[0].getName() + " => " + directions[1].getName(), Toast.LENGTH_LONG).show();
                                         popDirection();
 

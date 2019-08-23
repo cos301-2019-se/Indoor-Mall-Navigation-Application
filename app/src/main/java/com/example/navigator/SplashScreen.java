@@ -23,26 +23,63 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.felipecsl.gifimageview.library.GifImageView;
+
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class SplashScreen extends AppCompatActivity {
 
     ProgressBar progressBar2;
+    private GifImageView gifImageView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        progressBar2 = (ProgressBar) findViewById(R.id.progressBar2);
+       // progressBar2 = (ProgressBar) findViewById(R.id.progressBar2);
+        gifImageView = (GifImageView) findViewById(R.id.gifImageView);
 
-        ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        try {
+            InputStream inputstream = getAssets().open("giphy.gif");
+            byte[] bytes = IOUtils.toByteArray(inputstream);
+            gifImageView.setBytes(bytes);
+            gifImageView.startAnimation();
+        }
+        catch (IOException e){
+
+        }
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //SplashScreen.this.startActivity(SplashScreen.this,MainActivity.class);
+                startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                SplashScreen.this.finish();
+
+            }
+        },5000);
+
+    }
+}
+
+//Previous One
+
+      /*  ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
         final boolean connected = networkinfo != null && networkinfo.isAvailable() && networkinfo.isConnected();
         Log.v("Network state : ", connected + "");
@@ -84,12 +121,7 @@ public class SplashScreen extends AppCompatActivity {
             }
         };
         splashThread.start();
-
-    }
-
-}
-
-
+*/
 
 
 

@@ -11,7 +11,15 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <ImageView
+        <com.felipecsl.gifimageview.library.GifImageView
+        android:id="@+id/gifImageView"
+        android:scaleType="fitXY"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        />
+
+     <!--   <ImageView
             android:id="@+id/imageView"
             android:layout_width="250dp"
             android:layout_height="250dp"
@@ -19,18 +27,18 @@
             android:src="@drawable/logo"
             android:layout_marginTop="52dp"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true" /> -->
 
-        <ProgressBar
+    <!--    <ProgressBar
             android:id="@+id/progressBar2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="2"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal ="true"
+            android:layout_marginBottom="100dp"
+            android:layout_weight="1"
             style="@android:style/Widget.DeviceDefault.ProgressBar.Large"
-            android:layout_marginTop="25dp"
-            android:layout_below="@+id/imageView"
-            android:layout_centerHorizontal="true" />
+            android:layout_marginTop="25dp" />  -->
 
 
     </RelativeLayout>

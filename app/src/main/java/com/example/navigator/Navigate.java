@@ -651,15 +651,18 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private void setNextBeacon(MapPoint currPoint, MapPoint nextPoint){
         Log.d(TAG, "setNextBeacon: Setting nav from " + currPoint.toString() + " to " + nextPoint.toString());
         Beacon newTarget = getBeaconFromRange(nextPoint.getId());
-        if(newTarget != null)
-        {
+        if(newTarget != null) {
             Log.d(TAG, "setNextBeacon: newTarget: " + getMapPointName(newTarget.getId1().toString()));
             Log.d(TAG, "setNextBeacon: Setting distance");
             updateTargetBeacon(newTarget);
         }
+    }
+
+    private void setNextBeacon(MapPoint currPoint, MapPoint nextPoint, double trueNorth){
         compassView.setBearing((float) currPoint.getBearingTo(nextPoint.getId()));
         arrowView.setRotation((float) (currPoint.getBearingTo(nextPoint.getId()) + trueNorth));
         updateTextDirection((float) (currPoint.getBearingTo(nextPoint.getId()) + trueNorth));
+        setNextBeacon(currPoint,nextPoint);
     }
 
     private void updateTargetBeacon(Beacon target)

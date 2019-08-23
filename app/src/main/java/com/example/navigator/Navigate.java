@@ -95,8 +95,11 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
+import static com.example.navigator.MainActivity.map;
 
 
 /**
@@ -149,6 +152,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA
     };
+    private ArrayList<Beacon> beaconsInRange = new ArrayList<>();
 
 
     final Runnable distanceFromBeaconProcess = new Runnable() {
@@ -582,9 +586,9 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         ((TextView)rootView.findViewById(R.id.check_point_label)).setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
 
-        for (int i = 0; i < MainActivity.map.length; i++)
+        for (int i = 0; i < map.length; i++)
         {
-            if(MainActivity.map[i].getName().equals(selectedShop))
+            if(map[i].getName().equals(selectedShop))
             {
 //                compassView.setBearing();
             }
@@ -915,8 +919,33 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                     if (beacons.size() > 0) {
                         Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
 
+                        Beacon nearestBeacon = beacons.iterator().next();
+                        Beacon currBeacon;
+                        String beconsStr = "";
+
+                        Iterator iterator = beacons.iterator();
+                        while (iterator.hasNext()) {
+                            currBeacon = (Beacon) iterator.next();
+                            //System.out.println(iterator.next());
+                            beconsStr = beconsStr + " " + currBeacon.getDistance();
+
+                            if(nearestBeacon.getDistance() > currBeacon.getDistance()){
+                                nearestBeacon = currBeacon;
+                            }
+                        }
+
+                        Toast.makeText(getContext(),"Beacons: " + beconsStr + "Nearest beacon: " + nearestBeacon.getDistance(), Toast.LENGTH_LONG).show();
+                        
+
+
                         double distance = beacons.iterator().next().getDistance();
                         final String distance_str = df2.format(distance) + "m";
+
+
+                        //String id = beacons.iterator().next().getId1().toString();
+                        //Toast.makeText(getContext(),"ID: " + id, Toast.LENGTH_LONG).show();
+
+
                         ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText(distance_str);
 
                         String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();

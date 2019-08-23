@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapters.CartProductListAdapter;
+import adapters.WishListAdapter;
 import entities.CartProduct;
 
 
@@ -192,9 +193,9 @@ public class Wishlist extends Fragment {
                     count++;*/
                 }
 
-                CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);
+                WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);
 
-                listWLViewProduct.setAdapter(productListAdapter);
+                listWLViewProduct.setAdapter(wlProductListAdapter);
 
             }
 

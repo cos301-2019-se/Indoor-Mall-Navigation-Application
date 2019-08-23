@@ -23,6 +23,8 @@ package com.example.navigator;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -43,6 +45,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.navigator.utils.Installation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,7 +53,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.cert.PolicyNode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -77,9 +85,12 @@ public class Cart extends Fragment {
     TextView demoValue;
     ListView cartList;
 
+    //Retrieve Images from FirebaseStorage
+
+
+
     DatabaseReference rootRef,demoRef;
     public Cart() {
-        // Required empty public constructor
     }
 
     private void listViewProduct_onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -115,6 +126,8 @@ public class Cart extends Fragment {
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
 
 
+
+
         //final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -130,9 +143,10 @@ public class Cart extends Fragment {
                     String price = snapshot.child("price").getValue().toString();
                     String id = snapshot.child("id").getValue().toString();
                     String quantity = snapshot.child("quantity").getValue().toString();
+                    String imageName = snapshot.child("imageName").getValue().toString();
 
                     //Load Elements from DB to product list
-                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
+                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1, imageName));
 
                 }
 

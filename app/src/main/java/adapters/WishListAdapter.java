@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.navigator.Product;
 import com.example.navigator.R;
+import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.Installation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,7 +39,8 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
     //Get device ID
     final String deviceId = Installation.id(getContext());
 
-    DatabaseReference tempDBRef = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+    DatabaseReference cartDBRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+    DatabaseReference wishDBRef = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
     //Query myQuery = tempDBRef.orderByChild("id").equalTo(false);
 
 
@@ -55,9 +57,11 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         if (view == null) {
             viewHolder = new ViewHolder();
             view = LayoutInflater.from(context).inflate(wish_list_product_layout, parent, false);
-            viewHolder.textViewName = view.findViewById(R.id.textViewName);
-            viewHolder.textViewPrice = view.findViewById(R.id.textViewPrice);
-            viewHolder.imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
+            viewHolder.textViewName = view.findViewById(R.id.textViewNameWL);
+            viewHolder.textViewPrice = view.findViewById(R.id.textViewPriceWL);
+            viewHolder.imageViewPhoto = view.findViewById(R.id.imageViewPhotoWL);
+            viewHolder.deleteFromWL = view.findViewById(R.id.deleteWishListItem);
+            viewHolder.addToCart = view.findViewById(R.id.addToCart);
 
             view.setTag(viewHolder);
         } else {
@@ -69,13 +73,91 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         viewHolder.textViewPrice.setText("R " + product.getPrice());
         viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
 
+
+        final CartProduct currProduct = products.get(position);
+
+        viewHolder.deleteFromWL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Query myQuery = wishDBRef.orderByChild("id").equalTo(product.getId());
+
+                myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for(DataSnapshot dataSnap : dataSnapshot.getChildren())
+                        {
+                            String toDelete = dataSnap.getKey();
+                            DatabaseConn data = DatabaseConn.open();
+                            Toast.makeText(getContext(),product.getName()+ " removed from Wishlist", Toast.LENGTH_LONG).show();
+                            data.delete("Wishlist",deviceId+"/"+toDelete);
+                        }
+
+                        removeFromList(currProduct);
+
+                    }
+
+
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+        viewHolder.addToCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cartDBRef.push().setValue(product);
+                Toast.makeText(getContext(),product.getName()+ " added to Cart. ", Toast.LENGTH_LONG).show();
+
+                //Remove from Wishlist
+                Query myQuery = wishDBRef.orderByChild("id").equalTo(product.getId());
+
+                myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for(DataSnapshot dataSnap : dataSnapshot.getChildren())
+                        {
+                            String toDelete = dataSnap.getKey();
+                            DatabaseConn data = DatabaseConn.open();
+                            Toast.makeText(getContext(),product.getName()+ " removed from Wishlist", Toast.LENGTH_LONG).show();
+                            data.delete("Wishlist",deviceId+"/"+toDelete);
+                        }
+
+                        removeFromList(currProduct);
+
+                    }
+
+
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
         return view;
     }
+
+    private void removeFromList(CartProduct cp) {
+        int position = products.indexOf(cp);
+        products.remove(position);
+        notifyDataSetChanged();
+    }
+
 
     private static class ViewHolder {
         public static TextView textViewName;
         public static TextView textViewPrice;
         public static ImageView imageViewPhoto;
+        public static Button deleteFromWL;
+        public static Button addToCart;
 
     }
 }

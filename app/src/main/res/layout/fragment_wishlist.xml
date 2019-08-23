@@ -10,29 +10,7 @@
         android:layout_width="fill_parent" android:background="@color/white">
 
 
-        <!--<TextView
-            android:id="@+id/TextView01"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:textColorHint="@color/black"
-            android:textColor="@color/black"
-            android:textSize="24dip"
-            android:layout_margin="5dip"
-            android:layout_gravity="center"
-            android:text="WishList"
-            >
-        </TextView>-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/GrandTotal"
-            android:textSize="20dip"
-            android:background="@color/white"
-            android:textColorHint="@color/black"
-            android:textColor="@color/black"
-            android:layout_gravity="right"/>
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -40,99 +18,20 @@
             android:layout_gravity="center"
             android:orientation="vertical">
 
-            <!-- Removed from TableLayout
-                android:layout_above="@+id/textView"
-                android:layout_below="@+id/TextView01"
-            <TableLayout
-                android:id="@+id/myTableLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="503dp"
-                android:layout_weight="0.28"
-                android:clickable="true"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:paddingLeft="@dimen/activity_vertical_margin"
-                android:paddingRight="@dimen/activity_vertical_margin"
-                android:stretchColumns="*">
-
-
-                <TableRow
-                    android:id="@+id/tablerow1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
-
-                    <TextView
-                        android:id="@+id/textView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/white"
-                        android:text="Products"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/black"
-                        android:textSize="20dip" />
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/white"
-                        android:text="Unit Value"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/black"
-                        android:textSize="20dip" />-->
-
-
-                    <!--<TextView
-                        android:id="@+id/textView4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/white"
-                        android:text="Item Price"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/black"
-                        android:textSize="20dip" />
-
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="20dip"
-                        android:background="@color/white"
-                        android:textColorHint="@color/black"
-                        android:textColor="@color/black"/>
-
-
-                </TableRow>
-            </TableLayout>-->
-            <!--
             <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+                android:id="@+id/TextView01"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/fetch"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="78dp"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:layout_marginEnd="74dp"
-                android:layout_marginBottom="10dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="5dip"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="5dip"
                 android:background="@color/white"
-                android:text="Click the product to do changes in Cart"
+                android:text=""
+                android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="15dip" />
-            -->
-
-
-
-            <!-- Removed from Textview
-                android:layout_below="@+id/btnFetch"
-            -->
+                android:textColorHint="@color/black"
+                android:textSize="24dip"></TextView>
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
@@ -142,10 +41,10 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="0dp"
-                android:layout_marginTop="-37dp"
+                android:layout_marginTop="-36dp"
                 android:layout_marginEnd="0dp"
                 android:orientation="vertical"
-                tools:context=".Cart">
+                tools:context=".Wishlist">
 
                 <ListView
                     android:id="@+id/listWLViewProduct"

@@ -33,7 +33,7 @@
                     android:scaleType="fitStart">
 
                     <ImageView
-                        android:id="@+id/imageViewPhoto"
+                        android:id="@+id/imageViewPhotoWL"
                         android:layout_width="65dp"
                         android:layout_height="79dp"
                         android:layout_marginRight="5dp"
@@ -46,17 +46,7 @@
 
                 </LinearLayout>
 
-                <!--
 
-                    <TextView
-                        android:id="@+id/textViewName"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.2"
-                        android:textStyle="bold"
-                        android:text="'Product Name'"/>
-
-                -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -64,7 +54,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/textViewName"
+                        android:id="@+id/textViewNameWL"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
@@ -77,8 +67,8 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="78dp"
-                            android:layout_height="wrap_content"
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
                             android:layout_marginTop="2dp"
                             android:layout_weight="1"
                             android:orientation="vertical">
@@ -91,9 +81,9 @@
                                 android:layout_height="10dp" />
 
                             <TextView
-                                android:id="@+id/textViewPriceLabel"
+                                android:id="@+id/textViewPriceLabelWL"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:text="Unit Price:"/>
 
 
@@ -110,7 +100,7 @@
                                 android:layout_height="10dp" />
 
                             <TextView
-                                android:id="@+id/textViewPrice"
+                                android:id="@+id/textViewPriceWL"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="R 0.00"/>
@@ -133,7 +123,7 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="120dp"
+                            android:layout_width="100dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
@@ -149,16 +139,16 @@
                                 android:orientation="horizontal">
 
                                 <Button
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
+                                    android:layout_width="35dp"
+                                    android:layout_height="35dp"
                                     android:layout_marginLeft="1dp"
                                     android:background="@drawable/ic_shopping_cart_black_24dp"
                                     android:id="@+id/addToCart"
                                     />
                                 <Button
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    android:layout_marginLeft="20dp"
+                                    android:layout_width="35dp"
+                                    android:layout_height="35dp"
+                                    android:layout_marginLeft="10dp"
                                     android:background="@drawable/ic_delete_black_24dp"
                                     android:id="@+id/deleteWishListItem"/>
 

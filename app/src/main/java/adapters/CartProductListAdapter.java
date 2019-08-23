@@ -1,6 +1,9 @@
 package adapters;
 
 import entities.CartProduct;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import android.content.Context;
@@ -21,12 +26,17 @@ import com.example.navigator.Product;
 import com.example.navigator.R;
 import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.Installation;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import static com.example.navigator.R.layout.cart_product_list_layout;
 
@@ -35,14 +45,14 @@ import static com.example.navigator.R.layout.cart_product_list_layout;
 public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
     private Context context;
     private List<CartProduct> products;
-    private ListView cartListView;
+
 
     //Get device ID
     final String deviceId = Installation.id(getContext());
 
     DatabaseReference cartDBRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
     DatabaseReference wishDBRef = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
-
+    FirebaseStorage storage = FirebaseStorage.getInstance();
 
 
     public CartProductListAdapter(Context context, List<CartProduct> products) {
@@ -67,6 +77,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             viewHolder.incrementQuantity = view.findViewById(R.id.incrementQuantity);
             viewHolder.decrementQuantity = view.findViewById(R.id.decrementQuantity);
             viewHolder.deleteCartProduct = view.findViewById(R.id.deleteCartItem);
+            viewHolder.addToWishList = view.findViewById(R.id.addToWishlist);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -78,6 +89,32 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.textViewPrice.setText("R " + product.getPrice());
         viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
         viewHolder.totalPrice.setText(product.getTotalPrice());
+
+        CartProduct currCartProduct = new CartProduct();
+
+        try{
+            final File localFile = File.createTempFile("images","jpg");
+            StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(product.getId()+".jpeg");
+
+
+
+            imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    viewHolder.imageViewPhoto.setImageBitmap(bitmap);
+                    //Toast.makeText(getContext(),"Local File name: " + localFile.getName() + " image name "+ product.getImageName() , Toast.LENGTH_LONG).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //Increasing Quantity through button
         viewHolder.incrementQuantity.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +143,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 };
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
 
-                //Toast.makeText(getContext(),"Item deleted from Wish list", Toast.LENGTH_LONG).show();
+
             }
         });
 
@@ -137,20 +174,19 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 };
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
 
-                //HashMap<String, Object> update = new HashMap<>();
-                //update.put("/" + product.getId(), product.getQuantity());
-                //tempDBRef.updateChildren(update);
+                notifyDataSetChanged();
+
+
             }
         });
 
-        final View finalView = view;
-        int currPosition = position;
+
         final CartProduct currProduct = products.get(position);
 
         viewHolder.deleteCartProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //products.remove(products.get(position));
+
 
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
@@ -162,7 +198,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         {
                             String toDelete = dataSnap.getKey();
                             DatabaseConn data = DatabaseConn.open();
-                            //Toast.makeText(getContext(),deviceId + ", " + toDelete, Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(),product.getName()+ " removed from Cart ", Toast.LENGTH_LONG).show();
                             data.delete("Cart",deviceId+"/"+toDelete);
                         }
 
@@ -181,20 +217,45 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
 
 
-                /*ValueEventListener valueEventListener = new ValueEventListener() {
+
+            }
+        });
+
+        viewHolder.addToWishList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wishDBRef.push().setValue(product);
+                Toast.makeText(getContext(),product.getName()+ " added to WishList ", Toast.LENGTH_LONG).show();
+
+                Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
+
+                myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                        for(DataSnapshot dataSnap : dataSnapshot.getChildren())
+                        {
+                            String toDelete = dataSnap.getKey();
+                            DatabaseConn data = DatabaseConn.open();
+                            Toast.makeText(getContext(),product.getName()+ " removed from Cart ", Toast.LENGTH_LONG).show();
+                            data.delete("Cart",deviceId+"/"+toDelete);
+                        }
+
+                        removeFromList(currProduct);
+
                     }
+
+
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
-                };
-                myQuery.addListenerForSingleValueEvent(valueEventListener);*/
+                });
             }
         });
+
+
 
 
         return view;
@@ -215,5 +276,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         public static Button incrementQuantity;
         public static Button decrementQuantity;
         public static Button deleteCartProduct;
+        public static Button addToWishList;
     }
 }

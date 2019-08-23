@@ -237,27 +237,23 @@ public class Scan extends Fragment {
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("9780842371513")){
-        objProduct = new Product("9780842371513","Reading Book",59.99,itemQty);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9781936141364")){
-        objProduct = new Product("9781936141364","Another Reading Book",99.99,itemQty);
+        objProduct = new Product("9780842371513","Through Gates of Splendor - E.E",59.99,itemQty, "through_gates_of_splendor.jpg");
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("6009677500053")){
-        objProduct = new Product("6009677500053","Bene Water",9.99,itemQty);
+        objProduct = new Product("6009677500053","Bene Water",9.99,itemQty, "bene_water.jpg");
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("9781433506321")){
-        objProduct = new Product("9781433506321","Don't Waste Your Life",74.99,itemQty);
+        objProduct = new Product("9781433506321","Don't Waste Your Life - J.P",74.99,itemQty, "dont-t-waste-your-life.jpg");
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("9780805016888")){
-        objProduct = new Product("9780805016888","A & E",49.99,itemQty);
+        objProduct = new Product("9780805016888","Asthma & Exercise - N.G",49.99,itemQty, "asthma_and_excercise.jpg");
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("9781259080791")){
-        objProduct = new Product("9781259080791","OO Software Eng",849.99,itemQty);
+        objProduct = new Product("9781259080791","OO Software Engineering - D.C.K",849.99,itemQty, "oo_software_engineering.jpg");
         ref.push().setValue(objProduct);
       }
     }

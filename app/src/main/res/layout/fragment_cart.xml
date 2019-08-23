@@ -12,18 +12,6 @@
 
 
 
-
-        <!--<TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/GrandTotal"
-            android:textSize="20dip"
-            android:background="@color/white"
-            android:textColorHint="@color/black"
-            android:textColor="@color/black"
-            android:layout_gravity="right"/>-->
-
-
         <TextView
             android:id="@+id/TextView01"
             android:layout_width="match_parent"
@@ -33,7 +21,7 @@
             android:layout_marginTop="0dp"
             android:layout_marginEnd="5dip"
             android:background="@color/white"
-            android:text="Shopping Cart"
+            android:text=""
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textColorHint="@color/black"
@@ -64,10 +52,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="vertical">
-            <!-- Removed from TableLayout
-                android:layout_above="@+id/textView"
-                android:layout_below="@+id/TextView01"-->
-
 
             <Button
                 android:id="@+id/fetch"
@@ -90,12 +74,6 @@
             </Button>
 
         </LinearLayout>
-
-           <!--  Removed from Textview
-                android:layout_below="@+id/btnFetch"
-            -->
-
-
 
     </RelativeLayout>
 

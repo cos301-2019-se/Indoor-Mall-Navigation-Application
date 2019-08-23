@@ -42,6 +42,9 @@ import com.google.firebase.database.ValueEventListener;
 import org.w3c.dom.Text;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
+
+import static com.example.navigator.R.id.btncheckout;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -62,6 +65,7 @@ public class Scan extends Fragment {
   private DatabaseReference rootRef,demoRef;
   private Product objProduct;
   private DatabaseReference ref;
+  Button buttonCheckout;
 
     public Scan() {
         // Required empty public constructor
@@ -81,6 +85,7 @@ public class Scan extends Fragment {
       incrementQuantity = (Button) view.findViewById(R.id.btn_Increment_Quantity);
       decrementQuantity = (Button)  view.findViewById(R.id.btn_Decrement_Quantity);
 
+      buttonCheckout = (Button) view.findViewById(R.id.btncheckout);
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -154,6 +159,14 @@ public class Scan extends Fragment {
         }
       });
 
+      buttonCheckout.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          startActivity(new Intent(getContext(),Login.class));
+        }
+      });
+
+
       return view;
     }
     public void AddProduct(String sessionId){
@@ -187,4 +200,8 @@ public class Scan extends Fragment {
         ref.push().setValue(objProduct);
       }
     }
+
+
 }
+
+

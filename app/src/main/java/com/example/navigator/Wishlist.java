@@ -49,8 +49,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-
-
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -186,8 +184,6 @@ public class Wishlist extends Fragment {
 
 
         });
-
-
         return view;
     }
 }

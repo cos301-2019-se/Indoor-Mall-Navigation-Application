@@ -88,7 +88,16 @@ Cart extends Fragment {
         //database reference pointing to Product node
         demoRef = rootRef.child("Cart");
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
+
+
         buttonCheckout = (Button) view.findViewById(R.id.checkout);
+
+        buttonCheckout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(),Login.class));
+            }
+        });
 
         final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -160,6 +169,8 @@ Cart extends Fragment {
 
             }*/
         });
+
+
 
 
 

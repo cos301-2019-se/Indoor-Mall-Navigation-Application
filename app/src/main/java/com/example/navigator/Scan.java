@@ -69,13 +69,16 @@ public class Scan extends Fragment {
   private ZXingScannerView mScannerView;
   private DatabaseReference databaseReference1,databaseReference3,unameref;
   public static TextView resultTextView;
+  public static TextView productName;
+  public static TextView productPrice;
+  public static ImageView scanImage;
   public EditText quantityValue;
   Button buttonScan;
   Button buttonAddToCart;
   Button addToWishList;
   Button incrementQuantity;
   Button decrementQuantity;
-  public ImageView scanImage;
+
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
   private DatabaseReference rootRef,demoRef;
@@ -83,8 +86,8 @@ public class Scan extends Fragment {
   private DatabaseReference ref;
   int itemQuantity;
   //Retrieve images from DB
-  FirebaseStorage storage = FirebaseStorage.getInstance();
-  StorageReference storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("036002914585.jpg");//remember to remove .child when working
+  //FirebaseStorage storage = FirebaseStorage.getInstance();
+  //StorageReference storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("036002914585.jpg");//remember to remove .child when working
     public Scan() {
         // Required empty public constructor
     }
@@ -98,6 +101,8 @@ public class Scan extends Fragment {
       // Inflate the layout for this fragment
       View view = inflater.inflate(R.layout.fragment_scan, container, false);
       resultTextView = (TextView) view.findViewById(R.id.result_text);
+      productName = (TextView) view.findViewById((R.id.result_name));
+      productPrice = (TextView) view.findViewById((R.id.result_price));
       buttonScan = (Button) view.findViewById(R.id.btn_scan);
       buttonAddToCart = (Button) view.findViewById(R.id.btn_addToCart);
       addToWishList = (Button)  view.findViewById(R.id.btn_addToWishlist);
@@ -113,7 +118,7 @@ public class Scan extends Fragment {
       final String deviceId = Installation.id(getContext());
       //Toast.makeText(getContext(),"Your Device ID is: " + deviceId, Toast.LENGTH_LONG).show();
 
-      try {
+      /*try {
         final File localFile = File.createTempFile("images", "jpg");
         storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
           @Override
@@ -127,7 +132,7 @@ public class Scan extends Fragment {
           public void onFailure(@NonNull Exception exception) {
           }
         });
-      } catch (IOException e ) {}
+      } catch (IOException e ) {}*/
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -308,6 +313,34 @@ public class Scan extends Fragment {
       }
       else if(sessionId.equals("90586523150")){
         objProduct = new Product("90586523150","leather shoes",599.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6001275000003")){
+        objProduct = new Product("6001275000003","Jungle Oats",28.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6009510804812")){
+        objProduct = new Product("6009510804812","Lays Salted",14.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6001069206611")){
+        objProduct = new Product("6001069206611","Lays Sour Cream",14.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("5449000107787")){
+        objProduct = new Product("5449000107787","Valpre Spring Water",9.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6001076025038")){
+        objProduct = new Product("6001076025038","Eno",30.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6001076037079")){
+        objProduct = new Product("6001076037079","Grand-PA",45.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("9781259080791")){
+        objProduct = new Product("9781259080791","Object Oriented Software Engineering",849.99,itemQty);
         ref.push().setValue(objProduct);
       }
     }

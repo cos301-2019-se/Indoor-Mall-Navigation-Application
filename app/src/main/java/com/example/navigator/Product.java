@@ -28,15 +28,17 @@ public class Product {
     public String id;
     public String name;
     public double price;
+    public int quantity;
 
     public Product() {
 
     }
 
-    public Product(String id, String name, double price) {
+    public Product(String id, String name, double price, int qty) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.quantity = qty;
     }
 
     public String getId() {
@@ -46,4 +48,5 @@ public class Product {
     public double getPrice() {
         return price;
     }
+    public int getQuantity() {return quantity; }
 }

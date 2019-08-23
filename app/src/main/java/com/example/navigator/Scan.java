@@ -29,8 +29,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.navigator.utils.Installation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +42,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 /**
@@ -50,14 +56,18 @@ public class Scan extends Fragment {
   private ZXingScannerView mScannerView;
   private DatabaseReference databaseReference1,databaseReference3,unameref;
   public static TextView resultTextView;
+  public EditText quantityValue;
   Button buttonScan;
   Button buttonAddToCart;
   Button addToWishList;
+  Button incrementQuantity;
+  Button decrementQuantity;
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
   private DatabaseReference rootRef,demoRef;
   private Product objProduct;
   private DatabaseReference ref;
+  int itemQuantity;
 
     public Scan() {
         // Required empty public constructor
@@ -72,6 +82,37 @@ public class Scan extends Fragment {
       buttonScan = (Button) view.findViewById(R.id.btn_scan);
       buttonAddToCart = (Button) view.findViewById(R.id.btn_addToCart);
       addToWishList = (Button)  view.findViewById(R.id.btn_addToWishlist);
+      //Quantity to Cart.
+      quantityValue = (EditText) view.findViewById(R.id.edt_Quantity);
+      incrementQuantity = (Button) view.findViewById(R.id.btn_Increment_Quantity);
+      decrementQuantity = (Button)  view.findViewById(R.id.btn_Decrement_Quantity);
+
+      /*
+      *   PHONE ID
+      * */
+      final String deviceId = Installation.id(getContext());
+      //Toast.makeText(getContext(),"Your Device ID is: " + deviceId, Toast.LENGTH_LONG).show();
+
+      decrementQuantity.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          int  count = Integer.parseInt(quantityValue.getText().toString());
+          count--;
+          quantityValue.setText(String.valueOf(count));
+          itemQuantity = count;
+        }
+      });
+
+       //final int count = 0;
+      incrementQuantity.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+        int  count = Integer.parseInt(quantityValue.getText().toString());
+          count++;
+          quantityValue.setText(String.valueOf(count));
+          itemQuantity = count;
+        }
+      });
 
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -85,17 +126,27 @@ public class Scan extends Fragment {
       //database reference pointing to demo node
       demoRef = rootRef.child("Product");
 
-
       buttonAddToCart.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
           ref = FirebaseDatabase.getInstance().getReference().child("Cart");
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-              String sessionId = resultTextView.getText().toString();
-              AddProduct(sessionId);
+              if(dataSnapshot.child(deviceId).exists()){
+                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+                String sessionId = resultTextView.getText().toString();
+                AddProduct(sessionId,itemQuantity);
+              }
+              else {
+                ref.push().setValue(deviceId);
+                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+                String sessionId = resultTextView.getText().toString();
+                AddProduct(sessionId,itemQuantity);
+              }
+
             }
 
             @Override
@@ -114,8 +165,19 @@ public class Scan extends Fragment {
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-              String sessionId = resultTextView.getText().toString();
-              AddProduct(sessionId);
+
+              if(dataSnapshot.child(deviceId).exists()){
+                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+                String sessionId = resultTextView.getText().toString();
+                AddProduct(sessionId,itemQuantity);
+              }
+              else {
+                ref.push().setValue(deviceId);
+                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+                String sessionId = resultTextView.getText().toString();
+                AddProduct(sessionId,itemQuantity);
+              }
+
             }
 
             @Override
@@ -128,26 +190,50 @@ public class Scan extends Fragment {
 
       return view;
     }
-    public void AddProduct(String sessionId){
+    public void AddProduct(String sessionId, int itemQty){
 
       if(sessionId.equals("5060466519077")){
-        objProduct = new Product("5060466519077","Power Play",19.99);
+        objProduct = new Product("5060466519077","Power Play",19.99,itemQty);
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("8718114642871")){
-        objProduct = new Product("8718114642871","Vaseline Lip T",23.99);
+        objProduct = new Product("8718114642871","Vaseline Lip T",23.99,itemQty);
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("6009635830536")){
-        objProduct = new Product("6009635830536","Manuscript Book",10.99);
+        objProduct = new Product("6009635830536","Manuscript Book",10.99,itemQty);
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("6009695584912")){
-        objProduct = new Product("6009695584912","Bioplus",4.99);
+        objProduct = new Product("6009695584912","Bioplus",4.99,itemQty);
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("6003326009584")){
-        objProduct = new Product("6003326009584","Flying Fish Pressed Lemmon",15.99);
+        objProduct = new Product("6003326009584","Flying Fish Pressed Lemmon",15.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6009690380038")){
+        objProduct = new Product("6009690380038","Oasis Still 500ml",9.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("60018939")){
+        objProduct = new Product("60018939","Vaseline Blueseal",23.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6001120602871")){
+        objProduct = new Product("6001120602871","Jungle Bar",10.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6001120624972")){
+        objProduct = new Product("6001120624972","Sour Jelly Beans",22.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6001007091521")){
+        objProduct = new Product("6001007091521","Cream Soda",15.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("6007652000574")){
+        objProduct = new Product("6007652000574","Hand book",12.99,itemQty);
         ref.push().setValue(objProduct);
       }
     }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Navigator</string>
+    <string name="app_name">Indoor Mall Navigator</string>
     <string name="title_navigate">Navigate</string>
     <string name="title_scan">Scan</string>
     <string name="title_cart">Cart</string>

@@ -486,6 +486,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private void setNearestBeacon(Beacon beacon)
     {
         nearestBeacon = beacon;
+        green_dot.setVisibility(View.VISIBLE);
+        Log.d(TAG, "NEAREST BEACON SET! WE PROMISE! ");
     }
 
 
@@ -954,6 +956,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         try {
             beaconManager.startMonitoringBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
         } catch (RemoteException e) {    }
 
         try {beaconManager.removeAllRangeNotifiers();
@@ -1011,16 +1014,23 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
                         ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
 
                         if(directions != null) {
+//                            Toast.makeText(getContext(),"Directions: " + MapPoint.flattenDirections(directions), Toast.LENGTH_LONG).show();
+
                             if (nearestBeacon.getId1().toString().equals(directions[directions.length - 1].getId())) {
-                                if (distance <= 0.20) {
+                                if (distance <= 0.40) {
                                     reachedDestination();
                                 }
                             } else if (nearestBeacon.getId1().toString().equals(directions[0].getId())) {
-                                if (distance <= 0.20) {
-                                    popDirection();
+                                if (distance <= 0.40) {
+
                                     if (directions.length > 1) {
                                         setNextBeacon(directions[0], directions[1]);
+                                        Toast.makeText(getContext(),"Beacons set to: "+ directions[0].getName() + " => " + directions[1].getName(), Toast.LENGTH_LONG).show();
+                                        popDirection();
+
                                     }
+//                                    Toast.makeText(getContext(),"POP DIRECTION!!!", Toast.LENGTH_LONG).show();
+
                                 }
                             }
                         }

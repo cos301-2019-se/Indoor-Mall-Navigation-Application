@@ -650,10 +650,23 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         {
             Log.d(TAG, "setNextBeacon: newTarget: " + getMapPointName(newTarget.getId1().toString()));
             Log.d(TAG, "setNextBeacon: Setting distance");
-            setDistanceDetails(newTarget);
+            updateTargetBeacon(newTarget);
         }
         compassView.setBearing((float) currPoint.getBearingTo(nextPoint.getId()));
     }
+
+    private void updateTargetBeacon(Beacon target)
+    {
+        if(target != null)
+        {
+            setDistanceDetails(target);
+            targetBeacon = target;
+        }else
+        {
+            Log.d(TAG, "updateTargetBeacon: Null target");
+        }
+    }
+
 
     private void setDistanceDetails(Beacon target)
     {
@@ -671,12 +684,13 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         for (int i = 0; i < beaconsInRange.size(); i++)
         {
             Log.d(TAG, "getBeaconFromRange: Checking Beacon["+ i +"] " + beaconsInRange.get(i).getId1().toString());
-            if(beaconsInRange.get(i).getId1().toString() == id)
+            if(beaconsInRange.get(i).getId1().toString().equals(id))
             {
                 Log.d(TAG, "getBeaconFromRange: Found the right one! ["+i+"]");
                 return beaconsInRange.get(i);
             }
         }
+        Log.d(TAG, "getBeaconFromRange: Returned null on ID " + id);
         return null;
     }
 
@@ -1044,6 +1058,13 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
 
                         double distance = nearestBeacon.getDistance();
+                        Log.d(TAG, "didRangeBeaconsInRegion: Checking if target");
+                        if(targetBeacon != null)
+                        {
+                            Log.d(TAG, "didRangeBeaconsInRegion: Target Distance Update");
+                            updateTargetBeacon(getBeaconFromRange(targetBeacon.getId1().toString()));
+                            Log.d(TAG, "didRangeBeaconsInRegion: Target Distance Updated!");
+                        }
 
 //                        String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();
 
@@ -1053,11 +1074,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 //                            Toast.makeText(getContext(),"Directions: " + MapPoint.flattenDirections(directions), Toast.LENGTH_LONG).show();
 
                             if (nearestBeacon.getId1().toString().equals(directions[directions.length - 1].getId())) {
-                                if (distance <= 0.40) {
+                                if (distance <= 0.20) {
                                     reachedDestination();
                                 }
                             } else if (nearestBeacon.getId1().toString().equals(directions[0].getId())) {
-                                if (distance <= 0.40) {
+                                if (distance <= 0.20) {
 
                                     if (directions.length > 1) {
                                         setNextBeacon(directions[0], directions[1]);

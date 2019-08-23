@@ -7,22 +7,15 @@
 
 
     <RelativeLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:id="@+id/instructions_container"
-        android:visibility="gone"
         android:layout_height="match_parent">
 
-        <VideoView
-            android:layout_width="match_parent"
-            android:id="@+id/landing_video"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
-            android:layout_alignParentBottom="true"
-            android:layout_height="match_parent"/>
 
         <View
             android:layout_width="match_parent"
-            android:background="@color/gray_transparent"
+            android:background="@color/white"
             android:layout_height="match_parent"/>
 
         <Button
@@ -30,45 +23,52 @@
             android:layout_centerInParent="true"
             android:text="Navigate"
             android:visibility="invisible"
+            android:textColor="@color/white"
             android:id="@+id/navigate_button"
             android:textSize="@dimen/text_large"
-            android:background="@drawable/pressable_primary_to_primary_light_rounded"
-            android:textColor="@color/black"
+            android:background="@drawable/buttonshape"
             android:padding="@dimen/small"
-            android:layout_height="wrap_content"/>
+            android:layout_marginBottom="70dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"/>
 
-        <!--<TextView
+        <SearchView
+            android:id="@+id/searchView"
             android:layout_width="wrap_content"
-            android:text="@string/app_name"
-            android:id="@+id/app_title"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/navigate_button"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:focusable="false"
+            android:focusableInTouchMode="true"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search..." />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lv1"
+            android:divider="@color/black"
+            android:dividerHeight="2dp"
+            android:layout_above="@+id/searchView"
+            android:layout_below="@id/greenDot"/>
+
+        <ImageView
+            android:id="@+id/greenDot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:visibility="invisible"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_huge"
-            android:paddingTop="@dimen/huge"
-            android:layout_height="wrap_content"/>-->
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/greendot" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:text="Search"
-            android:id="@+id/search_destination"
-            android:layout_above="@id/navigate_button"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_large"
-            android:paddingBottom="@dimen/enormous"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:text="Help"
-            android:id="@+id/how_to_use"
-            android:layout_below="@id/navigate_button"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_large"
-            android:paddingTop="@dimen/enormous"
-            android:layout_height="wrap_content"/>
 
     </RelativeLayout>
 
@@ -101,21 +101,21 @@
             android:textColor="@color/setcoins_red"
             android:layout_height="wrap_content"/>
 
-        <SearchView
+        <!--<SearchView
             android:id="@+id/searchView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:iconifiedByDefault="false"
             android:layout_below="@id/dismiss_search"
-            android:queryHint="Search Here"/>
+            android:queryHint="Search Here"/>-->
 
-        <ListView
+        <!--<ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/lv1"
             android:divider="#ad5"
             android:dividerHeight="2dp"
-            android:layout_below="@+id/searchView"/>
+            android:layout_below="@+id/searchView"/>-->
 
     </RelativeLayout>
 
@@ -213,6 +213,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/arrived_at_destination"
+        android:visibility="gone"
         android:background="@color/light_gray_transparent"
         android:layout_height="match_parent">
 
@@ -280,14 +281,22 @@
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
         android:id="@+id/ar_container"
-        android:visibility="gone"
         android:layout_height="match_parent">
 
         <com.example.navigator.utils.CompassView
             android:id="@+id/compass"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:visibility="invisible"
             android:layout_centerInParent="true" />
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@mipmap/arr_up"
+            android:layout_centerInParent="true"
+            />
 
         <TextView
             android:id="@+id/latitude"

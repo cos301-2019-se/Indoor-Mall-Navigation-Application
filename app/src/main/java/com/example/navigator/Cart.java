@@ -23,6 +23,8 @@ package com.example.navigator;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -30,6 +32,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -39,7 +42,11 @@ import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.navigator.utils.Installation;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,12 +54,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.cert.PolicyNode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import adapters.CartProductListAdapter;
+import entities.CartProduct;
 
 import static android.app.Activity.DEFAULT_KEYS_DIALER;
 import static com.example.navigator.MainActivity.TAG;
@@ -63,83 +78,120 @@ import static com.example.navigator.MainActivity.TAG;
 
 public class Cart extends Fragment {
     private Context context = null;
+    private ListView listViewProduct;
 
+//
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
+    TextView overallTotal;
     ListView cartList;
 
+    //Retrieve Images from FirebaseStorage
+
+
+
     DatabaseReference rootRef,demoRef;
+    FirebaseStorage storage;
     public Cart() {
-        // Required empty public constructor
     }
+
+    private void listViewProduct_onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Product product = (Product) adapterView.getItemAtPosition(i);
+        Toast.makeText(getContext(), product.getName(), Toast.LENGTH_LONG).show();
+    }
+
+    /*private void initView() {
+        listViewProduct = findViewById(R.id.listViewProduct);
+        listViewProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                listViewProduct_onItemClick(adapterView, view, i, l);
+            }
+        });
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
-
+        final String deviceId = Installation.id(getContext());
         demoValue = (TextView) view.findViewById(R.id.tvValue);
+        overallTotal = view.findViewById(R.id.overallTotal);
         rootRef = FirebaseDatabase.getInstance().getReference();
+        storage = FirebaseStorage.getInstance();
         //database reference pointing to Product node
-        demoRef = rootRef.child("Cart");
+        demoRef = rootRef.child("Wishlist");
+
+        listViewProduct = view.findViewById(R.id.listViewProduct);
+
+        final List<CartProduct> products = new ArrayList<CartProduct>();
+        demoRef = rootRef.child("Cart").child(deviceId);
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
 
-        final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
+
+
+
+
+        //final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int count = 1;
+                final ArrayList<Integer> quantities = new ArrayList<>();
+                int quantitiesCount = 0;
+                int decreaseButtonID = 0;
+                int increaseButtonID = 0;
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String productName = snapshot.child("name").getValue().toString();
-                    String price = snapshot.child("price").getValue().toString();
-                    String priceProduct = productName + " R"+ price;
-                    price = "R " + price;
-                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
-                    //list.add(priceProduct);
-                    final int curr = count;
-                    final String currProductName = productName;
-                    //for (int i = 0; i <2; i++) {
+                    final String productName = snapshot.child("name").getValue().toString();
+                    final String price = snapshot.child("price").getValue().toString();
+                    final String id = snapshot.child("id").getValue().toString();
+                    final String quantity = snapshot.child("quantity").getValue().toString();
+                    String imageName = snapshot.child("imageName").getValue().toString();
 
-                        TableRow tableRow = new TableRow(getContext());
+                    final CartProduct currCartProduct = new CartProduct();
+                    /*final Bitmap[] aBitMap = new Bitmap[1];
 
-                        // Set new table row layout parameters.
-                        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-                        tableRow.setLayoutParams(layoutParams);
+                    try{
+                        final File localFile = File.createTempFile("images","jpg");
 
-                        // Add a TextView in the first column.
-                        TextView name = new TextView(getContext());
-                        name.setText(productName);
-                        tableRow.addView(name);
+                        StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(id+ ".jpg");
 
-                        // Add a TextView in the first column.
-                        TextView aPrice = new TextView(getContext());
-                        aPrice.setText(price);
-                        tableRow.addView(aPrice);
 
-                        // Add a button in the second column
-                        ImageButton button = new ImageButton(getContext());
-                        button.setImageResource(R.drawable.ic_delete_black_24dp);
-                        button.setOnClickListener(new View.OnClickListener() {
+
+                        imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
-                            public void onClick(View v) {
-                                myTable.removeViewAt(curr);
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                aBitMap[0] = bitmap;
+                                //products.add(new CartProduct(id, productName, price, quantity,bitmap));
+                                //Toast.makeText(getContext(),"Local File name: " + localFile.getName() + " image name "+ product.getImageName() , Toast.LENGTH_LONG).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
 
-                                //CODE THAT REMOVES PRODUCT FROM DB GOES HERE
                             }
                         });
-                        tableRow.addView(button);
 
-                        // Add a checkbox in the third column.
-                        //CheckBox checkBox = new CheckBox(context);
-                        //checkBox.setText("Check it");
-                        //myTable.addView(checkBox, 2);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
-                        myTable.addView(tableRow,count);
-                        //increment counter
-                        count++;
+                    */
+
+                    currCartProduct.setCartProduct(id, productName, price, quantity, R.drawable.thumb1);
+                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
+                    //Load Elements from DB to product list
+
+
                 }
+
+                CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);
+
+                listViewProduct.setAdapter(productListAdapter);
             }
 
             @Override
@@ -147,6 +199,17 @@ public class Cart extends Fragment {
 
             }
         });
+
+        Double oTotal = 0.00;
+
+        for(int i = 0; i< products.size();i++)
+        {
+            oTotal =+ Double.parseDouble(products.get(i).getTotalPrice());
+        }
+
+        //String setTotal = "R " + oTotal;
+
+        overallTotal.setText("R " + oTotal);
 
         return view;
     }

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="fill_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="2dp"
+            app:contentPadding="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="0.0"
+                    android:scaleType="fitStart">
+
+                    <ImageView
+                        android:id="@+id/imageViewPhotoWL"
+                        android:src="@mipmap/ic_launcher"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="0.7"
+                        android:scaleType="fitStart"
+                        />
+
+
+
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textViewNameWL"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:textStyle="bold"
+                        android:text="'Unknown Product'"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="2dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="10dp" />
+
+                            <TextView
+                                android:id="@+id/textViewPriceLabelWL"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="Unit Price:"/>
+
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="85dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="10dp" />
+
+                            <TextView
+                                android:id="@+id/textViewPriceWL"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="R 0.00"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="10dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+
+
+                            </LinearLayout>
+
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="5dp" />
+
+                            <LinearLayout
+                                android:layout_width="100dp"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="35dp"
+                                    android:layout_height="35dp"
+                                    android:layout_marginLeft="1dp"
+                                    android:background="@drawable/ic_shopping_cart_black_24dp"
+                                    android:id="@+id/addToCart"
+                                    />
+                                <Button
+                                    android:layout_width="35dp"
+                                    android:layout_height="35dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:background="@drawable/ic_delete_black_24dp"
+                                    android:id="@+id/deleteWishListItem"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+
+
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

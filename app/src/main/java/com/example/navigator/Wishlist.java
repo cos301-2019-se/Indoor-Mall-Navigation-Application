@@ -37,6 +37,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.navigator.utils.DatabaseConn;
+import com.example.navigator.utils.Installation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,6 +49,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
+
+import adapters.CartProductListAdapter;
+import adapters.WishListAdapter;
+import entities.CartProduct;
 
 
 /**
@@ -62,6 +69,7 @@ public class Wishlist extends Fragment {
     DatabaseReference ref;
     Product objProduct;
     private Context context = null;
+    private ListView listWLViewProduct;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
@@ -76,15 +84,20 @@ public class Wishlist extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wishlist, container, false);
+        final String deviceId = Installation.id(getContext());
         demoValue = (TextView) view.findViewById(R.id.tvValue);
         rootRef = FirebaseDatabase.getInstance().getReference();
         //database reference pointing to Product node
-        demoRef = rootRef.child("Wishlist");
+        final List<CartProduct> products = new ArrayList<CartProduct>();
+        demoRef = rootRef.child("Wishlist").child(deviceId);
+
+        listWLViewProduct = view.findViewById(R.id.listWLViewProduct);
         wishToCart = rootRef.child("Cart");
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
         final ArrayList<String>  list = new ArrayList<>();
+        final ArrayList<String>  IDList = new ArrayList<>();
         final ArrayList<String>  listProductNames = new ArrayList<>();
-        final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
+        //final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -92,16 +105,22 @@ public class Wishlist extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String productName = snapshot.child("name").getValue().toString();
                     String barCode  = snapshot.child("id").getValue().toString();
+                    IDList.add(snapshot.getKey());
                     list.add(barCode);
                     listProductNames.add(productName);
                     String price = snapshot.child("price").getValue().toString();
                     String priceProduct = productName + " R"+ price;
-                    price = "R " + price;
+                    String id = snapshot.child("id").getValue().toString();
+                    String quantity = snapshot.child("quantity").getValue().toString();
+                    //price = "R price;
                     //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     //list.add(priceProduct);
-                    final int curr = count;
-                    final String currProductName = productName;
+                    //final int curr = count;
+                    //final String currProductName = productName;
                     //for (int i = 0; i <2; i++) {
+
+                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
+                    /*
                     TableRow tableRow = new TableRow(getContext());
 
                     // Set new table row layout parameters.
@@ -127,6 +146,8 @@ public class Wishlist extends Fragment {
                             //CODE THAT ADDS TO CART FROM WISHLIST GOES HERE
                             String y = listProductNames.get(curr-1);
                             Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
+                            DatabaseConn data = DatabaseConn.open();
+
                             applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -156,29 +177,25 @@ public class Wishlist extends Fragment {
                         public void onClick(View v) {
                             myTable.removeViewAt(curr);
                             String y = listProductNames.get(curr-1);
+                            String yID = list.get(curr-1);
+//                            Toast.makeText(getContext(),y + " has ID: " + yID + " and is element " + IDList.get(curr-1), Toast.LENGTH_LONG).show();
                             Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
 
-                            applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
-                                        appleSnapshot.getRef().removeValue();
-                                    }
-                                }
+                            DatabaseConn data = DatabaseConn.open();
+                            data.delete("Wishlist", IDList.get(curr-1));
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
                             Toast.makeText(getContext(),"Item deleted from Wish list", Toast.LENGTH_LONG).show();
                         }
                     });
                     tableRow.addView(button);
                     myTable.addView(tableRow,count);
                     //increment counter
-                    count++;
+                    count++;*/
                 }
+
+                WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);
+
+                listWLViewProduct.setAdapter(wlProductListAdapter);
 
             }
 

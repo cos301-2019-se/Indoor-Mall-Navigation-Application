@@ -1,3 +1,23 @@
+/**
+ *
+ *  File Name: SplashScreen.js (path: app/src/main/java/com.example.navigator/utils/SplashScreen.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  11/07/2019  Mpho Mashaba    Original
+ *
+ *  Functional Description: This program file is a splashScreen file
+ *  Error Messages: none
+ *  Constraints: none
+ *  Assumptions: none
+ *
+ */
 package com.example.navigator;
 import android.content.Context;
 import android.content.Intent;

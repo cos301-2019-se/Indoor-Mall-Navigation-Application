@@ -128,8 +128,8 @@ public class MapPointTest {
     @Test
     public void bearingTo_GivenTwoPoints_ReturnsBearing()
     {
-        assertWithMessage("BearingFrom Root To AT is 21.5").that(root.bearingTo("8")).isEqualTo(30);
-        assertWithMessage("BearingFrom AT To Root is 21.5").that(almost_there.bearingTo("0")).isEqualTo(210);
+        assertWithMessage("BearingFrom Root To AT is 21.5").that(root.getBearingTo("8")).isEqualTo(30);
+        assertWithMessage("BearingFrom AT To Root is 21.5").that(almost_there.getBearingTo("0")).isEqualTo(210);
 
     }
 

@@ -269,7 +269,7 @@ public class MapPoint {
      * @param targetID The ID to be checked for
      * @return The bearing to the target, -1 if the target doesn't exist
      */
-    public double bearingTo(String targetID)
+    public double getBearingTo(String targetID)
     {
         for(int i = 0; i < points; i++)
         {

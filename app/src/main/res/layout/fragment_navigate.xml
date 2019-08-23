@@ -7,6 +7,7 @@
 
 
     <RelativeLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:id="@+id/instructions_container"
         android:layout_height="match_parent">
@@ -37,16 +38,16 @@
             android:id="@+id/searchView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/navigate_button"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_marginEnd="10dp"
-            android:iconifiedByDefault="false"
-            android:focusableInTouchMode="true"
+            android:layout_marginBottom="10dp"
             android:focusable="false"
-            android:queryHint="Search..."
-            android:layout_above="@+id/navigate_button"/>
+            android:focusableInTouchMode="true"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search..." />
 
         <ListView
             android:layout_width="match_parent"
@@ -54,7 +55,19 @@
             android:id="@+id/lv1"
             android:divider="@color/black"
             android:dividerHeight="2dp"
-            android:layout_above="@+id/searchView"/>
+            android:layout_above="@+id/searchView"
+            android:layout_below="@id/greenDot"/>
+
+        <ImageView
+            android:id="@+id/greenDot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/greendot" />
 
 
     </RelativeLayout>
@@ -268,14 +281,22 @@
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
         android:id="@+id/ar_container"
-        android:visibility="gone"
         android:layout_height="match_parent">
 
         <com.example.navigator.utils.CompassView
             android:id="@+id/compass"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:visibility="invisible"
             android:layout_centerInParent="true" />
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@mipmap/arr_up"
+            android:layout_centerInParent="true"
+            />
 
         <TextView
             android:id="@+id/latitude"

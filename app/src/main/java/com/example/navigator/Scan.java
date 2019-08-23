@@ -85,7 +85,7 @@ public class Scan extends Fragment {
       incrementQuantity = (Button) view.findViewById(R.id.btn_Increment_Quantity);
       decrementQuantity = (Button)  view.findViewById(R.id.btn_Decrement_Quantity);
 
-      buttonCheckout = (Button) view.findViewById(R.id.btncheckout);
+
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -156,13 +156,6 @@ public class Scan extends Fragment {
             }
           });
           Toast.makeText(getContext(),"Item added to Wish list", Toast.LENGTH_LONG).show();
-        }
-      });
-
-      buttonCheckout.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          startActivity(new Intent(getContext(),Login.class));
         }
       });
 

@@ -158,20 +158,7 @@ Cart extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-
-           /* public void onClick(View v) {
-
-                if(v == buttonCheckout){
-
-                    startActivity(new Intent(this, Payment.class));
-                }
-
-            }*/
         });
-
-
-
-
 
         return view;
     }

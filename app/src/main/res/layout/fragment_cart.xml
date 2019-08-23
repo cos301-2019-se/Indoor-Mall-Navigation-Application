@@ -127,7 +127,6 @@
                 android:textColor="@color/black"
                 android:textSize="15dip" />
             -->
-
             <Button
                 android:id="@+id/checkout"
                 android:layout_width="270dp"

@@ -138,7 +138,6 @@ Cart extends Fragment {
                             @Override
                             public void onClick(View v) {
                                 myTable.removeViewAt(curr);
-
                                 //CODE THAT REMOVES PRODUCT FROM DB GOES HERE
                             }
                         });

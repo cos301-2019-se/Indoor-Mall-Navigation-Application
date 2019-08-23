@@ -15,6 +15,15 @@
             android:layout_width="fill_parent"
             android:layout_height="150dp"
             android:background="@drawable/payfastimage"/>
+
+        <TextView
+            android:textColor="#000"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TOTAL PRICE:  R"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"/>
         <TextView
             android:id="@+id/textSelectPayment"
             android:textSize="20dp"
@@ -24,6 +33,7 @@
             android:text="Please select payment method"
             android:textColor="@color/black"
             android:textStyle="bold|italic" />
+
         <TextView
             android:textColor="#000"
             android:layout_marginTop="20dp"
@@ -49,7 +59,7 @@
             android:layout_width="180dp"
             android:layout_height="120dp"
             android:layout_gravity="center"
-            android:background="@drawable/EFT"
+            android:background="@drawable/instant"
 
             />
         <TextView

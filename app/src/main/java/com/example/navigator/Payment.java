@@ -14,7 +14,6 @@ public class Payment extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.activity_checkout);
     }
 
-
     @Override
     public void onClick(View view) {
 

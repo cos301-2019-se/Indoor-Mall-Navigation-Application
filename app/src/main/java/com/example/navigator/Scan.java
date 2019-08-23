@@ -84,7 +84,7 @@ public class Scan extends Fragment {
   int itemQuantity;
   //Retrieve images from DB
   FirebaseStorage storage = FirebaseStorage.getInstance();
-  StorageReference storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("vaseline_blue_seal.jpg");//remember to remove .child when working
+  StorageReference storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("036002914585.jpg");//remember to remove .child when working
     public Scan() {
         // Required empty public constructor
     }
@@ -295,7 +295,19 @@ public class Scan extends Fragment {
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("6007652000574")){
-        objProduct = new Product("6007652000574","Hand book",12.99,itemQty);
+        objProduct = new Product("6007652000574","Short Hand Note Book",21.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("036002914585")){
+        objProduct = new Product("036002914585","Aluminium Hiking Flask",139.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("503993116")){
+        objProduct = new Product("503993116","round neck shirt",129.99,itemQty);
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("90586523150")){
+        objProduct = new Product("90586523150","leather shoes",599.99,itemQty);
         ref.push().setValue(objProduct);
       }
     }

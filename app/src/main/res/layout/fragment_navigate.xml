@@ -7,6 +7,7 @@
 
 
     <RelativeLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:id="@+id/instructions_container"
         android:layout_height="match_parent">
@@ -280,14 +281,22 @@
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
         android:id="@+id/ar_container"
-        android:visibility="gone"
         android:layout_height="match_parent">
 
         <com.example.navigator.utils.CompassView
             android:id="@+id/compass"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:visibility="invisible"
             android:layout_centerInParent="true" />
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@mipmap/arr_up"
+            android:layout_centerInParent="true"
+            />
 
         <TextView
             android:id="@+id/latitude"

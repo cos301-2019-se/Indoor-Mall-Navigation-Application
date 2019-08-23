@@ -45,6 +45,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.navigator.utils.Installation;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -83,6 +84,7 @@ public class Cart extends Fragment {
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
+    TextView overallTotal;
     ListView cartList;
 
     //Retrieve Images from FirebaseStorage
@@ -90,6 +92,7 @@ public class Cart extends Fragment {
 
 
     DatabaseReference rootRef,demoRef;
+    FirebaseStorage storage;
     public Cart() {
     }
 
@@ -115,7 +118,9 @@ public class Cart extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
         final String deviceId = Installation.id(getContext());
         demoValue = (TextView) view.findViewById(R.id.tvValue);
+        overallTotal = view.findViewById(R.id.overallTotal);
         rootRef = FirebaseDatabase.getInstance().getReference();
+        storage = FirebaseStorage.getInstance();
         //database reference pointing to Product node
         demoRef = rootRef.child("Wishlist");
 
@@ -124,6 +129,7 @@ public class Cart extends Fragment {
         final List<CartProduct> products = new ArrayList<CartProduct>();
         demoRef = rootRef.child("Cart").child(deviceId);
         //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
+
 
 
 
@@ -139,14 +145,47 @@ public class Cart extends Fragment {
                 int increaseButtonID = 0;
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String productName = snapshot.child("name").getValue().toString();
-                    String price = snapshot.child("price").getValue().toString();
-                    String id = snapshot.child("id").getValue().toString();
-                    String quantity = snapshot.child("quantity").getValue().toString();
+                    final String productName = snapshot.child("name").getValue().toString();
+                    final String price = snapshot.child("price").getValue().toString();
+                    final String id = snapshot.child("id").getValue().toString();
+                    final String quantity = snapshot.child("quantity").getValue().toString();
                     String imageName = snapshot.child("imageName").getValue().toString();
 
+                    final CartProduct currCartProduct = new CartProduct();
+                    /*final Bitmap[] aBitMap = new Bitmap[1];
+
+                    try{
+                        final File localFile = File.createTempFile("images","jpg");
+
+                        StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(id+ ".jpg");
+
+
+
+                        imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                aBitMap[0] = bitmap;
+                                //products.add(new CartProduct(id, productName, price, quantity,bitmap));
+                                //Toast.makeText(getContext(),"Local File name: " + localFile.getName() + " image name "+ product.getImageName() , Toast.LENGTH_LONG).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    */
+
+                    currCartProduct.setCartProduct(id, productName, price, quantity, R.drawable.thumb1);
+                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
                     //Load Elements from DB to product list
-                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1, imageName));
+
 
                 }
 
@@ -160,6 +199,17 @@ public class Cart extends Fragment {
 
             }
         });
+
+        Double oTotal = 0.00;
+
+        for(int i = 0; i< products.size();i++)
+        {
+            oTotal =+ Double.parseDouble(products.get(i).getTotalPrice());
+        }
+
+        //String setTotal = "R " + oTotal;
+
+        overallTotal.setText("R " + oTotal);
 
         return view;
     }

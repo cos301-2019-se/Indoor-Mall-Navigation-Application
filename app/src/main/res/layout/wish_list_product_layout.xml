@@ -34,12 +34,13 @@
 
                     <ImageView
                         android:id="@+id/imageViewPhotoWL"
+                        android:src="@mipmap/ic_launcher"
                         android:layout_width="65dp"
-                        android:layout_height="79dp"
+                        android:layout_height="65dp"
                         android:layout_marginRight="5dp"
                         android:layout_weight="0.7"
                         android:scaleType="fitStart"
-                        app:srcCompat="@drawable/thumb1" />
+                        />
 
 
 

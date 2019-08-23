@@ -52,7 +52,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
     DatabaseReference cartDBRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
     DatabaseReference wishDBRef = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
-    FirebaseStorage storage = FirebaseStorage.getInstance();
+
 
 
     public CartProductListAdapter(Context context, List<CartProduct> products) {
@@ -78,6 +78,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             viewHolder.decrementQuantity = view.findViewById(R.id.decrementQuantity);
             viewHolder.deleteCartProduct = view.findViewById(R.id.deleteCartItem);
             viewHolder.addToWishList = view.findViewById(R.id.addToWishlist);
+
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -87,14 +88,17 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.textViewName.setText(product.getName());
         viewHolder.textViewQuantity.setText(product.getQuantity());
         viewHolder.textViewPrice.setText("R " + product.getPrice());
-        viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
+        //viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
         viewHolder.totalPrice.setText(product.getTotalPrice());
+
+        viewHolder.imageViewPhoto.setImageBitmap(product.getBmap());
 
         CartProduct currCartProduct = new CartProduct();
 
         try{
             final File localFile = File.createTempFile("images","jpg");
-            StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(product.getId()+".jpeg");
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(product.getId()+ ".jpg");
 
 
 
@@ -115,6 +119,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         //Increasing Quantity through button
         viewHolder.incrementQuantity.setOnClickListener(new View.OnClickListener() {
@@ -237,7 +242,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         {
                             String toDelete = dataSnap.getKey();
                             DatabaseConn data = DatabaseConn.open();
-                            Toast.makeText(getContext(),product.getName()+ " removed from Cart ", Toast.LENGTH_LONG).show();
+
                             data.delete("Cart",deviceId+"/"+toDelete);
                         }
 

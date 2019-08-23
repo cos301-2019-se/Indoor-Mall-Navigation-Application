@@ -33,25 +33,24 @@
                 android:textColorHint="@color/black"
                 android:textSize="24dip"></TextView>
 
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/tvValue"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="-36dp"
-                android:layout_marginEnd="0dp"
-                android:orientation="vertical"
-                tools:context=".Wishlist">
 
-                <ListView
-                    android:id="@+id/listWLViewProduct"
+
+                <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/tvValue"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="-36dp"
+                    android:layout_marginEnd="0dp"
+                    android:orientation="vertical"
+                    tools:context=".Wishlist"
+                    android:id="@+id/listWLViewProduct"
+                     />
 
-            </LinearLayout>
+
             <TextView
                 android:id="@+id/tvValue"
                 android:layout_width="match_parent"

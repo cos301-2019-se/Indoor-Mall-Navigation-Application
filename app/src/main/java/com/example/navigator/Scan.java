@@ -256,5 +256,9 @@ public class Scan extends Fragment {
         objProduct = new Product("9781259080791","OO Software Engineering - D.C.K",849.99,itemQty, "oo_software_engineering.jpg");
         ref.push().setValue(objProduct);
       }
+      else if(sessionId.equals("9781741818444")){
+        objProduct = new Product("9781741818444","Simply Guitar - S.M",24.99,itemQty, "oo_software_engineering.jpg");
+        ref.push().setValue(objProduct);
+      }
     }
 }

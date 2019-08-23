@@ -3,6 +3,8 @@ package adapters;
 import entities.CartProduct;
 import entities.WishListProduct;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import android.content.Context;
@@ -22,12 +26,17 @@ import com.example.navigator.Product;
 import com.example.navigator.R;
 import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.Installation;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import static com.example.navigator.R.layout.wish_list_product_layout;
 
@@ -41,6 +50,7 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
 
     DatabaseReference cartDBRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
     DatabaseReference wishDBRef = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+
     //Query myQuery = tempDBRef.orderByChild("id").equalTo(false);
 
 
@@ -71,7 +81,33 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         viewHolder.textViewName.setText(product.getName());
 
         viewHolder.textViewPrice.setText("R " + product.getPrice());
-        viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
+        //viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
+
+        try{
+            final File localFile = File.createTempFile("images","jpg");
+            final String imageName = product.getId()+".jpg";
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(product.getId()+".jpg");
+
+
+
+            imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    viewHolder.imageViewPhoto.setImageBitmap(bitmap);
+                    //Toast.makeText(getContext(),"Image: " + imageName, Toast.LENGTH_LONG).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
         final CartProduct currProduct = products.get(position);
@@ -124,7 +160,7 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
                         {
                             String toDelete = dataSnap.getKey();
                             DatabaseConn data = DatabaseConn.open();
-                            Toast.makeText(getContext(),product.getName()+ " removed from Wishlist", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getContext(),product.getName()+ " removed from Wishlist", Toast.LENGTH_LONG).show();
                             data.delete("Wishlist",deviceId+"/"+toDelete);
                         }
 

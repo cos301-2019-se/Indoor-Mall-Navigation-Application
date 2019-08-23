@@ -175,14 +175,16 @@
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
                                     android:layout_marginLeft="15dp"
-                                    android:background="@drawable/ic_delete_black_24dp"
-                                    android:id="@+id/deleteCartItem"/>
+                                    android:background="@drawable/ic_favorite_black_24dp"
+                                    android:id="@+id/addToWishlist"/>
+
                                 <Button
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
-                                    android:layout_marginLeft="10dp"
-                                    android:background="@drawable/ic_favorite_black_24dp"
-                                    android:id="@+id/addToWishlist"/>
+                                    android:layout_marginLeft="15dp"
+                                    android:background="@drawable/ic_delete_black_24dp"
+                                    android:id="@+id/deleteCartItem"/>
+
 
                             </LinearLayout>
 

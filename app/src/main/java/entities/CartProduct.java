@@ -1,4 +1,6 @@
 package entities;
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
@@ -12,6 +14,7 @@ public class CartProduct implements Serializable{
     private int photo;
     private String totalPrice;
     private String imageName;
+    private Bitmap bmap;
 
     public CartProduct() {
     }
@@ -31,13 +34,28 @@ public class CartProduct implements Serializable{
 
     }
 
-    public CartProduct(String id, String name, String price, String quantity, int photo, String imageName) {
+    public CartProduct(String id, String name, String price, String quantity, int photo, Bitmap b) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.photo = photo;
-        this.imageName = imageName;
+        this.bmap = b;
+
+        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = Double.parseDouble(decimal.format(tPrice));
+        this.totalPrice = Double.toString(tPrice);
+
+    }
+
+    public CartProduct(String id, String name, String price, String quantity, Bitmap b) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.photo = photo;
+        this.bmap = b;
 
         Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
         DecimalFormat decimal = new DecimalFormat("0.00");
@@ -53,6 +71,23 @@ public class CartProduct implements Serializable{
         this.quantity = quantity;
         this.photo = photo;
         this.imageName = "";
+
+
+        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = Double.parseDouble(decimal.format(tPrice));
+        this.totalPrice = Double.toString(tPrice);
+
+    }
+
+    public void setCartProduct(String id, String name, String price, String quantity, int photo, Bitmap b) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.photo = photo;
+        this.imageName = "";
+        this.bmap = b;
 
         Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
         DecimalFormat decimal = new DecimalFormat("0.00");
@@ -80,6 +115,10 @@ public class CartProduct implements Serializable{
     public String getPrice() {
         return this.price;
     }
+
+    public void setBmap(Bitmap b){this.bmap = b;};
+
+    public Bitmap getBmap(){return this.bmap;};
 
     public void setPrice(String price) {
         this.price = price;

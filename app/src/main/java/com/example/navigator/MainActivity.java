@@ -47,6 +47,7 @@ import android.widget.TextView;
 
 import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.FirebaseConn;
+import com.example.navigator.utils.MapPoint;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     private RelativeLayout mContainer;
     public MixpanelAPI mixpanel;
     public BottomNavigationView bottomNavigationView;
+    public static MapPoint[] map = null;
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
@@ -150,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         DatabaseConn.open(new FirebaseConn());
-
+        map = buildMiniMap();
         setContentView(R.layout.activity_main);
 
         final String GO_TO = getIntent().getStringExtra("GO_TO");
@@ -329,5 +331,90 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
         } catch (RemoteException e) {    }
     }
+
+    private MapPoint[] buildTestMap()
+    {
+        DatabaseConn data = DatabaseConn.open();
+        data.truncate("Map");
+
+        MapPoint root, almost_there, not_quite, midpoint, little_further, end, another_point, point_a, point_b, point_c, point_d;
+
+        root = new MapPoint("STARTING POINT", "0");
+        almost_there = new MapPoint("ALMOST THERE", "8");
+        not_quite = new MapPoint("NOT QUITE", "7");
+        midpoint = new MapPoint("MIDPOINT", "2");
+        little_further = new MapPoint("LITTLE FURTHER", "6");
+        end = new MapPoint("END", "1");
+        another_point = new MapPoint("ANOTHER POINT", "3");
+        point_a = new MapPoint("POINT A", "4");
+        point_b = new MapPoint("POINT B", "5");
+        point_c = new MapPoint("POINT C", "9");
+        point_d = new MapPoint("POINT D", "10");
+
+        //Add points to End
+        end.addTwoWayPoint(not_quite, 9.5, 120);
+        end.addTwoWayPoint(almost_there, 7.8, 240);
+
+        //Add points to Almost_There
+        almost_there.addTwoWayPoint(midpoint, 8.3, 150);
+
+        //Add points to Midpoint
+        midpoint.addTwoWayPoint(little_further, 9.6, 250);
+
+        //Add points to Little Further
+        little_further.addTwoWayPoint(another_point, 5.7, 250);
+
+        //Add points to Another Point
+        another_point.addTwoWayPoint(point_a, 8.6, 90);
+        another_point.addTwoWayPoint(point_c, 10.1, 120);
+
+        //Add points to Point A
+        point_a.addTwoWayPoint(point_b, 9.3, 90);
+
+        //Add points to Point C
+        point_c.addTwoWayPoint(point_d, 20.2, 90);
+
+        //Add points to Point B
+        point_b.addTwoWayPoint(point_d, 3.5, 180);
+
+        //Add points to root
+        root.addTwoWayPoint(almost_there, 21.5, 30);
+        root.addTwoWayPoint(not_quite, 10.5, 330);
+        root.addTwoWayPoint(midpoint, 7.2, 120);
+        root.addTwoWayPoint(little_further, 30.6, 180);
+
+        data.insert("Map", root);
+        data.insert("Map", almost_there);
+        data.insert("Map", not_quite);
+        data.insert("Map", midpoint);
+        data.insert("Map", little_further);
+        data.insert("Map", end);
+        data.insert("Map", another_point);
+        data.insert("Map", point_a);
+        data.insert("Map", point_b);
+        data.insert("Map", point_c);
+        data.insert("Map", point_d);
+        MapPoint[] mapList = {root, almost_there, not_quite, midpoint, little_further, end, another_point, point_a, point_b, point_c, point_d};
+        return mapList;
+    }
+
+    private MapPoint[] buildMiniMap()
+    {
+        DatabaseConn data = DatabaseConn.open();
+//        data.truncate("Map");
+
+        MapPoint CNA, woolworths, pnp;
+
+        CNA = new MapPoint("CNA", "00f0c1d6-7539-4ca7-b676-2b9a1e352f24");
+        woolworths = new MapPoint("Woolworths", "a038e0b7-505c-4340-a32a-13645a04cece");
+        pnp = new MapPoint("Pick 'n Pay", "4edf0c20-f1b0-4d0d-8c2e-fd0758057dfe");
+
+        CNA.addTwoWayPoint(woolworths, 2.0, 90);
+        woolworths.addTwoWayPoint(pnp, 4, 180);
+        MapPoint[] mapList = {CNA, woolworths, pnp};
+//        data.insert("Map", mapList);
+        return mapList;
+    }
+
 
 }

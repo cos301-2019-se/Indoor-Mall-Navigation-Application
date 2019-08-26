@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,33 +11,71 @@
 
     <!-- TODO: Update blank fragment layout -->
     <Button
-        android:text="SCAN PRODUCT"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
+        android:id="@+id/btn_scan"
         android:layout_width="270dp"
         android:layout_height="45dp"
         android:background="@drawable/buttonshape"
         android:shadowColor="#A8A8A8"
+        android:layout_marginTop="0dp"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5"
-        android:id="@+id/btn_scan"/>
-    
+
+        android:text="SCAN PRODUCT"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp" />
+
     <TextView
+        android:id="@+id/result_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=""
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:textSize="22sp"
-        android:layout_marginTop="20dp"
-        android:id="@+id/result_text"
-        android:layout_marginBottom="120dp"/>
+        android:text=""
+        android:textSize="22sp" />
+    <TextView
+        android:id="@+id/result_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="4dp"
+        android:gravity="center"
+        android:text=""
+        android:textSize="22sp" />
+    <TextView
+        android:id="@+id/result_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="50dp"
+        android:gravity="center"
+        android:text=""
+        android:textSize="22sp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="250dp"
+        android:layout_marginTop="-100dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/img_scanned_product"
+            android:layout_width="350dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="5dp"
+            android:src="@android:drawable/ic_menu_report_image" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_marginBottom="10dp">
+
     <Button
         android:id="@+id/btn_Decrement_Quantity"
         android:layout_width="63dp"
@@ -55,14 +95,14 @@
             android:layout_width="93dp"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="1"
+            android:text="0"
             android:textAlignment="center"
             android:background="@android:color/transparent"
             android:inputType="number" />
 
     <Button
         android:id="@+id/btn_Increment_Quantity"
-        android:layout_width="68dp"
+        android:layout_width="63dp"
         android:layout_height="wrap_content"
         android:background="@drawable/buttonshape"
         android:shadowColor="#A8A8A8"
@@ -89,47 +129,43 @@
 
         />
 
-    <Button
-        android:layout_marginTop="20dp"
-        android:text="Add To Cart"
-        android:textColor="#FFFFFF"
-        android:textSize="25sp"
-        android:layout_width="270dp"
-        android:layout_height="40dp"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:id="@+id/btn_addToCart"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="99dp"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <Button
-        android:layout_marginTop="20dp"
-        android:text="Add To Wishlist"
-        android:textColor="#FFFFFF"
-        android:textSize="25sp"
-        android:layout_width="270dp"
-        android:layout_height="40dp"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:id="@+id/btn_addToWishlist"/>
+        <Button
+            android:id="@+id/btn_addToCart"
+            android:layout_width="173dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/buttonshape"
+            android:shadowColor="#A8A8A8"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:text="Cart"
+            android:textColor="#FFFFFF"
+            android:textSize="25sp" />
 
-    <Button
-        android:layout_marginTop="20dp"
-        android:text="Checkout"
-        android:textColor="#FFFFFF"
-        android:textSize="25sp"
-        android:layout_width="270dp"
-        android:layout_height="40dp"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:id="@+id/btncheckout"/>
+        <Button
+            android:id="@+id/btn_addToWishlist"
+            android:layout_width="173dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/buttonshape"
+            android:shadowColor="#A8A8A8"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:text="Wishlist"
+            android:textColor="#FFFFFF"
+            android:textSize="25sp" />
+    </LinearLayout>
 
 
 </LinearLayout>
+

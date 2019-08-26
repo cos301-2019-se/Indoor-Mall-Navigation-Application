@@ -63,6 +63,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -75,6 +76,7 @@ import com.example.navigator.utils.ArDisplayView;
 import com.example.navigator.utils.CompassView;
 import com.example.navigator.utils.Installation;
 import com.example.navigator.utils.LowPassFilter;
+import com.example.navigator.utils.MapPoint;
 import com.example.navigator.utils.RadarScanView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -94,8 +96,11 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
+import static com.example.navigator.MainActivity.map;
 
 
 /**
@@ -128,11 +133,16 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private String TAG = "NavigationFragment";
     private NavigationFragmentInteractionListener mListener;
     private View rootView;
+    private ImageView green_dot;
+    private ImageView arrowView;
     private FrameLayout arContentOverlay = null;
     private Double currentLat;
     private Double currentLong;
     private Handler handler = new Handler();
     private Button navigateButton = null;
+    private MapPoint[] directions = null;
+    private Beacon nearestBeacon = null;
+    private Beacon targetBeacon = null;
     private BeaconManager beaconManager;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private SensorManager mSensorManager;
@@ -148,6 +158,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA
     };
+    private ArrayList<Beacon> beaconsInRange = new ArrayList<>();
+    private double bearing;
+    private double distance;
+
 
     final Runnable distanceFromBeaconProcess = new Runnable() {
         @Override
@@ -163,13 +177,22 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     public boolean searchList(String needle, ArrayList<String> haystack)
     {
+        boolean foundNeedle = false;
+        ArrayList<String> needleStack = new ArrayList<>();
+
         for(int i = 0; i < haystack.size(); i++){
             if(haystack.get(i).toLowerCase().contains(needle.toLowerCase())){
 
-                return true;
+                if(!needleStack.contains(haystack.get(i))){
+                    needleStack.add(haystack.get(i));
+                }
+                foundNeedle = true;
             }
         }
-        return false;
+
+        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, needleStack);
+
+        return foundNeedle;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -178,6 +201,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         beaconManager = BeaconManager.getInstanceForApplication(getContext());
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.bind(this);
+
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
 
@@ -266,6 +290,9 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         mSensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
         accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        green_dot = rootView.findViewById(R.id.greenDot);
+        arrowView = rootView.findViewById(R.id.arrow);
+
 
         if (ContextCompat.checkSelfPermission( getContext() ,android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
         {
@@ -297,6 +324,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         mListener.timeEvent("App Opened to Navigate");
         configureOverlayWindow();
+
         return rootView;
     }
 
@@ -461,6 +489,13 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     }
 
+    private void setNearestBeacon(Beacon beacon)
+    {
+        nearestBeacon = beacon;
+        green_dot.setVisibility(View.VISIBLE);
+        Log.d(TAG, "NEAREST BEACON SET! WE PROMISE! ");
+    }
+
 
     private void assignClickListeners()
     {
@@ -481,8 +516,16 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         rootView.findViewById(R.id.stop_button).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                onResume();
-                navigateButton.setVisibility(View.GONE);
+
+                rootView.findViewById(R.id.instructions_container).setVisibility(View.VISIBLE);
+                rootView.findViewById(R.id.arrived_at_destination).setVisibility(View.GONE);
+                rootView.findViewById(R.id.ar_container).setVisibility(View.GONE);
+                rootView.findViewById(R.id.camera_frame).setVisibility(View.GONE);
+                rootView.findViewById(R.id.ar_content_overlay).setVisibility(View.GONE);
+
+
+                listView.setVisibility(View.VISIBLE);
+                navigateButton.setVisibility(View.INVISIBLE);
                 return false;
             }
         });
@@ -569,10 +612,106 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         ((TextView)rootView.findViewById(R.id.check_point_label)).setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
 
+
+        if(nearestBeacon != null) {
+            Toast.makeText(getContext(),"Nearest Beacon Found", Toast.LENGTH_LONG).show();
+
+            for (int i = 0; i < map.length; i++) {
+                if (map[i].getName().equals(selectedShop)) {
+//                compassView.setBearing();
+                    for (int j = 0; j < map.length; j++) {
+                        if (map[j].getId().equals(nearestBeacon.getId1().toString())) {
+                            Log.d(TAG, "prepareNavigation: Setting direction array for Beacons");
+                            directions = map[j].getDirectionsTo(map[i].getId(), 4);
+                            Log.d(TAG, "prepareNavigationBeacon: Directions: " + MapPoint.flattenDirections(directions));
+                            if(directions.length > 1)
+                            {
+                                Log.d(TAG, "prepareNavigationBeacon: More than 1 direction");
+                                setNextBeacon(directions[0], directions[1]);
+                                popDirection();
+                            }else
+                            {
+                                reachedDestination();
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            Toast.makeText(getContext(),"Nearest Beacon not Found", Toast.LENGTH_LONG).show();
+        }
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
 
         initializeBeaconDistance();
+    }
+
+    private void setNextBeacon(MapPoint currPoint, MapPoint nextPoint){
+        Log.d(TAG, "setNextBeacon: Setting nav from " + currPoint.toString() + " to " + nextPoint.toString());
+        Beacon newTarget = getBeaconFromRange(nextPoint.getId());
+        if(newTarget != null) {
+            Log.d(TAG, "setNextBeacon: newTarget: " + getMapPointName(newTarget.getId1().toString()));
+            Log.d(TAG, "setNextBeacon: Setting distance");
+            updateTargetBeacon(newTarget);
+        }
+    }
+
+    private void setNextBeacon(MapPoint currPoint, MapPoint nextPoint, double trueNorth){
+        compassView.setBearing((float) currPoint.getBearingTo(nextPoint.getId()));
+        arrowView.setRotation((float) (currPoint.getBearingTo(nextPoint.getId()) + trueNorth));
+        updateTextDirection((float) (currPoint.getBearingTo(nextPoint.getId()) + trueNorth));
+        setNextBeacon(currPoint,nextPoint);
+    }
+
+    private void updateTargetBeacon(Beacon target)
+    {
+        if(target != null)
+        {
+            setDistanceDetails(target);
+            targetBeacon = target;
+        }else
+        {
+            Log.d(TAG, "updateTargetBeacon: Null target");
+        }
+    }
+
+
+    private void setDistanceDetails(Beacon target)
+    {
+        String distanceLabel = "Distance from " + getMapPointName(target.getId1().toString());
+        ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
+        double distance = target.getDistance();
+        final String distance_str = df2.format(distance) + "m";
+        ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText(distance_str);
+    }
+
+
+    private Beacon getBeaconFromRange(String id)
+    {
+        Log.d(TAG, "getBeaconFromRange: Checking for beacon matching id: " + id);
+        for (int i = 0; i < beaconsInRange.size(); i++)
+        {
+            Log.d(TAG, "getBeaconFromRange: Checking Beacon["+ i +"] " + beaconsInRange.get(i).getId1().toString());
+            if(beaconsInRange.get(i).getId1().toString().equals(id))
+            {
+                Log.d(TAG, "getBeaconFromRange: Found the right one! ["+i+"]");
+                return beaconsInRange.get(i);
+            }
+        }
+        Log.d(TAG, "getBeaconFromRange: Returned null on ID " + id);
+        return null;
+    }
+
+    private void popDirection(){
+        MapPoint[] newArray = new MapPoint[directions.length-1];
+
+        for (int i = 1; i < directions.length; i++) {
+            newArray[i-1] = directions[i];
+        }
+
+        directions = newArray;
     }
 
     private void shareGeneral() {
@@ -730,7 +869,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         // get bearing to target
         SensorManager.getOrientation(rotation, orientation);
         // east degrees of true North
-        double bearing = orientation[0];
+        bearing = orientation[0];
 
         //angleLowpassFilter.add((float) bearing);
 
@@ -755,8 +894,29 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             compassView.postInvalidate();
         }
 
-        updateTextDirection(bearing); // display text direction on screen
+        //updateTextDirection(bearing); // display text direction on screen
 
+        if(directions != null) {
+//                            Toast.makeText(getContext(),"Directions: " + MapPoint.flattenDirections(directions), Toast.LENGTH_LONG).show();
+
+            if (nearestBeacon.getId1().toString().equals(directions[directions.length - 1].getId())) {
+                if (distance <= 0.40) {
+                    reachedDestination();
+                }
+            } else if (nearestBeacon.getId1().toString().equals(directions[0].getId())) {
+                if (distance <= 0.40) {
+
+                    if (directions.length > 1) {
+                        setNextBeacon(directions[0], directions[1], bearing);
+                        Toast.makeText(getContext(),"Beacons set to: "+ directions[0].getName() + " => " + directions[1].getName(), Toast.LENGTH_LONG).show();
+                        popDirection();
+
+                    }
+//                                    Toast.makeText(getContext(),"POP DIRECTION!!!", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        }
 
 
     }
@@ -886,35 +1046,84 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         try {
             beaconManager.startMonitoringBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
         } catch (RemoteException e) {    }
 
         try {beaconManager.removeAllRangeNotifiers();
             beaconManager.addRangeNotifier(new RangeNotifier() {
                 @Override
                 public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                    Log.d(TAG, "didRangeBeaconsInRegion: Entering Did Range");
                     if (beacons.size() > 0) {
-                        Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
+//                        nearestBeacon = beacons.iterator().next();
+                        Log.d(TAG, "didRangeBeaconsInRegion: More than 0 beacons");
 
-                        double distance = beacons.iterator().next().getDistance();
-                        final String distance_str = df2.format(distance) + "m";
-                        ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText(distance_str);
+                        Beacon currBeacon;
+                        String beconsStr = "";
 
-                        String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();
-                        String beaconName = beacons.iterator().next().getBluetoothAddress();
-                        if(bluetoothAddress.equals("51:0D:6F:72:E6:A0")){
-                            beaconName = "Edgars";
+                        beaconsInRange.clear();
+
+                        Iterator iterator = beacons.iterator();
+                        while (iterator.hasNext()) {
+                            currBeacon = (Beacon) iterator.next();
+                            //System.out.println(iterator.next());
+                            beaconsInRange.add(currBeacon);
+                            beconsStr = beconsStr + " " + currBeacon.getDistance();
+
+
                         }
-                        else if (bluetoothAddress.equals("72:92:CF:8E:05:68")){
-                            beaconName = "Spitz";
-                        }
-                        String distanceLabel = "Distance from " + beaconName;
-                        ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
+                        Log.d(TAG, "didRangeBeaconsInRegion: "+beconsStr);
 
-                        if(distance < 1.00){
-                            reachedDestination();
+                        setNearestBeacon(beaconsInRange.get(0));
+                        Log.i(TAG, "The first beacon I see is about "+nearestBeacon.getDistance()+" meters away.");
+                        green_dot.setVisibility(View.VISIBLE);
+                        for (int i = 1; i < beaconsInRange.size(); i++) {
+                            if(nearestBeacon.getDistance() > beaconsInRange.get(i).getDistance()){
+                                setNearestBeacon(beaconsInRange.get(i));
+                            }
                         }
 
-                        Log.i(TAG,distance_str);
+                        green_dot.setVisibility(View.VISIBLE);
+//                        Toast.makeText(getContext(),"Beacons: " + beconsStr + "Nearest beacon ID: " + nearestBeacon.getId1().toString(), Toast.LENGTH_LONG).show();
+
+
+
+                        double distance = nearestBeacon.getDistance();
+                        Log.d(TAG, "didRangeBeaconsInRegion: Checking if target");
+                        if(targetBeacon != null)
+                        {
+                            Log.d(TAG, "didRangeBeaconsInRegion: Target Distance Update");
+                            updateTargetBeacon(getBeaconFromRange(targetBeacon.getId1().toString()));
+                            Log.d(TAG, "didRangeBeaconsInRegion: Target Distance Updated!");
+                        }
+
+//                        String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();
+
+
+
+                        if(directions != null) {
+//                            Toast.makeText(getContext(),"Directions: " + MapPoint.flattenDirections(directions), Toast.LENGTH_LONG).show();
+
+                            if (nearestBeacon.getId1().toString().equals(directions[directions.length - 1].getId())) {
+                                if (distance <= 0.20) {
+                                    reachedDestination();
+                                }
+                            } else if (nearestBeacon.getId1().toString().equals(directions[0].getId())) {
+                                if (distance <= 0.20) {
+
+                                    if (directions.length > 1) {
+                                        setNextBeacon(directions[0], directions[1], bearing);
+                                        Toast.makeText(getContext(),"Beacons set to: "+ directions[0].getName() + " => " + directions[1].getName(), Toast.LENGTH_LONG).show();
+                                        popDirection();
+
+                                    }
+//                                    Toast.makeText(getContext(),"POP DIRECTION!!!", Toast.LENGTH_LONG).show();
+
+                                }
+                            }
+                        }
+
+//                        Log.i(TAG,distance_str);
                     }
                 }
             });
@@ -948,6 +1157,19 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         }
         return true;
     }
+
+    private String getMapPointName(String id)
+    {
+        for (int i = 0; i < map.length; i++)
+        {
+            if(map[i].getId().equals(id))
+            {
+                return map[i].getName();
+            }
+        }
+        return "Node not found";
+    }
+
 
     private void requestPermissions() {
         ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);

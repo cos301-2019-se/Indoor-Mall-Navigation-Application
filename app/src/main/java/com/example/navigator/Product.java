@@ -28,15 +28,27 @@ public class Product {
     public String id;
     public String name;
     public double price;
+    public int quantity;
+    public String imageName;
 
     public Product() {
 
     }
 
-    public Product(String id, String name, double price) {
+    public Product(String id, String name, double price, int qty) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.quantity = qty;
+        this.imageName = "";
+    }
+
+    public Product(String id, String name, double price, int qty, String imageName) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = qty;
+        this.imageName = imageName;
     }
 
     public String getId() {
@@ -46,4 +58,5 @@ public class Product {
     public double getPrice() {
         return price;
     }
+    public int getQuantity() {return quantity; }
 }

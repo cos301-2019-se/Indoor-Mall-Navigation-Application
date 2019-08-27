@@ -149,7 +149,7 @@ public class Cart extends Fragment {
                     final String price = snapshot.child("price").getValue().toString();
                     final String id = snapshot.child("id").getValue().toString();
                     final String quantity = snapshot.child("quantity").getValue().toString();
-                    String imageName = snapshot.child("imageName").getValue().toString();
+                    //String imageName = snapshot.child("imageName").getValue().toString();
 
                     final CartProduct currCartProduct = new CartProduct();
                     /*final Bitmap[] aBitMap = new Bitmap[1];

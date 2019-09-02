@@ -5,14 +5,16 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.navigator.R;
 
 import java.util.ArrayList;
 
-public class ComparePriceDialog extends Dialog implements
-        android.view.View.OnClickListener{
+public class ComparePriceDialog extends Dialog{
 
     private Context c;
     private Dialog d;
@@ -41,19 +43,18 @@ public class ComparePriceDialog extends Dialog implements
         prodPrice.setText("R" + price);
         TextView prodShop = findViewById(R.id.textViewShopName);
         prodShop.setText(shop);
-
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            /*case R.id.ok_btn:
+        ListView otherShopsListView = findViewById(R.id.othershops_lv);
+        Button close = findViewById(R.id.close_btn);
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 dismiss();
-                break;
-            default:
-                break;*/
-        }
-        dismiss();
+            }
+        });
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(c, android.R.layout.simple_list_item_1, otherShops);
+        otherShopsListView.setAdapter(arrayAdapter);
+
     }
 
 }

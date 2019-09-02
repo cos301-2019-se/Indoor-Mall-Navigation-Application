@@ -55,9 +55,11 @@ import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import adapters.ComparePriceDialog;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 /**
  * A simple {@link Fragment} subclass.
@@ -74,6 +76,7 @@ public class Scan extends Fragment {
   public static ImageView scanImage;
   public EditText quantityValue;
   Button buttonScan;
+  Button comparePrice;
   Button buttonAddToCart;
   Button addToWishList;
   Button incrementQuantity;
@@ -106,6 +109,7 @@ public class Scan extends Fragment {
       buttonScan = (Button) view.findViewById(R.id.btn_scan);
       buttonAddToCart = (Button) view.findViewById(R.id.btn_addToCart);
       addToWishList = (Button)  view.findViewById(R.id.btn_addToWishlist);
+      comparePrice = (Button) view.findViewById(R.id.compare_price);
       //Quantity to Cart.
       quantityValue = (EditText) view.findViewById(R.id.edt_Quantity);
       incrementQuantity = (Button) view.findViewById(R.id.btn_Increment_Quantity);
@@ -153,6 +157,21 @@ public class Scan extends Fragment {
           quantityValue.setText(String.valueOf(count));
           itemQuantity = count;
         }
+      });
+
+      comparePrice.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          ArrayList<String> otherShops = new ArrayList<>();
+          otherShops.add("Shoprite - R18.00");
+          otherShops.add("Pick 'n Pay - R20.00");
+          otherShops.add("Spar - R22.00");
+          ComparePriceDialog comparePriceDialog = new ComparePriceDialog(getContext(), "Coca Cola 2L", "30,00", "Woolworths", otherShops);
+          comparePriceDialog.show();
+
+        }
+
+
       });
 
       buttonScan.setOnClickListener(new View.OnClickListener() {

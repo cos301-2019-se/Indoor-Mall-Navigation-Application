@@ -137,8 +137,18 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/compare_price"
+            android:layout_width="140dp"
+            android:layout_height="42dp"
+            android:background="@drawable/buttonshape"
+            android:layout_marginRight="10dp"
+            android:textColor="#FFFFFF"
+            android:textSize="25sp"
+            android:text="Compare"/>
+
+        <Button
             android:id="@+id/btn_addToCart"
-            android:layout_width="173dp"
+            android:layout_width="140dp"
             android:layout_height="42dp"
             android:layout_marginTop="0dp"
             android:layout_marginRight="10dp"
@@ -153,7 +163,7 @@
 
         <Button
             android:id="@+id/btn_addToWishlist"
-            android:layout_width="173dp"
+            android:layout_width="140dp"
             android:layout_height="42dp"
             android:layout_marginTop="0dp"
             android:background="@drawable/buttonshape"

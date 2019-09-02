@@ -63,6 +63,7 @@ import java.io.IOException;
 import java.security.cert.PolicyNode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -122,7 +123,7 @@ public class Cart extends Fragment {
         rootRef = FirebaseDatabase.getInstance().getReference();
         storage = FirebaseStorage.getInstance();
         //database reference pointing to Product node
-        demoRef = rootRef.child("Wishlist");
+        //demoRef = rootRef.child("Wishlist");
 
         listViewProduct = view.findViewById(R.id.listViewProduct);
 
@@ -138,51 +139,25 @@ public class Cart extends Fragment {
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int count = 1;
-                final ArrayList<Integer> quantities = new ArrayList<>();
-                int quantitiesCount = 0;
-                int decreaseButtonID = 0;
-                int increaseButtonID = 0;
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
                     final String productName = snapshot.child("name").getValue().toString();
                     final String price = snapshot.child("price").getValue().toString();
                     final String id = snapshot.child("id").getValue().toString();
                     final String quantity = snapshot.child("quantity").getValue().toString();
-                    String url = snapshot.child("url").getValue().toString();
+                    final String url = snapshot.child("imageUrl").getValue().toString();
+
+                    //Updating values in DB
+                    /*Map<String, Object> userUpdates = new HashMap<>();
+                    userUpdates.put("url", "Alan The Machine");
+                    snapshot.updateChildrenAsync(userUpdates);
+                    String url = snapshot.child("url").getValue().toString();*/
 
 
 
                     final CartProduct currCartProduct = new CartProduct();
-                    /*final Bitmap[] aBitMap = new Bitmap[1];
 
-                    try{
-                        final File localFile = File.createTempFile("images","jpg");
-
-                        StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(id+ ".jpg");
-
-
-
-                        imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                                aBitMap[0] = bitmap;
-                                //products.add(new CartProduct(id, productName, price, quantity,bitmap));
-                                //Toast.makeText(getContext(),"Local File name: " + localFile.getName() + " image name "+ product.getImageName() , Toast.LENGTH_LONG).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-
-                            }
-                        });
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    */
 
                     //currCartProduct.setCartProduct(id, productName, price, quantity, R.drawable.thumb1);
                     products.add(new CartProduct(id, productName, price, quantity, url));
@@ -210,6 +185,8 @@ public class Cart extends Fragment {
         }
 
         //String setTotal = "R " + oTotal;
+
+        Toast.makeText(getContext(),"Overall Price: " + oTotal, Toast.LENGTH_LONG).show();
 
         overallTotal.setText("R " + oTotal);
 

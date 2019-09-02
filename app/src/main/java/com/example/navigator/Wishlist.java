@@ -112,6 +112,7 @@ public class Wishlist extends Fragment {
                     String priceProduct = productName + " R"+ price;
                     String id = snapshot.child("id").getValue().toString();
                     String quantity = snapshot.child("quantity").getValue().toString();
+                    final String url = snapshot.child("imageUrl").getValue().toString();
                     //price = "R price;
                     //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     //list.add(priceProduct);
@@ -119,7 +120,7 @@ public class Wishlist extends Fragment {
                     //final String currProductName = productName;
                     //for (int i = 0; i <2; i++) {
 
-                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
+                    products.add(new CartProduct(id, productName, price, quantity, url));
                     /*
                     TableRow tableRow = new TableRow(getContext());
 

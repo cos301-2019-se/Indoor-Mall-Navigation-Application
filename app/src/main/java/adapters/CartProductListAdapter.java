@@ -51,7 +51,6 @@ import static com.example.navigator.R.layout.cart_product_list_layout;
 public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
     private Context context;
     private List<CartProduct> products;
-    private Uri imageFileUri;
 
 
     //Get device ID
@@ -95,22 +94,12 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.textViewName.setText(product.getName());
         viewHolder.textViewQuantity.setText(product.getQuantity());
         viewHolder.textViewPrice.setText("R " + product.getPrice());
-        //viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
+
         viewHolder.totalPrice.setText(product.getTotalPrice());
 
-        //viewHolder.imageViewPhoto.setImageBitmap(product.getBmap());
 
-        //CartProduct currCartProduct = new CartProduct();
-
-        //FirebaseStorage storage = FirebaseStorage.getInstance();
-        //StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(product.getId()+ ".jpg");
 
         new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
-
-
-
-
-
 
         //Increasing Quantity through button
         viewHolder.incrementQuantity.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +137,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             @Override
             public void onClick(View v) {
                 //Updated quantity on display
-                //viewHolder.textViewQuantity.setText(product.decreaseQuantity());
+                viewHolder.textViewQuantity.setText(product.decreaseQuantity());
                 viewHolder.totalPrice.setText(product.getTotalPrice());
                 //Query to find the ID
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
@@ -160,7 +149,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         for(DataSnapshot dataSnap : dataSnapshot.getChildren())
                         {
                             dataSnap.child("quantity").getRef().setValue(product.getQuantity());
-                            notifyDataSetChanged();
+                            //notifyDataSetChanged();
                         }
                     }
 

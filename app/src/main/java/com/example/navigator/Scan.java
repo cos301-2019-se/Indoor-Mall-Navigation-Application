@@ -116,23 +116,7 @@ public class Scan extends Fragment {
       *   PHONE ID
       * */
       final String deviceId = Installation.id(getContext());
-      //Toast.makeText(getContext(),"Your Device ID is: " + deviceId, Toast.LENGTH_LONG).show();
 
-      /*try {
-        final File localFile = File.createTempFile("images", "jpg");
-        storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-          @Override
-          public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-            Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-            scanImage.setImageBitmap(bitmap);
-
-          }
-        }).addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception exception) {
-          }
-        });
-      } catch (IOException e ) {}*/
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override

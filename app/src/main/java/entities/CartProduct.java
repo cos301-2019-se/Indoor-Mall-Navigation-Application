@@ -13,8 +13,9 @@ public class CartProduct implements Serializable{
     private String quantity;
     private int photo;
     private String totalPrice;
-    private String imageName;
+    private String imageUrl;
     private Bitmap bmap;
+
 
     public CartProduct() {
     }
@@ -25,7 +26,7 @@ public class CartProduct implements Serializable{
         this.price = price;
         this.quantity = quantity;
         this.photo = photo;
-        this.imageName = "";
+        this.imageUrl= "";
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
@@ -35,7 +36,7 @@ public class CartProduct implements Serializable{
 
     }
 
-    public CartProduct(String id, String name, String price, String quantity, int photo, Bitmap b) {
+   /* public CartProduct(String id, String name, String price, String quantity, int photo, Bitmap b) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -49,15 +50,31 @@ public class CartProduct implements Serializable{
         tPrice = roundToTwoPoint(tPrice);
         this.totalPrice = Double.toString(tPrice);
 
-    }
+    }*/
 
-    public CartProduct(String id, String name, String price, String quantity, Bitmap b) {
+   /* public CartProduct(String id, String name, String price, String quantity, Bitmap b) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.photo = photo;
         this.bmap = b;
+
+        price.replace(',','.');
+        double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+//        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = roundToTwoPoint(tPrice);
+        this.totalPrice = Double.toString(tPrice);
+
+    }*/
+
+    public CartProduct(String id, String name, String price, String quantity, String imageUrl) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        //this.photo = photo;
+        this.imageUrl = imageUrl;
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
@@ -73,7 +90,7 @@ public class CartProduct implements Serializable{
         this.price = price;
         this.quantity = quantity;
         this.photo = photo;
-        this.imageName = "";
+        this.imageUrl = "";
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
@@ -89,7 +106,7 @@ public class CartProduct implements Serializable{
         this.price = price;
         this.quantity = quantity;
         this.photo = photo;
-        this.imageName = "";
+        this.imageUrl = "";
         this.bmap = b;
 
         price.replace(',','.');
@@ -183,12 +200,12 @@ public class CartProduct implements Serializable{
         this.totalPrice = Double.toString(tPrice);
     }
 
-    public String getImageName() {
-        return this.imageName;
+    public String getImageUrl() {
+        return this.imageUrl;
     }
 
-    public void setImageName(String imageName) {
-        this.price = imageName;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
 

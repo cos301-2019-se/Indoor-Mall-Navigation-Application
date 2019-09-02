@@ -149,7 +149,9 @@ public class Cart extends Fragment {
                     final String price = snapshot.child("price").getValue().toString();
                     final String id = snapshot.child("id").getValue().toString();
                     final String quantity = snapshot.child("quantity").getValue().toString();
-                    String imageName = snapshot.child("imageName").getValue().toString();
+                    String url = snapshot.child("url").getValue().toString();
+
+
 
                     final CartProduct currCartProduct = new CartProduct();
                     /*final Bitmap[] aBitMap = new Bitmap[1];
@@ -182,8 +184,8 @@ public class Cart extends Fragment {
 
                     */
 
-                    currCartProduct.setCartProduct(id, productName, price, quantity, R.drawable.thumb1);
-                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
+                    //currCartProduct.setCartProduct(id, productName, price, quantity, R.drawable.thumb1);
+                    products.add(new CartProduct(id, productName, price, quantity, url));
                     //Load Elements from DB to product list
 
 

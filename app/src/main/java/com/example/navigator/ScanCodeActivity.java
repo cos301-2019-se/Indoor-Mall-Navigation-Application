@@ -62,6 +62,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
                     Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                     //Toast.makeText(getContext(), localFile.getName(),Toast.LENGTH_LONG).show();
                     Scan.scanImage.setImageBitmap(bitmap);
+                    Scan.scanImageBitmap = bitmap;
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

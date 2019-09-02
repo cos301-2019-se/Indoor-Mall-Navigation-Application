@@ -74,6 +74,7 @@ public class Scan extends Fragment {
   public static TextView productName;
   public static TextView productPrice;
   public static ImageView scanImage;
+  public static Bitmap scanImageBitmap;
   public EditText quantityValue;
   Button buttonScan;
   Button comparePrice;
@@ -166,7 +167,8 @@ public class Scan extends Fragment {
           otherShops.add("Shoprite - R18.00");
           otherShops.add("Pick 'n Pay - R20.00");
           otherShops.add("Spar - R22.00");
-          ComparePriceDialog comparePriceDialog = new ComparePriceDialog(getContext(), "Coca Cola 2L", "30,00", "Woolworths", otherShops);
+          ComparePriceDialog comparePriceDialog = new ComparePriceDialog(getContext(), scanImageBitmap, productName.getText().toString(), productPrice.getText().toString(),
+                  "Woolworths", otherShops);
           comparePriceDialog.show();
 
         }

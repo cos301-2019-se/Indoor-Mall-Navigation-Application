@@ -2,11 +2,13 @@ package adapters;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,14 +24,16 @@ public class ComparePriceDialog extends Dialog{
     private String price;
     private String shop;
     private ArrayList<String> otherShops;
+    private Bitmap scanImageBitmap;
 
-    public ComparePriceDialog(Context a, String productName, String price, String shop, ArrayList<String> otherShops){
+    public ComparePriceDialog(Context a, Bitmap scanImageBitmap, String productName, String price, String shop, ArrayList<String> otherShops){
         super(a);
         this.c = a;
         this.productName = productName;
         this.price = price;
         this.shop = shop;
         this.otherShops = otherShops;
+        this.scanImageBitmap = scanImageBitmap;
     }
 
     @Override
@@ -37,10 +41,12 @@ public class ComparePriceDialog extends Dialog{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.compare_price_dialog);
 
+        ImageView prodImage = findViewById(R.id.imageViewPhoto);
+        prodImage.setImageBitmap(scanImageBitmap);
         TextView prodName = findViewById(R.id.textViewName);
         prodName.setText(productName);
         TextView prodPrice = findViewById(R.id.textViewPrice);
-        prodPrice.setText("R" + price);
+        prodPrice.setText(price);
         TextView prodShop = findViewById(R.id.textViewShopName);
         prodShop.setText(shop);
         ListView otherShopsListView = findViewById(R.id.othershops_lv);

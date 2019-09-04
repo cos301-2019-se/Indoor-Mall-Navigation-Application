@@ -50,8 +50,9 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
 
     @Override
     public void handleResult(final Result result) {
-        Scan.resultTextView.setText(result.getText());
+        Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
 
+        Scan.resultTextView.setText(result.getText());
         String imageURL = result.getText()+".jpg";
         try {
             final File localFile = File.createTempFile("images", "jpg");

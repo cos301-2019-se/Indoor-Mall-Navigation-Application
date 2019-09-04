@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,6 +83,9 @@ public class Scan extends Fragment {
   Button addToWishList;
   Button incrementQuantity;
   Button decrementQuantity;
+  private LinearLayout comparePriceContainer;
+  public ArrayList<String> otherShops = null;
+  public static View view;
 
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
@@ -96,6 +100,9 @@ public class Scan extends Fragment {
         // Required empty public constructor
     }
 
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -103,7 +110,7 @@ public class Scan extends Fragment {
       //StorageReference storageRef = mStorageRef.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("android.jpg");
 
       // Inflate the layout for this fragment
-      View view = inflater.inflate(R.layout.fragment_scan, container, false);
+      view = inflater.inflate(R.layout.fragment_scan, container, false);
       resultTextView = (TextView) view.findViewById(R.id.result_text);
       productName = (TextView) view.findViewById((R.id.result_name));
       productPrice = (TextView) view.findViewById((R.id.result_price));
@@ -116,6 +123,7 @@ public class Scan extends Fragment {
       incrementQuantity = (Button) view.findViewById(R.id.btn_Increment_Quantity);
       decrementQuantity = (Button)  view.findViewById(R.id.btn_Decrement_Quantity);
       scanImage = (ImageView) view.findViewById(R.id.img_scanned_product);
+      comparePriceContainer = (LinearLayout) view.findViewById(R.id.compare_price_container);
 
       /*
       *   PHONE ID
@@ -160,10 +168,11 @@ public class Scan extends Fragment {
         }
       });
 
+
       comparePrice.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          ArrayList<String> otherShops = new ArrayList<>();
+          otherShops = new ArrayList<>();
           otherShops.add("Shoprite - R18.00");
           otherShops.add("Pick 'n Pay - R20.00");
           otherShops.add("Spar - R22.00");
@@ -180,6 +189,13 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View view) {
           startActivity(new Intent(getContext(),ScanCodeActivity.class));
+
+          if(otherShops != null && !otherShops.isEmpty()){
+            comparePriceContainer.setVisibility(View.VISIBLE);
+          }
+          else {
+            comparePriceContainer.setVisibility(View.GONE);
+          }
 
           //CHECK!
          /* String barCode = resultTextView.getText().toString();

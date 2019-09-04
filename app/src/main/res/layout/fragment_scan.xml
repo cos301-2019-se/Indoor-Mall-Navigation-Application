@@ -78,8 +78,8 @@
 
     <Button
         android:id="@+id/btn_Decrement_Quantity"
-        android:layout_width="63dp"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="@drawable/buttonshape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
@@ -87,7 +87,7 @@
         android:shadowRadius="5"
         android:text="-"
         android:textColor="#FFFFFF"
-        android:textSize="40dp" />
+        android:textSize="30dp" />
 
 
         <EditText
@@ -102,8 +102,8 @@
 
     <Button
         android:id="@+id/btn_Increment_Quantity"
-        android:layout_width="63dp"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="@drawable/buttonshape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
@@ -111,7 +111,7 @@
         android:shadowRadius="5"
         android:text="+"
         android:textColor="#FFFFFF"
-        android:textSize="40dp" />
+        android:textSize="30sp" />
 
     </LinearLayout>
 
@@ -136,44 +136,96 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/compare_price"
-            android:layout_width="140dp"
+        <LinearLayout
+            android:id="@+id/compare_price_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/compare_price"
+                android:layout_width="50dp"
+                android:layout_height="42dp"
+                android:background="@drawable/buttonshape"
+                android:drawableStart="@drawable/compare2"
+                android:padding="10dp"
+                android:textColor="#FFFFFF"
+                android:textSize="25sp"
+                android:visibility="visible" />
+            <TextView
+                android:layout_width="60sp"
+                android:textAlignment="center"
+                android:layout_height="match_parent"
+                android:text="Compare Prices"
+                android:textColor="@color/black" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+            android:id="@+id/btn_addToCart"
+            android:layout_width="50dp"
             android:layout_height="42dp"
+            android:layout_marginTop="0dp"
             android:background="@drawable/buttonshape"
-            android:layout_marginRight="10dp"
+            android:shadowColor="#A8A8A8"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
             android:textColor="#FFFFFF"
             android:textSize="25sp"
-            android:text="Compare"/>
+            android:drawableStart="@drawable/add_to_cart2"
+            android:padding="10dp"/>
 
-        <Button
-            android:id="@+id/btn_addToCart"
-            android:layout_width="140dp"
-            android:layout_height="42dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/buttonshape"
-            android:shadowColor="#A8A8A8"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="5"
-            android:text="Cart"
-            android:textColor="#FFFFFF"
-            android:textSize="25sp" />
+            <TextView
+                android:layout_width="60sp"
+                android:textAlignment="center"
+                android:layout_height="match_parent"
+                android:text="Add to Cart"
+                android:textColor="@color/black" />
 
-        <Button
-            android:id="@+id/btn_addToWishlist"
-            android:layout_width="140dp"
-            android:layout_height="42dp"
-            android:layout_marginTop="0dp"
-            android:background="@drawable/buttonshape"
-            android:shadowColor="#A8A8A8"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="5"
-            android:text="Wishlist"
-            android:textColor="#FFFFFF"
-            android:textSize="25sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_addToWishlist"
+                android:layout_width="50dp"
+                android:layout_height="42dp"
+                android:layout_marginTop="0dp"
+                android:background="@drawable/buttonshape"
+                android:shadowColor="#A8A8A8"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"
+                android:drawableStart="@drawable/add_to_wishlist2"
+                android:padding="10dp"
+                android:textColor="#FFFFFF"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="60sp"
+                android:textAlignment="center"
+                android:layout_height="match_parent"
+                android:text="Add to Wishlist"
+                android:textColor="@color/black" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

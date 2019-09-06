@@ -54,6 +54,8 @@
         android:textSize="22sp" />
 
     <LinearLayout
+        android:id="@+id/imageContainer"
+        android:visibility="invisible"
         android:layout_width="fill_parent"
         android:layout_height="250dp"
         android:layout_marginTop="-100dp"
@@ -70,64 +72,75 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:id="@+id/qtyContainer"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="10dp">
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_Decrement_Quantity"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="-"
-        android:textColor="#FFFFFF"
-        android:textSize="30dp" />
+        <LinearLayout
+
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="10dp">
+
+            <Button
+                android:id="@+id/btn_Decrement_Quantity"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/buttonshape"
+                android:shadowColor="#A8A8A8"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"
+                android:text="-"
+                android:textColor="#FFFFFF"
+                android:textSize="30dp" />
+
+
+            <EditText
+                android:id="@+id/edt_Quantity"
+                android:layout_width="93dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:text="0"
+                android:textAlignment="center"
+                android:background="@android:color/transparent"
+                android:inputType="number" />
+
+            <Button
+                android:id="@+id/btn_Increment_Quantity"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/buttonshape"
+                android:shadowColor="#A8A8A8"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"
+                android:text="+"
+                android:textColor="#FFFFFF"
+                android:textSize="30sp" />
+
+        </LinearLayout>
 
 
         <EditText
-            android:id="@+id/edt_Quantity"
-            android:layout_width="93dp"
+            android:id="@+id/editText2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="0"
-            android:textAlignment="center"
+            android:inputType="textPersonName"
             android:background="@android:color/transparent"
-            android:inputType="number" />
+            android:layout_gravity="center"
+            android:text="Quantity"
+            android:textAlignment="center"
 
-    <Button
-        android:id="@+id/btn_Increment_Quantity"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="+"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp" />
+            />
 
     </LinearLayout>
 
-
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:background="@android:color/transparent"
-        android:layout_gravity="center"
-        android:text="Quantity"
-        android:textAlignment="center"
-
-        />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -165,6 +178,8 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/addToCartContainer"
+            android:visibility="invisible"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -196,6 +211,8 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/addToWishlistContainer"
+            android:visibility="invisible"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"

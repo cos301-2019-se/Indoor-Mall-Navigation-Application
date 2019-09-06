@@ -84,6 +84,10 @@ public class Scan extends Fragment {
   Button incrementQuantity;
   Button decrementQuantity;
   private LinearLayout comparePriceContainer;
+  private LinearLayout imageContainer;
+  private LinearLayout qtyContainer;
+  private LinearLayout addToCartContainer;
+  private LinearLayout addToWishlistContainer;
   public ArrayList<String> otherShops = null;
   public static View view;
 
@@ -124,6 +128,10 @@ public class Scan extends Fragment {
       decrementQuantity = (Button)  view.findViewById(R.id.btn_Decrement_Quantity);
       scanImage = (ImageView) view.findViewById(R.id.img_scanned_product);
       comparePriceContainer = (LinearLayout) view.findViewById(R.id.compare_price_container);
+      imageContainer = (LinearLayout) view.findViewById(R.id.imageContainer);
+      qtyContainer = (LinearLayout) view.findViewById(R.id.qtyContainer);
+      addToCartContainer = (LinearLayout) view.findViewById(R.id.addToCartContainer);
+      addToWishlistContainer = (LinearLayout) view.findViewById(R.id.addToWishlistContainer);
 
       /*
       *   PHONE ID
@@ -190,12 +198,6 @@ public class Scan extends Fragment {
         public void onClick(View view) {
           startActivity(new Intent(getContext(),ScanCodeActivity.class));
 
-          if(otherShops != null && !otherShops.isEmpty()){
-            comparePriceContainer.setVisibility(View.VISIBLE);
-          }
-          else {
-            comparePriceContainer.setVisibility(View.GONE);
-          }
 
           //CHECK!
          /* String barCode = resultTextView.getText().toString();

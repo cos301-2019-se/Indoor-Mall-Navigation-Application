@@ -51,6 +51,10 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
     @Override
     public void handleResult(final Result result) {
         Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.imageContainer).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.qtyContainer).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.addToCartContainer).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.addToWishlistContainer).setVisibility(View.VISIBLE);
 
         Scan.resultTextView.setText(result.getText());
         String imageURL = result.getText()+".jpg";

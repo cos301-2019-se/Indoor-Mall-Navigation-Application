@@ -254,12 +254,12 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
     }
 
     private static class ViewHolder {
-        TextView textViewName;
-        TextView textViewQuantity;
-        TextView textViewPrice;
-        ImageView imageViewPhoto;
-        TextView totalPrice;
-        Button incrementQuantity;
+        public static TextView textViewName;
+        public static TextView textViewQuantity;
+        public static TextView textViewPrice;
+        public static ImageView imageViewPhoto;
+        public static TextView totalPrice;
+        public static Button incrementQuantity;
         Button decrementQuantity;
         Button deleteCartProduct;
         Button addToWishList;

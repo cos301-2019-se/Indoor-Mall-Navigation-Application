@@ -88,31 +88,7 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
 
         new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
 
-        /*try{
-            final File localFile = File.createTempFile("images","jpg");
-            final String imageName = product.getId()+".jpg";
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(product.getId()+".jpg");
 
-
-
-            imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    viewHolder.imageViewPhoto.setImageBitmap(bitmap);
-                    //Toast.makeText(getContext(),"Image: " + imageName, Toast.LENGTH_LONG).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-
-                }
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
 
 
         final CartProduct currProduct = products.get(position);

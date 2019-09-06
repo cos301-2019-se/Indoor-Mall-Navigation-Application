@@ -122,14 +122,13 @@ public class Cart extends Fragment {
         overallTotal = view.findViewById(R.id.overallTotal);
         rootRef = FirebaseDatabase.getInstance().getReference();
         storage = FirebaseStorage.getInstance();
-        //database reference pointing to Product node
-        //demoRef = rootRef.child("Wishlist");
+
 
         listViewProduct = view.findViewById(R.id.listViewProduct);
 
         final List<CartProduct> products = new ArrayList<CartProduct>();
         demoRef = rootRef.child("Cart").child(deviceId);
-        //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
+
 
 
 
@@ -148,20 +147,9 @@ public class Cart extends Fragment {
                     final String quantity = snapshot.child("quantity").getValue().toString();
                     final String url = snapshot.child("imageUrl").getValue().toString();
 
-                    //Updating values in DB
-                    /*Map<String, Object> userUpdates = new HashMap<>();
-                    userUpdates.put("url", "Alan The Machine");
-                    snapshot.updateChildrenAsync(userUpdates);
-                    String url = snapshot.child("url").getValue().toString();*/
 
-
-
-                    final CartProduct currCartProduct = new CartProduct();
-
-
-                    //currCartProduct.setCartProduct(id, productName, price, quantity, R.drawable.thumb1);
                     products.add(new CartProduct(id, productName, price, quantity, url));
-                    //Load Elements from DB to product list
+
 
 
                 }
@@ -169,6 +157,19 @@ public class Cart extends Fragment {
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);
 
                 listViewProduct.setAdapter(productListAdapter);
+
+                double oTotal = 0.00;
+
+                Toast.makeText(getContext(),"Products: " + products.size(), Toast.LENGTH_LONG).show();
+
+                for(int i = 0; i< products.size();i++)
+                {
+                    oTotal += Double.parseDouble(products.get(i).getTotalPrice());
+                }
+
+
+
+                overallTotal.setText("R " + oTotal);
             }
 
             @Override
@@ -177,18 +178,7 @@ public class Cart extends Fragment {
             }
         });
 
-        Double oTotal = 0.00;
 
-        for(int i = 0; i< products.size();i++)
-        {
-            oTotal =+ Double.parseDouble(products.get(i).getTotalPrice());
-        }
-
-        //String setTotal = "R " + oTotal;
-
-        Toast.makeText(getContext(),"Overall Price: " + oTotal, Toast.LENGTH_LONG).show();
-
-        overallTotal.setText("R " + oTotal);
 
         return view;
     }

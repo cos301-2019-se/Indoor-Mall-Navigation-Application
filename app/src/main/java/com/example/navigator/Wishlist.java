@@ -101,7 +101,7 @@ public class Wishlist extends Fragment {
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int count = 1;
+                
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String productName = snapshot.child("name").getValue().toString();
                     String barCode  = snapshot.child("id").getValue().toString();
@@ -109,89 +109,13 @@ public class Wishlist extends Fragment {
                     list.add(barCode);
                     listProductNames.add(productName);
                     String price = snapshot.child("price").getValue().toString();
-                    String priceProduct = productName + " R"+ price;
                     String id = snapshot.child("id").getValue().toString();
                     String quantity = snapshot.child("quantity").getValue().toString();
                     final String url = snapshot.child("imageUrl").getValue().toString();
-                    //price = "R price;
-                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
-                    //list.add(priceProduct);
-                    //final int curr = count;
-                    //final String currProductName = productName;
-                    //for (int i = 0; i <2; i++) {
+
 
                     products.add(new CartProduct(id, productName, price, quantity, url));
-                    /*
-                    TableRow tableRow = new TableRow(getContext());
 
-                    // Set new table row layout parameters.
-                    TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-                    tableRow.setLayoutParams(layoutParams);
-
-                    // Add a TextView in the first column.
-                    TextView name = new TextView(getContext());
-                    name.setText(productName);
-                    tableRow.addView(name);
-                    // Add a TextView in the first column.
-                    TextView aPrice = new TextView(getContext());
-                    aPrice.setText(price);
-                    tableRow.addView(aPrice);
-
-                    // Add a button in the second column
-                    ImageButton button1 = new ImageButton(getContext());
-                    button1.setImageResource(R.drawable.ic_shopping_cart_black_24dp);
-                    button1.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            myTable.removeViewAt(curr);
-                            //CODE THAT ADDS TO CART FROM WISHLIST GOES HERE
-                            String y = listProductNames.get(curr-1);
-                            Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
-                            DatabaseConn data = DatabaseConn.open();
-
-                            applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
-                                        Product addToCart = new Product();
-                                        addToCart.id = appleSnapshot.child("id").getValue().toString();
-                                        addToCart.name = appleSnapshot.child("name").getValue().toString();
-                                        addToCart.price = Double.parseDouble(appleSnapshot.child("price").getValue().toString());
-                                        wishToCart.push().setValue(addToCart);
-                                        appleSnapshot.getRef().removeValue();
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                            Toast.makeText(getContext(),"Item added to Cart", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    tableRow.addView(button1);
-                    ImageButton button = new ImageButton(getContext());
-                    button.setImageResource(R.drawable.ic_delete_black_24dp);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            myTable.removeViewAt(curr);
-                            String y = listProductNames.get(curr-1);
-                            String yID = list.get(curr-1);
-//                            Toast.makeText(getContext(),y + " has ID: " + yID + " and is element " + IDList.get(curr-1), Toast.LENGTH_LONG).show();
-                            Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
-
-                            DatabaseConn data = DatabaseConn.open();
-                            data.delete("Wishlist", IDList.get(curr-1));
-
-                            Toast.makeText(getContext(),"Item deleted from Wish list", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    tableRow.addView(button);
-                    myTable.addView(tableRow,count);
-                    //increment counter
-                    count++;*/
                 }
 
                 WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);

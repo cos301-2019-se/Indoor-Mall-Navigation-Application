@@ -76,7 +76,7 @@ public class Scan extends Fragment {
   public static TextView productPrice;
   public static ImageView scanImage;
   public static Bitmap scanImageBitmap;
-  public EditText quantityValue;
+  public static EditText quantityValue;
   Button buttonScan;
   Button comparePrice;
   Button buttonAddToCart;
@@ -159,9 +159,12 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View v) {
           int  count = Integer.parseInt(quantityValue.getText().toString());
-          count--;
-          quantityValue.setText(String.valueOf(count));
-          itemQuantity = count;
+
+          if(count > 1) {
+              count--;
+              quantityValue.setText(String.valueOf(count));
+              itemQuantity = count;
+          }
         }
       });
 

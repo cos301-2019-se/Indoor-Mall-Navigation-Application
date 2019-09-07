@@ -55,6 +55,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
         Scan.view.findViewById(R.id.qtyContainer).setVisibility(View.VISIBLE);
         Scan.view.findViewById(R.id.addToCartContainer).setVisibility(View.VISIBLE);
         Scan.view.findViewById(R.id.addToWishlistContainer).setVisibility(View.VISIBLE);
+        Scan.quantityValue.setText("1");
 
         Scan.resultTextView.setText(result.getText());
         String imageURL = result.getText()+".jpg";

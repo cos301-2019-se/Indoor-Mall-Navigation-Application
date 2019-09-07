@@ -20,7 +20,10 @@
  *
  */
 package com.example.navigator;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,9 +59,11 @@ import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import adapters.ComparePriceDialog;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 /**
  * A simple {@link Fragment} subclass.
@@ -65,6 +71,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
 public class Scan extends Fragment {
+  private Context context;
   private StorageReference mStorageRef; //Retrieving images from DB.
   private ZXingScannerView mScannerView;
   private DatabaseReference databaseReference1,databaseReference3,unameref;
@@ -72,12 +79,25 @@ public class Scan extends Fragment {
   public static TextView productName;
   public static TextView productPrice;
   public static ImageView scanImage;
-  public EditText quantityValue;
+  public static Bitmap scanImageBitmap;
+  public static EditText quantityValue;
   Button buttonScan;
+  Button comparePrice;
   Button buttonAddToCart;
   Button addToWishList;
   Button incrementQuantity;
   Button decrementQuantity;
+  private LinearLayout comparePriceContainer;
+  private LinearLayout imageContainer;
+  private LinearLayout qtyContainer;
+  private LinearLayout addToCartContainer;
+  private LinearLayout addToWishlistContainer;
+  public ArrayList<String> otherShops = null;
+  public static View view;
+  Button Notify;
+  String productNam = "";
+  String productPrices = "";
+  String AnotherOne = "Whatever";
 
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
@@ -92,6 +112,9 @@ public class Scan extends Fragment {
         // Required empty public constructor
     }
 
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -99,18 +122,26 @@ public class Scan extends Fragment {
       //StorageReference storageRef = mStorageRef.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("android.jpg");
 
       // Inflate the layout for this fragment
-      View view = inflater.inflate(R.layout.fragment_scan, container, false);
+      view = inflater.inflate(R.layout.fragment_scan, container, false);
       resultTextView = (TextView) view.findViewById(R.id.result_text);
       productName = (TextView) view.findViewById((R.id.result_name));
       productPrice = (TextView) view.findViewById((R.id.result_price));
       buttonScan = (Button) view.findViewById(R.id.btn_scan);
       buttonAddToCart = (Button) view.findViewById(R.id.btn_addToCart);
       addToWishList = (Button)  view.findViewById(R.id.btn_addToWishlist);
+      comparePrice = (Button) view.findViewById(R.id.compare_price);
       //Quantity to Cart.
       quantityValue = (EditText) view.findViewById(R.id.edt_Quantity);
       incrementQuantity = (Button) view.findViewById(R.id.btn_Increment_Quantity);
       decrementQuantity = (Button)  view.findViewById(R.id.btn_Decrement_Quantity);
       scanImage = (ImageView) view.findViewById(R.id.img_scanned_product);
+      comparePriceContainer = (LinearLayout) view.findViewById(R.id.compare_price_container);
+      imageContainer = (LinearLayout) view.findViewById(R.id.imageContainer);
+      qtyContainer = (LinearLayout) view.findViewById(R.id.qtyContainer);
+      addToCartContainer = (LinearLayout) view.findViewById(R.id.addToCartContainer);
+      addToWishlistContainer = (LinearLayout) view.findViewById(R.id.addToWishlistContainer);
+      //Notify = (Button) view.findViewById(R.id.btn_notify);
+      rootRef = FirebaseDatabase.getInstance().getReference();
 
       /*
       *   PHONE ID
@@ -122,9 +153,12 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View v) {
           int  count = Integer.parseInt(quantityValue.getText().toString());
-          count--;
-          quantityValue.setText(String.valueOf(count));
-          itemQuantity = count;
+
+          if(count > 1) {
+              count--;
+              quantityValue.setText(String.valueOf(count));
+              itemQuantity = count;
+          }
         }
       });
 
@@ -138,11 +172,82 @@ public class Scan extends Fragment {
           itemQuantity = count;
         }
       });
+/*
+      Notify.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+           //String pn ;
+          final String pp;
+          demoRef =rootRef.child("Product");
+          demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+              String result = "60018939";
+              for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                String snapResult =  snapshot.child("id").getValue().toString();
+                //.toString()
+                if(result.equals(snapResult)){
+                  //String productNam = snapshot.child("name").getValue().toString();
+                  //String productPrices = snapshot.child("price").getValue().toString();
+
+                  productNam = snapshot.child("name").getValue().toString();
+                  productPrices = snapshot.child("price").getValue().toString() ;
+                }
+              }
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+          });
+          AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+          builder.setCancelable(true);
+          builder.setTitle("Products running out");
+          builder.setMessage("the following Product in your wishlist is out of stock: \n"+productNam +"\n"+productPrices);
+          //\n "+productNam+"\n"+productPrices
+
+
+          builder.setNegativeButton("Remove", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               // DialogInterface.cancel();
+            }
+          });
+          builder.setPositiveButton("Cart", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+          });
+          builder.show();
+        }
+      });*/
+
+
+      comparePrice.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          otherShops = new ArrayList<>();
+          otherShops.add("Shoprite - R18.00");
+          otherShops.add("Pick 'n Pay - R20.00");
+          otherShops.add("Spar - R22.00");
+          ComparePriceDialog comparePriceDialog = new ComparePriceDialog(getContext(), scanImageBitmap, productName.getText().toString(), productPrice.getText().toString(),
+                  "Woolworths", otherShops);
+          comparePriceDialog.show();
+
+        }
+
+
+      });
 
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
           startActivity(new Intent(getContext(),ScanCodeActivity.class));
+
 
           //CHECK!
          /* String barCode = resultTextView.getText().toString();
@@ -186,8 +291,6 @@ public class Scan extends Fragment {
                 String sessionId = resultTextView.getText().toString();
 
                 //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
-
-
 
                 AddProduct(sessionId,itemQuantity);
               }

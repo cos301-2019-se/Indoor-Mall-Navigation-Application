@@ -27,9 +27,10 @@ public class CartProduct implements Serializable{
         this.photo = photo;
         this.imageName = "";
 
-        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = Double.parseDouble(decimal.format(tPrice));
+        price.replace(',','.');
+        double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+//        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = roundToTwoPoint(tPrice);
         this.totalPrice = Double.toString(tPrice);
 
     }
@@ -42,9 +43,10 @@ public class CartProduct implements Serializable{
         this.photo = photo;
         this.bmap = b;
 
-        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = Double.parseDouble(decimal.format(tPrice));
+        price.replace(',','.');
+        double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+//        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = roundToTwoPoint(tPrice);
         this.totalPrice = Double.toString(tPrice);
 
     }
@@ -57,9 +59,10 @@ public class CartProduct implements Serializable{
         this.photo = photo;
         this.bmap = b;
 
-        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = Double.parseDouble(decimal.format(tPrice));
+        price.replace(',','.');
+        double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+//        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = roundToTwoPoint(tPrice);
         this.totalPrice = Double.toString(tPrice);
 
     }
@@ -72,10 +75,10 @@ public class CartProduct implements Serializable{
         this.photo = photo;
         this.imageName = "";
 
-
-        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = Double.parseDouble(decimal.format(tPrice));
+        price.replace(',','.');
+        double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+//        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = Math.round(tPrice *100.00)/100.00;
         this.totalPrice = Double.toString(tPrice);
 
     }
@@ -89,9 +92,10 @@ public class CartProduct implements Serializable{
         this.imageName = "";
         this.bmap = b;
 
-        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = Double.parseDouble(decimal.format(tPrice));
+        price.replace(',','.');
+        double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+//        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = roundToTwoPoint(tPrice);
         this.totalPrice = Double.toString(tPrice);
 
     }
@@ -137,6 +141,11 @@ public class CartProduct implements Serializable{
         return quantity;
     }
 
+    public double roundToTwoPoint(double round)
+    {
+        return Math.round(round*100)/100;
+    }
+
     public String decreaseQuantity()
     {
         int temp = Integer.parseInt(quantity);
@@ -168,9 +177,9 @@ public class CartProduct implements Serializable{
 
     public void setTotalPrice(String quantity, String price)
     {
-        Double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = Double.parseDouble(decimal.format(tPrice));
+        double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+//        DecimalFormat decimal = new DecimalFormat("0.00");
+        tPrice = roundToTwoPoint(tPrice);
         this.totalPrice = Double.toString(tPrice);
     }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fillViewport="true"
@@ -12,13 +12,14 @@
         android:background="@color/white">
 
         <ImageView
+            android:layout_marginTop="20dp"
             android:layout_width="fill_parent"
             android:layout_height="150dp"
-            android:background="@drawable/payfastimage"/>
+            android:background="@drawable/indoor"/>
 
         <TextView
-            android:textColor="#000"
-            android:layout_marginTop="10dp"
+            android:textColor="#FF0000"
+            android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TOTAL PRICE:  R"
@@ -26,7 +27,7 @@
             android:layout_marginBottom="10dp"/>
         <TextView
             android:id="@+id/textSelectPayment"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,13 +37,13 @@
 
         <TextView
             android:textColor="#000"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="60dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Credit Card"
+            android:text="Debit/Credit Card"
             android:layout_gravity="center"/>
         <ImageView
-
+            android:id="@+id/imageCredit"
             android:layout_width="180dp"
             android:layout_height="120dp"
             android:background="@drawable/credit_card"
@@ -55,28 +56,13 @@
             android:text="EFT"
             android:layout_gravity="center"/>
         <ImageView
+            android:id="@+id/imageEFT"
             android:layout_marginTop="4dp"
             android:layout_width="180dp"
             android:layout_height="120dp"
             android:layout_gravity="center"
             android:background="@drawable/instant"
-
             />
-        <TextView
-            android:textColor="#000"
-            android:layout_marginTop="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bitcoin"
-            android:layout_gravity="center"/>
-        <ImageView
-            android:layout_marginTop="4dp"
-            android:layout_width="180dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:background="@drawable/bitcoin"
-            />
-
         </LinearLayout>
-</ScrollView>
+</RelativeLayout>
 

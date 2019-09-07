@@ -33,53 +33,18 @@ import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.felipecsl.gifimageview.library.GifImageView;
-
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 public class SplashScreen extends AppCompatActivity {
 
     ProgressBar progressBar2;
-    private GifImageView gifImageView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-       // progressBar2 = (ProgressBar) findViewById(R.id.progressBar2);
-        gifImageView = (GifImageView) findViewById(R.id.gifImageView);
-
-        try {
-            InputStream inputstream = getAssets().open("giphy.gif");
-            byte[] bytes = IOUtils.toByteArray(inputstream);
-            gifImageView.setBytes(bytes);
-            gifImageView.startAnimation();
-        }
-        catch (IOException e){
-
-        }
-
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //SplashScreen.this.startActivity(SplashScreen.this,MainActivity.class);
-                startActivity(new Intent(SplashScreen.this, MainActivity.class));
-                SplashScreen.this.finish();
-
-            }
-        },5000);
-
-    }
-}
-
-//Previous One
-
-      /*  ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
         final boolean connected = networkinfo != null && networkinfo.isAvailable() && networkinfo.isConnected();
         Log.v("Network state : ", connected + "");
@@ -109,7 +74,7 @@ public class SplashScreen extends AppCompatActivity {
                             }
                         });
                         //finish();
-                        Intent intent=new Intent(Settings.ACTION_SETTINGS);
+                        Intent intent = new Intent(Settings.ACTION_SETTINGS);
                         startActivity(intent);
 
                     } else {
@@ -121,9 +86,8 @@ public class SplashScreen extends AppCompatActivity {
             }
         };
         splashThread.start();
-*/
-
-
+    }
+}
 
 
 /*

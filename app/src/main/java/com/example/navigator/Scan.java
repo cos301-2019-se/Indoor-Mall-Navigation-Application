@@ -20,7 +20,10 @@
  *
  */
 package com.example.navigator;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -68,6 +71,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
 public class Scan extends Fragment {
+  private Context context;
   private StorageReference mStorageRef; //Retrieving images from DB.
   private ZXingScannerView mScannerView;
   private DatabaseReference databaseReference1,databaseReference3,unameref;
@@ -90,6 +94,10 @@ public class Scan extends Fragment {
   private LinearLayout addToWishlistContainer;
   public ArrayList<String> otherShops = null;
   public static View view;
+  Button Notify;
+  String productNam = "";
+  String productPrices = "";
+  String AnotherOne = "Whatever";
 
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
@@ -132,6 +140,8 @@ public class Scan extends Fragment {
       qtyContainer = (LinearLayout) view.findViewById(R.id.qtyContainer);
       addToCartContainer = (LinearLayout) view.findViewById(R.id.addToCartContainer);
       addToWishlistContainer = (LinearLayout) view.findViewById(R.id.addToWishlistContainer);
+      //Notify = (Button) view.findViewById(R.id.btn_notify);
+      rootRef = FirebaseDatabase.getInstance().getReference();
 
       /*
       *   PHONE ID
@@ -178,6 +188,59 @@ public class Scan extends Fragment {
           itemQuantity = count;
         }
       });
+/*
+      Notify.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+           //String pn ;
+          final String pp;
+          demoRef =rootRef.child("Product");
+          demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+              String result = "60018939";
+              for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                String snapResult =  snapshot.child("id").getValue().toString();
+                //.toString()
+                if(result.equals(snapResult)){
+                  //String productNam = snapshot.child("name").getValue().toString();
+                  //String productPrices = snapshot.child("price").getValue().toString();
+
+                  productNam = snapshot.child("name").getValue().toString();
+                  productPrices = snapshot.child("price").getValue().toString() ;
+                }
+              }
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+          });
+          AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+          builder.setCancelable(true);
+          builder.setTitle("Products running out");
+          builder.setMessage("the following Product in your wishlist is out of stock: \n"+productNam +"\n"+productPrices);
+          //\n "+productNam+"\n"+productPrices
+
+
+          builder.setNegativeButton("Remove", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               // DialogInterface.cancel();
+            }
+          });
+          builder.setPositiveButton("Cart", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+          });
+          builder.show();
+        }
+      });*/
 
 
       comparePrice.setOnClickListener(new View.OnClickListener() {
@@ -244,8 +307,6 @@ public class Scan extends Fragment {
                 String sessionId = resultTextView.getText().toString();
 
                 //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
-
-
 
                 AddProduct(sessionId,itemQuantity);
               }

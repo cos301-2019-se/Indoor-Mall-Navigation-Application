@@ -119,7 +119,7 @@ public class Scan extends Fragment {
       incrementQuantity = (Button) view.findViewById(R.id.btn_Increment_Quantity);
       decrementQuantity = (Button)  view.findViewById(R.id.btn_Decrement_Quantity);
       scanImage = (ImageView) view.findViewById(R.id.img_scanned_product);
-      Notify = (Button) view.findViewById(R.id.btn_notify);
+      //Notify = (Button) view.findViewById(R.id.btn_notify);
       rootRef = FirebaseDatabase.getInstance().getReference();
 
       /*
@@ -164,7 +164,7 @@ public class Scan extends Fragment {
           itemQuantity = count;
         }
       });
-
+/*
       Notify.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -216,7 +216,7 @@ public class Scan extends Fragment {
           });
           builder.show();
         }
-      });
+      });*/
 
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override

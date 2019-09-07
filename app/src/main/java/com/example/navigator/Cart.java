@@ -33,11 +33,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -83,8 +78,7 @@ public class Cart extends Fragment {
 
 //
     private static DecimalFormat df2 = new DecimalFormat("#.##");
-    private FirebaseAuth firebaseAuth;
-    TextView demoValue;
+
     TextView overallTotal;
     ListView cartList;
 
@@ -92,7 +86,7 @@ public class Cart extends Fragment {
 
 
 
-    DatabaseReference rootRef,demoRef;
+    DatabaseReference dbRef,cartRef;
     FirebaseStorage storage;
     public Cart() {
     }
@@ -102,56 +96,47 @@ public class Cart extends Fragment {
         Toast.makeText(getContext(), product.getName(), Toast.LENGTH_LONG).show();
     }
 
-    /*private void initView() {
-        listViewProduct = findViewById(R.id.listViewProduct);
-        listViewProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                listViewProduct_onItemClick(adapterView, view, i, l);
-            }
-        });
-    }*/
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
+
+        //Get Device ID
         final String deviceId = Installation.id(getContext());
-        demoValue = (TextView) view.findViewById(R.id.tvValue);
-        overallTotal = view.findViewById(R.id.overallTotal);
-        rootRef = FirebaseDatabase.getInstance().getReference();
-        storage = FirebaseStorage.getInstance();
 
+        //Retrieve Database Reference
+        dbRef = FirebaseDatabase.getInstance().getReference();
 
+        //List of Products to be placed in Cart
+        final List<CartProduct> products = new ArrayList<CartProduct>();
+
+        //Point to Cart in DB
+        cartRef = dbRef.child("Cart").child(deviceId);
+
+        //List of Cart products
         listViewProduct = view.findViewById(R.id.listViewProduct);
 
-        final List<CartProduct> products = new ArrayList<CartProduct>();
-        demoRef = rootRef.child("Cart").child(deviceId);
+        overallTotal = view.findViewById(R.id.overallTotal);
 
-
-
-
-
-
-        //final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
-        demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        //Get Items From Database
+        cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+                    //Assign Item attributes from DB to each product attribute
                     final String productName = snapshot.child("name").getValue().toString();
                     final String price = snapshot.child("price").getValue().toString();
                     final String id = snapshot.child("id").getValue().toString();
                     final String quantity = snapshot.child("quantity").getValue().toString();
                     final String url = snapshot.child("imageUrl").getValue().toString();
 
-
+                    //Add a product to list of Cart products
                     products.add(new CartProduct(id, productName, price, quantity, url));
-
-
-
                 }
 
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);
@@ -159,8 +144,6 @@ public class Cart extends Fragment {
                 listViewProduct.setAdapter(productListAdapter);
 
                 double oTotal = 0.00;
-
-                Toast.makeText(getContext(),"Products: " + products.size(), Toast.LENGTH_LONG).show();
 
                 for(int i = 0; i< products.size();i++)
                 {

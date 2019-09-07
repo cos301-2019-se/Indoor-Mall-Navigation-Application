@@ -60,22 +60,10 @@ import entities.CartProduct;
  * A simple {@link Fragment} subclass.
  */
 public class Wishlist extends Fragment {
-    SearchView searchView;
-    ListView listView;
-    ArrayList<String> list;
-    ArrayList<String> listProductNames;
-    ArrayAdapter<String > adapter;
-    Button sub;
-    DatabaseReference ref;
-    Product objProduct;
-    private Context context = null;
-    private ListView listWLViewProduct;
-    private static DecimalFormat df2 = new DecimalFormat("#.##");
-    private FirebaseAuth firebaseAuth;
-    TextView demoValue;
-    ListView cartList;
 
-    DatabaseReference rootRef,demoRef,wishToCart;
+    private ListView listWLViewProduct;
+    DatabaseReference dbRef,wlRef;
+
     public Wishlist() {
         // Required empty public constructor
     }
@@ -84,36 +72,37 @@ public class Wishlist extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wishlist, container, false);
-        final String deviceId = Installation.id(getContext());
-        demoValue = (TextView) view.findViewById(R.id.tvValue);
-        rootRef = FirebaseDatabase.getInstance().getReference();
-        //database reference pointing to Product node
-        final List<CartProduct> products = new ArrayList<CartProduct>();
-        demoRef = rootRef.child("Wishlist").child(deviceId);
 
+        //Get Device ID
+        final String deviceId = Installation.id(getContext());
+
+        //Retrieve Database Reference
+        dbRef = FirebaseDatabase.getInstance().getReference();
+
+        //List of Products to be placed in Wishlist
+        final List<CartProduct> products = new ArrayList<CartProduct>();
+
+        //Point to Wishlist in DB
+        wlRef = dbRef.child("Wishlist").child(deviceId);
+
+        //List of Wishlist products
         listWLViewProduct = view.findViewById(R.id.listWLViewProduct);
-        wishToCart = rootRef.child("Cart");
-        //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
-        final ArrayList<String>  list = new ArrayList<>();
-        final ArrayList<String>  IDList = new ArrayList<>();
-        final ArrayList<String>  listProductNames = new ArrayList<>();
-        //final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
-        demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        //Get Items From Database
+        wlRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+                    //Assign Item attributes from DB to each product attribute
                     String productName = snapshot.child("name").getValue().toString();
-                    String barCode  = snapshot.child("id").getValue().toString();
-                    IDList.add(snapshot.getKey());
-                    list.add(barCode);
-                    listProductNames.add(productName);
                     String price = snapshot.child("price").getValue().toString();
                     String id = snapshot.child("id").getValue().toString();
                     String quantity = snapshot.child("quantity").getValue().toString();
                     final String url = snapshot.child("imageUrl").getValue().toString();
 
-
+                    //Add a product to list of Wishlist products
                     products.add(new CartProduct(id, productName, price, quantity, url));
 
                 }

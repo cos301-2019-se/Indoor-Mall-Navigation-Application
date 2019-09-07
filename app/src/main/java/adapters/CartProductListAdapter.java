@@ -4,7 +4,7 @@ import entities.CartProduct;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -15,34 +15,23 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.net.URL;
 import java.util.List;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.example.navigator.Product;
 import com.example.navigator.R;
 import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.Installation;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import static com.example.navigator.R.layout.cart_product_list_layout;
 
@@ -91,15 +80,18 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         }
 
         final CartProduct product = products.get(position);
+
         viewHolder.textViewName.setText(product.getName());
         viewHolder.textViewQuantity.setText(product.getQuantity());
         viewHolder.textViewPrice.setText("R " + product.getPrice());
-
         viewHolder.totalPrice.setText(product.getTotalPrice());
 
-
+        //Trying Drawable Method
+        //viewHolder.imageViewPhoto.setImageDrawable(LoadImageFromUrl(product.getImageUrl()));
 
         new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
+
+        final CartProduct currProduct = products.get(position);
 
         //Increasing Quantity through button
         viewHolder.incrementQuantity.setOnClickListener(new View.OnClickListener() {
@@ -111,13 +103,13 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 //Query to find the ID
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
-
                 ValueEventListener valueEventListener = new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for(DataSnapshot dataSnap : dataSnapshot.getChildren())
                         {
                             dataSnap.child("quantity").getRef().setValue(product.getQuantity());
+                            notifyDataSetChanged();
                         }
                     }
 
@@ -149,7 +141,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         for(DataSnapshot dataSnap : dataSnapshot.getChildren())
                         {
                             dataSnap.child("quantity").getRef().setValue(product.getQuantity());
-                            //notifyDataSetChanged();
+                            notifyDataSetChanged();
                         }
                     }
 
@@ -160,14 +152,14 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 };
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
 
-                notifyDataSetChanged();
+
 
 
             }
         });
 
 
-        final CartProduct currProduct = products.get(position);
+        //final CartProduct currProduct = products.get(position);
 
         viewHolder.deleteCartProduct.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,12 +218,8 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                             data.delete("Cart",deviceId+"/"+toDelete);
                         }
-
                         removeFromList(currProduct);
-
                     }
-
-
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -240,9 +228,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 });
             }
         });
-
-
-
 
         return view;
     }
@@ -289,4 +274,21 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             bmImage.setImageBitmap(result);
         }
     }
+
+    private Drawable LoadImageFromUrl(String url)
+    {
+        try{
+
+            //Toast.makeText(context.getApplicationContext(),url, Toast.LENGTH_LONG).show();
+            InputStream inStream = (InputStream) new URL(url).getContent();
+            Drawable drawable = Drawable.createFromStream(inStream,"product name");
+            return drawable;
+
+        } catch (Exception E)
+        {
+            return null;
+        }
+    }
+
+
 }

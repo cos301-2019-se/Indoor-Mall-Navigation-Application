@@ -37,9 +37,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import static com.example.navigator.R.layout.wish_list_product_layout;
 
@@ -82,15 +79,10 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         }
         final CartProduct product = products.get(position);
         viewHolder.textViewName.setText(product.getName());
-
         viewHolder.textViewPrice.setText("R " + product.getPrice());
         //viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
 
         new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
-
-
-
-
         final CartProduct currProduct = products.get(position);
 
         viewHolder.deleteFromWL.setOnClickListener(new View.OnClickListener() {

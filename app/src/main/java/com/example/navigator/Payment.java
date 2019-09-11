@@ -24,7 +24,7 @@ public class Payment extends AppCompatActivity implements View.OnClickListener {
         debitImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), Login.class);
+                Intent intent = new Intent(view.getContext(), CardInfo.class);
                 view.getContext().startActivity(intent);}
         });
     }

@@ -35,6 +35,7 @@
         <activity android:name=".Signup"></activity>
         <activity android:name=".ScanCodeActivity"></activity>
         <activity android:name=".Payment"></activity>
+        <activity android:name=".CardInfo"></activity>
 
         <activity
             android:name=".MainActivity"

@@ -80,7 +80,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         buttonLogin = (Button) findViewById(R.id.buttonLogin);
         textViewSignup = (TextView) findViewById(R.id.textViewSignUp);
 
-
         buttonLogin.setOnClickListener(this);
         textViewSignup.setOnClickListener(this);
 

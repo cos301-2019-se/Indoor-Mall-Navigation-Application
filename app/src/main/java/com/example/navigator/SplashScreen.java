@@ -121,7 +121,7 @@ public class SplashScreen extends AppCompatActivity {
                             }
                         });
                         //finish();
-                        Intent intent=new Intent(Settings.ACTION_SETTINGS);
+                        Intent intent = new Intent(Settings.ACTION_SETTINGS);
                         startActivity(intent);
 
                     } else {
@@ -133,9 +133,8 @@ public class SplashScreen extends AppCompatActivity {
             }
         };
         splashThread.start();
-*/
-
-
+    }
+}
 
 
 /*
@@ -156,11 +155,6 @@ public class SplashScreen extends AppCompatActivity {
                 Intent i = new Intent(SplashScreen.this, MainActivity.class); startActivity(i);
                 finish(); } }, 3000);
     }
-
-
-
-
-
 }
 */
 

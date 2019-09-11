@@ -50,8 +50,14 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
 
     @Override
     public void handleResult(final Result result) {
-        Scan.resultTextView.setText(result.getText());
+        Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.imageContainer).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.qtyContainer).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.addToCartContainer).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.addToWishlistContainer).setVisibility(View.VISIBLE);
+        Scan.quantityValue.setText("1");
 
+        Scan.resultTextView.setText(result.getText());
         String imageURL = result.getText()+".jpg";
         try {
             final File localFile = File.createTempFile("images", "jpg");
@@ -62,6 +68,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
                     Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                     //Toast.makeText(getContext(), localFile.getName(),Toast.LENGTH_LONG).show();
                     Scan.scanImage.setImageBitmap(bitmap);
+                    Scan.scanImageBitmap = bitmap;
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

@@ -11,14 +11,6 @@
         android:orientation="vertical"
         android:background="@color/white">
 
-        <ImageView
-            android:layout_marginTop="20dp"
-            android:layout_width="fill_parent"
-            android:layout_height="150dp">
-
-        </ImageView>
-
-
         <TextView
             android:textColor="#FF0000"
             android:layout_marginTop="20dp"
@@ -29,7 +21,7 @@
             android:layout_marginBottom="20dp"/>
         <TextView
             android:id="@+id/textSelectPayment"
-            android:textSize="15dp"
+            android:textSize="20dp"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

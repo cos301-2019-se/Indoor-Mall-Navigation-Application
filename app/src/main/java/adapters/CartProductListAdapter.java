@@ -5,6 +5,7 @@ import entities.CartProduct;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -32,6 +33,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
 
 import static com.example.navigator.R.layout.cart_product_list_layout;
 
@@ -67,7 +70,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             viewHolder.textViewName = view.findViewById(R.id.textViewName);
             viewHolder.textViewPrice = view.findViewById(R.id.textViewPrice);
             viewHolder.textViewQuantity = view.findViewById(R.id.textQuantity);
-            viewHolder.imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
+            viewHolder.imageViewPhoto =  view.findViewById(R.id.imageViewPhoto);
             viewHolder.totalPrice = view.findViewById(R.id.totalPrice);
             viewHolder.incrementQuantity = view.findViewById(R.id.incrementQuantity);
             viewHolder.decrementQuantity = view.findViewById(R.id.decrementQuantity);
@@ -88,8 +91,8 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
         //Trying Drawable Method
         //viewHolder.imageViewPhoto.setImageDrawable(LoadImageFromUrl(product.getImageUrl()));
-
-        new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
+        Picasso.with(context).load(product.getImageUrl()).into(viewHolder.imageViewPhoto);
+        //new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
 
         final CartProduct currProduct = products.get(position);
 

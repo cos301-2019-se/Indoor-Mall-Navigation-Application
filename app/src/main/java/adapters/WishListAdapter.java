@@ -37,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import static com.example.navigator.R.layout.wish_list_product_layout;
 
@@ -82,7 +83,8 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         viewHolder.textViewPrice.setText("R " + product.getPrice());
         //viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
 
-        new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
+        Picasso.with(context).load(product.getImageUrl()).into(viewHolder.imageViewPhoto);
+        //new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
         final CartProduct currProduct = products.get(position);
 
         viewHolder.deleteFromWL.setOnClickListener(new View.OnClickListener() {

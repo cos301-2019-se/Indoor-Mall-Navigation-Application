@@ -143,6 +143,8 @@ public class Cart extends Fragment {
 
                 listViewProduct.setAdapter(productListAdapter);
 
+                Toast.makeText(getContext(), "Size: " + products.size() + " Device ID: " + deviceId, Toast.LENGTH_LONG).show();
+
                 double oTotal = 0.00;
 
                 for(int i = 0; i< products.size();i++)

@@ -454,5 +454,14 @@ public class Scan extends Fragment {
         objProduct = new Product("9781741818444","Simply Guitar - S.M",24.99,itemQty, "oo_software_engineering.jpg");
         ref.push().setValue(objProduct);
       }
+      else if(sessionId.equals("6009612470045")){
+        objProduct = new Product("6009612470045","aQuelle Still Water",8.99,itemQty, "oo_software_engineering.jpg");
+        ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("8892961606160")){
+        objProduct = new Product("8892961606160","Spar Rewards Tag",2.50,itemQty, "oo_software_engineering.jpg");
+        ref.push().setValue(objProduct);
+      }
+
     }
 }

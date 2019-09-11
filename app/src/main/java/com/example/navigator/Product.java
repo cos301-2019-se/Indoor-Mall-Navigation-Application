@@ -30,6 +30,7 @@ public class Product {
     public double price;
     public int quantity;
     public String imageName;
+    public String imageUrl;
 
     public Product() {
 
@@ -59,4 +60,12 @@ public class Product {
         return price;
     }
     public int getQuantity() {return quantity; }
+
+    public String getImageUrl() {
+        return this.imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

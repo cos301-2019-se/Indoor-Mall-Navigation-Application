@@ -33,47 +33,59 @@ import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.felipecsl.gifimageview.library.GifImageView;
-
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 public class SplashScreen extends AppCompatActivity {
 
     ProgressBar progressBar2;
-    private GifImageView gifImageView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-       // progressBar2 = (ProgressBar) findViewById(R.id.progressBar2);
-        gifImageView = (GifImageView) findViewById(R.id.gifImageView);
+        ConnectivityManager connectivitymanager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkinfo = connectivitymanager.getActiveNetworkInfo();
+        final boolean connected = networkinfo != null && networkinfo.isAvailable() && networkinfo.isConnected();
+        Log.v("Network state : ", connected + "");
 
-        try {
-            InputStream inputstream = getAssets().open("giphy.gif");
-            byte[] bytes = IOUtils.toByteArray(inputstream);
-            gifImageView.setBytes(bytes);
-            gifImageView.startAnimation();
-        }
-        catch (IOException e){
-
-        }
-
-
-        new Handler().postDelayed(new Runnable() {
+        Thread splashThread = new Thread() {
             @Override
             public void run() {
-                //SplashScreen.this.startActivity(SplashScreen.this,MainActivity.class);
-                startActivity(new Intent(SplashScreen.this, MainActivity.class));
-                SplashScreen.this.finish();
+                try {
+                    int waited = 0;
+                    while (waited < 5000) {
+                        sleep(100);
+                        waited += 100;
+                    }
+                } catch (InterruptedException e) {
+                    // do nothing
+                } finally {
+                    Looper.prepare();
+                    if (connected == false) {
+                        SplashScreen.this.runOnUiThread(new Runnable() {
 
+                            @Override
+                            public void run() {
+                                Toast toast = Toast.makeText(SplashScreen.this, "You must connect to the Internet to continue", Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL, 0, 0);
+                                toast.show();
+
+                            }
+                        });
+                        //finish();
+                        Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                        startActivity(intent);
+
+                    } else {
+                        finish();
+                        startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                    }
+                    Looper.loop();
+                }
             }
-        },5000);
-
+        };
+        splashThread.start();
     }
 }
 

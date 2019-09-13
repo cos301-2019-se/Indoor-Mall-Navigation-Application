@@ -81,6 +81,9 @@ public class Scan extends Fragment {
   public static ImageView scanImage;
   public static Bitmap scanImageBitmap;
   public static EditText quantityValue;
+
+  public static boolean WishlistBoolean = false;
+    public static boolean CartBoolean = false;
   Button buttonScan;
   Button comparePrice;
   Button buttonAddToCart;
@@ -105,6 +108,8 @@ public class Scan extends Fragment {
   private Product objProduct;
   private DatabaseReference ref;
   int itemQuantity;
+
+  public static String imageUrl;
   //Retrieve images from DB
   //FirebaseStorage storage = FirebaseStorage.getInstance();
   //StorageReference storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("036002914585.jpg");//remember to remove .child when working
@@ -280,7 +285,7 @@ public class Scan extends Fragment {
       buttonAddToCart.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-
+            CartBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Cart");
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -292,13 +297,13 @@ public class Scan extends Fragment {
 
                 //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
 
-                AddProduct(sessionId,itemQuantity);
+                AddProduct(sessionId,itemQuantity,imageUrl);
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity);
+                AddProduct(sessionId,itemQuantity,imageUrl);
               }
 
             }
@@ -313,8 +318,10 @@ public class Scan extends Fragment {
       });
 
       addToWishList.setOnClickListener(new View.OnClickListener() {
+
         @Override
         public void onClick(View v) {
+            WishlistBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -323,13 +330,13 @@ public class Scan extends Fragment {
               if(dataSnapshot.child(deviceId).exists()){
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity);
+                AddProduct(sessionId,itemQuantity,imageUrl);
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity);
+                AddProduct(sessionId,itemQuantity,imageUrl);
               }
 
             }
@@ -344,18 +351,18 @@ public class Scan extends Fragment {
 
       return view;
     }
-    public void AddProduct(String sessionId, int itemQty){
+    public void AddProduct(String sessionId, int itemQty,String imageUrl){
 
       if(sessionId.equals("5060466519077")){
-        objProduct = new Product("5060466519077","Power Play",19.99,itemQty);
+        objProduct = new Product("5060466519077","Power Play",19.99,itemQty,imageUrl);
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("8718114642871")){
-        objProduct = new Product("8718114642871","Vaseline Lip T",23.99,itemQty);
+        objProduct = new Product("8718114642871","Vaseline Lip T",23.99,itemQty,imageUrl);
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("6009635830536")){
-        objProduct = new Product("6009635830536","Manuscript Book",10.99,itemQty);
+        objProduct = new Product("6009635830536","Manuscript Book",10.99,itemQty,imageUrl);
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("6009695584912")){
@@ -459,7 +466,7 @@ public class Scan extends Fragment {
         ref.push().setValue(objProduct);
       }
       else if(sessionId.equals("8892961606160")){
-        objProduct = new Product("8892961606160","Spar Rewards Tag",2.50,itemQty, "oo_software_engineering.jpg");
+        objProduct = new Product("8892961606160","Spar Rewards Tag",2.50,itemQty,imageUrl);
         ref.push().setValue(objProduct);
       }
 

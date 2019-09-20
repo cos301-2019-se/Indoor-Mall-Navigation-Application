@@ -103,6 +103,8 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 //Updated quantity on display
                 viewHolder.textViewQuantity.setText(product.increaseQuantity());
                 viewHolder.totalPrice.setText(product.getTotalPrice());
+                notifyDataSetChanged();
+
                 //Query to find the ID
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
@@ -112,7 +114,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         for(DataSnapshot dataSnap : dataSnapshot.getChildren())
                         {
                             dataSnap.child("quantity").getRef().setValue(product.getQuantity());
-                            notifyDataSetChanged();
+
                         }
                     }
 
@@ -134,6 +136,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 //Updated quantity on display
                 viewHolder.textViewQuantity.setText(product.decreaseQuantity());
                 viewHolder.totalPrice.setText(product.getTotalPrice());
+                notifyDataSetChanged();
                 //Query to find the ID
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
@@ -144,7 +147,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         for(DataSnapshot dataSnap : dataSnapshot.getChildren())
                         {
                             dataSnap.child("quantity").getRef().setValue(product.getQuantity());
-                            notifyDataSetChanged();
+
                         }
                     }
 

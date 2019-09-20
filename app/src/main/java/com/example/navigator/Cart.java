@@ -137,6 +137,15 @@ public class Cart extends Fragment {
 
                     //Add a product to list of Cart products
                     products.add(new CartProduct(id, productName, price, quantity, url));
+
+                    double oTotal = 0.00;
+
+                    for(int i = 0; i< products.size();i++)
+                    {
+                        oTotal += Double.parseDouble(products.get(i).getTotalPrice());
+                    }
+
+                    overallTotal.setText("R " + oTotal);
                 }
 
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);
@@ -145,7 +154,7 @@ public class Cart extends Fragment {
 
                 //Toast.makeText(getContext(), "Size: " + products.size() + " Device ID: " + deviceId, Toast.LENGTH_LONG).show();
 
-                double oTotal = 0.00;
+                /*double oTotal = 0.00;
 
                 for(int i = 0; i< products.size();i++)
                 {
@@ -154,7 +163,7 @@ public class Cart extends Fragment {
 
 
 
-                overallTotal.setText("R " + oTotal);
+                overallTotal.setText("R " + oTotal);*/
             }
 
             @Override

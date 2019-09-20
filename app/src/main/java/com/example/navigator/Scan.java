@@ -148,6 +148,26 @@ public class Scan extends Fragment {
       * */
       final String deviceId = Installation.id(getContext());
       //Toast.makeText(getContext(),"Your Device ID is: " + deviceId, Toast.LENGTH_LONG).show();
+      rootRef.child("Product").addValueEventListener(new ValueEventListener(){
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot){
+
+          Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+
+          for(DataSnapshot child: children){
+            Toast.makeText(getContext(),"Data " + child.getValue().toString(), Toast.LENGTH_LONG).show();
+          }
+//          for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//            final String productName = snapshot.child("name").getValue().toString();
+//            final String price = snapshot.child("price").getValue().toString();
+//          }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError){
+
+        }
+      });
+
 
       /*try {
         final File localFile = File.createTempFile("images", "jpg");
@@ -188,6 +208,8 @@ public class Scan extends Fragment {
           itemQuantity = count;
         }
       });
+
+
 /*
       Notify.setOnClickListener(new View.OnClickListener() {
         @Override

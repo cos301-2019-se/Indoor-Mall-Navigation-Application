@@ -229,5 +229,7 @@ Cart extends Fragment {
         overallTotal.setText("R " + oTotal);
 
         return view;
+
     }
+
 }

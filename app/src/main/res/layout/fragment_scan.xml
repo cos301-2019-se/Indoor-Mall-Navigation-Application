@@ -10,6 +10,59 @@
     android:gravity="center"
     tools:context=".Scan">
 
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/enormous"
+        android:layout_marginBottom="@dimen/huge"
+        android:layout_marginLeft="@dimen/large"
+        android:layout_marginRight="@dimen/large"
+        android:id="@+id/search_container"
+        android:layout_centerVertical="true"
+        android:animateLayoutChanges="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+
+        android:backgroundTint="@color/black"
+        android:alpha="0"
+        android:clickable="true"
+        android:background="@drawable/rounded_box_white"
+        android:paddingTop="@dimen/large"
+        android:paddingBottom="@dimen/large"
+        android:paddingStart="@dimen/xxxlarge"
+        android:paddingEnd="@dimen/xxxlarge"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Close"
+            android:id="@+id/dismiss_search"
+            android:layout_centerHorizontal="true"
+            android:textSize="@dimen/text_large"
+            android:paddingBottom="@dimen/xlarge"
+            android:textColor="@color/setcoins_red"
+            android:layout_height="wrap_content"/>
+
+
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:layout_below="@id/dismiss_search"
+            android:queryHint="Search Here"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lv1"
+            android:divider="#ad5"
+            android:dividerHeight="2dp"
+            android:layout_below="@+id/searchView"/>
+
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,6 +75,24 @@
         android:orientation="vertical">
 
         <!-- TODO: Update blank fragment layout -->
+
+        <Button
+            android:id="@+id/shop_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shop Name"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            />
+        <Button
+            android:id="@+id/shop_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shop List"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            />
+
         <Button
             android:id="@+id/btn_scan"
             android:layout_width="270dp"
@@ -35,6 +106,12 @@
             android:text="SCAN PRODUCT"
             android:textColor="#FFFFFF"
             android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Search"
+            android:id="@+id/search_btn"
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/result_text"

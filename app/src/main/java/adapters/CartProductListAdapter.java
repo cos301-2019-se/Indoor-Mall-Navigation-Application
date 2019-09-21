@@ -33,10 +33,10 @@ import com.squareup.picasso.Picasso;
 import static com.example.navigator.R.layout.cart_product_list_layout;
 
 
-
 public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
     private Context context;
     private List<CartProduct> products;
+    private TextView localOverall;
 
 
     //Get device ID
@@ -47,10 +47,11 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
 
 
-    public CartProductListAdapter(Context context, List<CartProduct> products) {
+    public CartProductListAdapter(Context context, List<CartProduct> products, TextView oTotal) {
         super(context, R.layout.cart_product_list_layout, products);
         this.context = context;
         this.products = products;
+        this.localOverall = oTotal;
     }
 
     @NonNull
@@ -101,9 +102,17 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 product.increaseQuantity();
                 viewHolder.textViewQuantity.setText(product.getQuantity());
-                viewHolder.textViewPrice.setText("R " + product.getPrice());
+                viewHolder.totalPrice.setText("R " + product.getTotalPrice());
+
+                //Get the double from cart
+                String sOverallTotal = localOverall.getText().toString().substring(2);
+
+                double temp = Double.parseDouble(sOverallTotal);
 
 
+                temp += Double.parseDouble(product.getPrice());
+                temp = (double) Math.round(temp*100)/100;
+                localOverall.setText("R " +Double.toString(temp));
 
                 //Query to find the ID
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
@@ -138,10 +147,20 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 product.decreaseQuantity();
 
                 viewHolder.textViewQuantity.setText(product.getQuantity());
-                viewHolder.textViewPrice.setText("R " + product.getPrice());
+                viewHolder.totalPrice.setText("R " + product.getTotalPrice());
 
                 //notifyDataSetChanged();
                 //Query to find the ID
+
+                String sOverallTotal = localOverall.getText().toString().substring(2);
+
+                double temp = Double.parseDouble(sOverallTotal);
+
+
+                temp -= Double.parseDouble(product.getPrice());
+                temp = (double) Math.round(temp*100)/100;
+                localOverall.setText("R " +Double.toString(temp));
+
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
 
@@ -174,6 +193,15 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.deleteCartProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String sOverallTotal = localOverall.getText().toString().substring(2);
+
+                double temp = Double.parseDouble(sOverallTotal);
+
+
+                temp -= Double.parseDouble(product.getTotalPrice());
+                temp = (double) Math.round(temp*100)/100;
+                localOverall.setText("R " +Double.toString(temp));
 
 
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
@@ -212,6 +240,15 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.addToWishList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String sOverallTotal = localOverall.getText().toString().substring(2);
+
+                double temp = Double.parseDouble(sOverallTotal);
+
+
+                temp -= Double.parseDouble(product.getTotalPrice());
+                temp = (double) Math.round(temp*100)/100;
+                localOverall.setText("R " +Double.toString(temp));
+
                 wishDBRef.push().setValue(product);
                 Toast.makeText(getContext(),product.getName()+ " added to WishList ", Toast.LENGTH_LONG).show();
 

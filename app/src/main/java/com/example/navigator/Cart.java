@@ -142,13 +142,15 @@ public class Cart extends Fragment {
 
                     for(int i = 0; i< products.size();i++)
                     {
-                        oTotal += Double.parseDouble(products.get(i).getTotalPrice());
+                        double temp = Double.parseDouble(products.get(i).getTotalPrice());
+                        temp = (double) Math.round(temp*100)/100;
+                        oTotal += temp;
                     }
 
                     overallTotal.setText("R " + oTotal);
                 }
 
-                CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);
+                CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
 
                 listViewProduct.setAdapter(productListAdapter);
 

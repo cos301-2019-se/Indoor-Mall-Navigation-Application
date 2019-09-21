@@ -471,6 +471,10 @@ public class Scan extends Fragment {
         objProduct = new Product("8892961606160","Spar Rewards Tag",2.50,itemQty,imageUrl);
         ref.push().setValue(objProduct);
       }
+      else if(sessionId.equals("6008454002605")){
+          objProduct = new Product("6008454002605","Counter Book",5.49,itemQty,imageUrl);
+          ref.push().setValue(objProduct);
+      }
 
 
     }
@@ -591,6 +595,10 @@ public class Scan extends Fragment {
         }
         else if(sessionId.equals("8892961606160")){
             objProduct = new Product("8892961606160","Spar Rewards Tag",2.50,itemQty,imageUrl);
+            //ref.push().setValue(objProduct);
+        }
+        else if(sessionId.equals("6008454002605")){
+            objProduct = new Product("6008454002605","Counter Book",5.49,itemQty,imageUrl);
             //ref.push().setValue(objProduct);
         }
 

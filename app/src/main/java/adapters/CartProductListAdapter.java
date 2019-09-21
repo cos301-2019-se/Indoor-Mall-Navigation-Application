@@ -2,13 +2,8 @@ package adapters;
 
 import entities.CartProduct;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
+
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.InputStream;
-import java.net.URL;
+
 import java.util.List;
 import android.content.Context;
 import android.widget.Toast;
@@ -101,9 +95,15 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             @Override
             public void onClick(View v) {
                 //Updated quantity on display
-                viewHolder.textViewQuantity.setText(product.increaseQuantity());
-                viewHolder.totalPrice.setText(product.getTotalPrice());
-                notifyDataSetChanged();
+                //viewHolder.textViewQuantity.setText(product.increaseQuantity());
+                //viewHolder.totalPrice.setText(product.getTotalPrice());
+
+
+                product.increaseQuantity();
+                viewHolder.textViewQuantity.setText(product.getQuantity());
+                viewHolder.textViewPrice.setText("R " + product.getPrice());
+
+
 
                 //Query to find the ID
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
@@ -123,6 +123,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                     }
                 };
+                notifyDataSetChanged();
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
 
 
@@ -133,10 +134,13 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.decrementQuantity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Updated quantity on display
-                viewHolder.textViewQuantity.setText(product.decreaseQuantity());
-                viewHolder.totalPrice.setText(product.getTotalPrice());
-                notifyDataSetChanged();
+
+                product.decreaseQuantity();
+
+                viewHolder.textViewQuantity.setText(product.getQuantity());
+                viewHolder.textViewPrice.setText("R " + product.getPrice());
+
+                //notifyDataSetChanged();
                 //Query to find the ID
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
@@ -147,7 +151,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         for(DataSnapshot dataSnap : dataSnapshot.getChildren())
                         {
                             dataSnap.child("quantity").getRef().setValue(product.getQuantity());
-
                         }
                     }
 
@@ -156,6 +159,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                     }
                 };
+                notifyDataSetChanged();
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
 
 
@@ -245,56 +249,19 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
     }
 
     private static class ViewHolder {
-        public static TextView textViewName;
-        public static TextView textViewQuantity;
-        public static TextView textViewPrice;
-        public static ImageView imageViewPhoto;
-        public static TextView totalPrice;
-        public static Button incrementQuantity;
+        public TextView textViewName;
+        public TextView textViewQuantity;
+        public TextView textViewPrice;
+        public ImageView imageViewPhoto;
+        public TextView totalPrice;
+        public Button incrementQuantity;
         Button decrementQuantity;
         Button deleteCartProduct;
         Button addToWishList;
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
 
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
 
-        protected Bitmap doInBackground(String[] urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
-
-    private Drawable LoadImageFromUrl(String url)
-    {
-        try{
-
-            //Toast.makeText(context.getApplicationContext(),url, Toast.LENGTH_LONG).show();
-            InputStream inStream = (InputStream) new URL(url).getContent();
-            Drawable drawable = Drawable.createFromStream(inStream,"product name");
-            return drawable;
-
-        } catch (Exception E)
-        {
-            return null;
-        }
-    }
 
 
 }

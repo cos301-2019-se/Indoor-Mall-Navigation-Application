@@ -48,7 +48,8 @@ public class CartProduct implements Serializable{
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        tPrice = roundToTwoPoint(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = Double.toString(tPrice);
 
     }
@@ -66,7 +67,8 @@ public class CartProduct implements Serializable{
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
 //        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = roundToTwoPoint(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = Double.toString(tPrice);
 
     }
@@ -82,7 +84,8 @@ public class CartProduct implements Serializable{
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
 //        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = Math.round(tPrice *100.00)/100.00;
+        //tPrice = Math.round(tPrice *100.00)/100.00;
+        tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = Double.toString(tPrice);
 
     }
@@ -99,7 +102,8 @@ public class CartProduct implements Serializable{
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
 //        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = roundToTwoPoint(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = Double.toString(tPrice);
 
     }
@@ -182,7 +186,7 @@ public class CartProduct implements Serializable{
     public void setTotalPrice(String quantity, String price)
     {
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        tPrice = roundToTwoPoint(tPrice);
+        tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = Double.toString(tPrice);
     }
 

@@ -150,6 +150,15 @@ public class Cart extends Fragment {
                     overallTotal.setText("R " + oTotal);
                 }
 
+                /*Calling the overall value
+                *
+                * Retrieve it from the display
+                *
+                * String sOverallTotal = localOverall.getText().toString().substring(2);
+                * double valueAsDouble = Double.parseDouble(sOverallTotal);
+                *
+                * */
+
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
 
                 listViewProduct.setAdapter(productListAdapter);

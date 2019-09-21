@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.security.AccessController;
+import java.text.DecimalFormat;
 
 import static java.security.AccessController.getContext;
 
@@ -34,6 +35,8 @@ public class CartProduct implements Serializable{
     private String imageUrl;
     private Bitmap bmap;
 
+    private static DecimalFormat roundToTwo = new DecimalFormat("#.##");
+
 
     public CartProduct() {
     }
@@ -49,8 +52,9 @@ public class CartProduct implements Serializable{
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
         //tPrice = roundToTwoPoint(tPrice);
-        tPrice = (double) Math.round(tPrice*100)/100;
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -68,8 +72,9 @@ public class CartProduct implements Serializable{
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
 //        DecimalFormat decimal = new DecimalFormat("0.00");
         //tPrice = roundToTwoPoint(tPrice);
-        tPrice = (double) Math.round(tPrice*100)/100;
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -84,9 +89,10 @@ public class CartProduct implements Serializable{
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
 //        DecimalFormat decimal = new DecimalFormat("0.00");
-        //tPrice = Math.round(tPrice *100.00)/100.00;
-        tPrice = (double) Math.round(tPrice*100)/100;
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -103,8 +109,9 @@ public class CartProduct implements Serializable{
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
 //        DecimalFormat decimal = new DecimalFormat("0.00");
         //tPrice = roundToTwoPoint(tPrice);
-        tPrice = (double) Math.round(tPrice*100)/100;
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -157,7 +164,7 @@ public class CartProduct implements Serializable{
     public String decreaseQuantity()
     {
         int temp = Integer.parseInt(quantity);
-        if(temp>0)
+        if(temp>1)
             temp--;
         quantity = Integer.toString(temp);
         setTotalPrice(quantity,price);
@@ -186,8 +193,10 @@ public class CartProduct implements Serializable{
     public void setTotalPrice(String quantity, String price)
     {
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        tPrice = (double) Math.round(tPrice*100)/100;
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
     }
 
     public String getImageUrl() {
@@ -217,29 +226,6 @@ public class CartProduct implements Serializable{
         }
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
 
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String[] urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
 
 }

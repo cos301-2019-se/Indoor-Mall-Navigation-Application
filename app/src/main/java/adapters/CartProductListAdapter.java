@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import java.text.DecimalFormat;
 import java.util.List;
 import android.content.Context;
 import android.widget.Toast;
@@ -38,7 +39,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
     private List<CartProduct> products;
     private TextView localOverall;
 
-
+    private static DecimalFormat roundToTwo = new DecimalFormat("#.##");
     //Get device ID
     final String deviceId = Installation.id(getContext());
 
@@ -85,7 +86,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.totalPrice.setText(product.getTotalPrice());
 
         //Trying Drawable Method
-        //viewHolder.imageViewPhoto.setImageDrawable(LoadImageFromUrl(product.getImageUrl()));
         Picasso.with(context).load(product.getImageUrl()).into(viewHolder.imageViewPhoto);
         //new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
 
@@ -96,9 +96,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             @Override
             public void onClick(View v) {
                 //Updated quantity on display
-                //viewHolder.textViewQuantity.setText(product.increaseQuantity());
-                //viewHolder.totalPrice.setText(product.getTotalPrice());
-
 
                 product.increaseQuantity();
                 viewHolder.textViewQuantity.setText(product.getQuantity());
@@ -106,13 +103,11 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 //Get the double from cart
                 String sOverallTotal = localOverall.getText().toString().substring(2);
-
                 double temp = Double.parseDouble(sOverallTotal);
 
-
                 temp += Double.parseDouble(product.getPrice());
-                temp = (double) Math.round(temp*100)/100;
-                localOverall.setText("R " +Double.toString(temp));
+                //temp = (double) Math.round(temp*100)/100;
+                localOverall.setText("R " +roundToTwo.format(temp));
 
                 //Query to find the ID
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
@@ -144,6 +139,20 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             @Override
             public void onClick(View v) {
 
+                String sOverallTotal = localOverall.getText().toString().substring(2);
+
+                double temp = Double.parseDouble(sOverallTotal);
+                double currPrice = Double.parseDouble(product.getPrice());
+                double currTotalPrice = Double.parseDouble(product.getTotalPrice());
+
+                if(currTotalPrice>currPrice) {
+
+                    temp -= Double.parseDouble(product.getPrice());
+                    temp = (double) Math.round(temp*100)/100;
+                    localOverall.setText("R " +roundToTwo.format(temp));
+
+                }
+
                 product.decreaseQuantity();
 
                 viewHolder.textViewQuantity.setText(product.getQuantity());
@@ -152,14 +161,11 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 //notifyDataSetChanged();
                 //Query to find the ID
 
-                String sOverallTotal = localOverall.getText().toString().substring(2);
-
-                double temp = Double.parseDouble(sOverallTotal);
 
 
-                temp -= Double.parseDouble(product.getPrice());
-                temp = (double) Math.round(temp*100)/100;
-                localOverall.setText("R " +Double.toString(temp));
+
+
+
 
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
@@ -201,7 +207,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 temp -= Double.parseDouble(product.getTotalPrice());
                 temp = (double) Math.round(temp*100)/100;
-                localOverall.setText("R " +Double.toString(temp));
+                localOverall.setText("R " +roundToTwo.format(temp));
 
 
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
@@ -247,7 +253,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 temp -= Double.parseDouble(product.getTotalPrice());
                 temp = (double) Math.round(temp*100)/100;
-                localOverall.setText("R " +Double.toString(temp));
+                localOverall.setText("R " +roundToTwo.format(temp));
 
                 wishDBRef.push().setValue(product);
                 Toast.makeText(getContext(),product.getName()+ " added to WishList ", Toast.LENGTH_LONG).show();

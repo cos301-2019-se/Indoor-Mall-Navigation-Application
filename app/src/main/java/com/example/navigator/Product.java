@@ -29,7 +29,7 @@ public class Product {
     public String name;
     public double price;
     public int quantity;
-    public String imageName;
+    public String imageUrl;
 
     public Product() {
 
@@ -40,15 +40,15 @@ public class Product {
         this.name = name;
         this.price = price;
         this.quantity = qty;
-        this.imageName = "";
+
     }
 
-    public Product(String id, String name, double price, int qty, String imageName) {
+    public Product(String id, String name, double price, int qty, String imageUrl) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = qty;
-        this.imageName = imageName;
+        this.imageUrl = imageUrl;
     }
 
     public String getId() {
@@ -59,4 +59,12 @@ public class Product {
         return price;
     }
     public int getQuantity() {return quantity; }
+
+    public String getImageUrl() {
+        return this.imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

@@ -5,7 +5,9 @@ import entities.WishListProduct;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import android.content.Context;
@@ -34,9 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import static com.example.navigator.R.layout.wish_list_product_layout;
 
@@ -79,37 +80,11 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         }
         final CartProduct product = products.get(position);
         viewHolder.textViewName.setText(product.getName());
-
         viewHolder.textViewPrice.setText("R " + product.getPrice());
         //viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
 
-        try{
-            final File localFile = File.createTempFile("images","jpg");
-            final String imageName = product.getId()+".jpg";
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(product.getId()+".jpg");
-
-
-
-            imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    viewHolder.imageViewPhoto.setImageBitmap(bitmap);
-                    //Toast.makeText(getContext(),"Image: " + imageName, Toast.LENGTH_LONG).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-
-                }
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
+        Picasso.with(context).load(product.getImageUrl()).into(viewHolder.imageViewPhoto);
+        //new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
         final CartProduct currProduct = products.get(position);
 
         viewHolder.deleteFromWL.setOnClickListener(new View.OnClickListener() {
@@ -195,5 +170,30 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         public static Button deleteFromWL;
         public static Button addToCart;
 
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String[] urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
     }
 }

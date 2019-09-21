@@ -34,11 +34,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -64,6 +60,7 @@ import java.io.IOException;
 import java.security.cert.PolicyNode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,8 +81,7 @@ Cart extends Fragment {
 
 //
     private static DecimalFormat df2 = new DecimalFormat("#.##");
-    private FirebaseAuth firebaseAuth;
-    TextView demoValue;
+
     TextView overallTotal;
     ListView cartList;
     Button buttonCheckout;
@@ -94,7 +90,7 @@ Cart extends Fragment {
 
 
 
-    DatabaseReference rootRef,demoRef;
+    DatabaseReference dbRef,cartRef;
     FirebaseStorage storage;
     public Cart() {
     }
@@ -104,34 +100,22 @@ Cart extends Fragment {
         Toast.makeText(getContext(), product.getName(), Toast.LENGTH_LONG).show();
     }
 
-    /*private void initView() {
-        listViewProduct = findViewById(R.id.listViewProduct);
-        listViewProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                listViewProduct_onItemClick(adapterView, view, i, l);
-            }
-        });
-    }*/
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
+
+        //Get Device ID
         final String deviceId = Installation.id(getContext());
-        demoValue = (TextView) view.findViewById(R.id.tvValue);
-        overallTotal = view.findViewById(R.id.overallTotal);
-        rootRef = FirebaseDatabase.getInstance().getReference();
-        storage = FirebaseStorage.getInstance();
-        //database reference pointing to Product node
-        demoRef = rootRef.child("Wishlist");
 
-        listViewProduct = view.findViewById(R.id.listViewProduct);
+        //Retrieve Database Reference
+        dbRef = FirebaseDatabase.getInstance().getReference();
 
+        //List of Products to be placed in Cart
         final List<CartProduct> products = new ArrayList<CartProduct>();
-        demoRef = rootRef.child("Cart").child(deviceId);
-        //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
 
 
         buttonCheckout = (Button) view.findViewById(R.id.fetch);
@@ -145,34 +129,46 @@ Cart extends Fragment {
 
 
 
+        //Point to Cart in DB
+        cartRef = dbRef.child("Cart").child(deviceId);
 
+
+        //List of Cart products
+        listViewProduct = view.findViewById(R.id.listViewProduct);
+
+        overallTotal = view.findViewById(R.id.overallTotal);
 
         //final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
 
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        //Get Items From Database
+        cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int count = 1;
-                final ArrayList<Integer> quantities = new ArrayList<>();
-                int quantitiesCount = 0;
-                int decreaseButtonID = 0;
-                int increaseButtonID = 0;
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+                    //Assign Item attributes from DB to each product attribute
                     final String productName = snapshot.child("name").getValue().toString();
                     final String price = snapshot.child("price").getValue().toString();
                     final String id = snapshot.child("id").getValue().toString();
                     final String quantity = snapshot.child("quantity").getValue().toString();
-                    String imageName = snapshot.child("imageName").getValue().toString();
+                    final String url = snapshot.child("imageUrl").getValue().toString();
 
-                    final CartProduct currCartProduct = new CartProduct();
-                    /*final Bitmap[] aBitMap = new Bitmap[1];
+                    //Add a product to list of Cart products
+                    products.add(new CartProduct(id, productName, price, quantity, url));
 
-                    try{
-                        final File localFile = File.createTempFile("images","jpg");
+                    double oTotal = 0.00;
 
-                        StorageReference imageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(id+ ".jpg");
+                    for(int i = 0; i< products.size();i++)
+                    {
+                        oTotal += Double.parseDouble(products.get(i).getTotalPrice());
+                    }
 
+                    overallTotal.setText("R " + oTotal);
+                }
 
 
                         imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
@@ -197,18 +193,23 @@ Cart extends Fragment {
                         e.printStackTrace();
                     }
 
-                    */
-
-                    currCartProduct.setCartProduct(id, productName, price, quantity, R.drawable.thumb1);
-                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
-                    //Load Elements from DB to product list
-
-
-                }
-
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);
 
+
                 listViewProduct.setAdapter(productListAdapter);
+
+                //Toast.makeText(getContext(), "Size: " + products.size() + " Device ID: " + deviceId, Toast.LENGTH_LONG).show();
+
+                /*double oTotal = 0.00;
+
+                for(int i = 0; i< products.size();i++)
+                {
+                    oTotal += Double.parseDouble(products.get(i).getTotalPrice());
+                }
+
+
+
+                overallTotal.setText("R " + oTotal);*/
             }
 
             @Override
@@ -217,16 +218,7 @@ Cart extends Fragment {
             }
         });
 
-        Double oTotal = 0.00;
 
-        for(int i = 0; i< products.size();i++)
-        {
-            oTotal =+ Double.parseDouble(products.get(i).getTotalPrice());
-        }
-
-        //String setTotal = "R " + oTotal;
-
-        overallTotal.setText("R " + oTotal);
 
         return view;
 

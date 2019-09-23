@@ -77,6 +77,7 @@ import com.example.navigator.utils.CompassView;
 import com.example.navigator.utils.Installation;
 import com.example.navigator.utils.LowPassFilter;
 import com.example.navigator.utils.MapPoint;
+import com.example.navigator.utils.Orientation;
 import com.example.navigator.utils.RadarScanView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -100,14 +101,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import static android.content.Context.SENSOR_SERVICE;
 import static com.example.navigator.MainActivity.map;
+import static com.example.navigator.MainActivity.navigator;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 
-public class Navigate extends Fragment implements BeaconConsumer, SensorEventListener,
+public class Navigate extends Fragment implements SensorEventListener,
         LocationListener{
 
     private RelativeLayout mContainer;
@@ -118,10 +121,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     public static final String FIXED = "FIXED";
     private static final int LOCATION_MIN_TIME = 30 * 1000;
     private static final int LOCATION_MIN_DISTANCE = 10;
-    private float[] gravity = new float[3];
-    private float[] geomagnetic = new float[3];
-    private float[] rotation = new float[9];
-    private float[] orientation = new float[3];
+    private Orientation orienter;
     private SensorManager sensorManager;
     private Sensor sensorGravity;
     private Sensor sensorMagnetic;
@@ -136,14 +136,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     private ImageView green_dot;
     private ImageView arrowView;
     private FrameLayout arContentOverlay = null;
-    private Double currentLat;
-    private Double currentLong;
     private Handler handler = new Handler();
     private Button navigateButton = null;
-    private MapPoint[] directions = null;
-    private Beacon nearestBeacon = null;
-    private Beacon targetBeacon = null;
-    private BeaconManager beaconManager;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private SensorManager mSensorManager;
     private Sensor accSensor;
@@ -159,16 +153,18 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             android.Manifest.permission.CAMERA
     };
     private ArrayList<Beacon> beaconsInRange = new ArrayList<>();
-    private double bearing;
+    private double bearing = 180;
     private double distance;
+    private float[] orientationSmoothing = new float[15];
+    private int smoothing = 0;
 
 
-    final Runnable distanceFromBeaconProcess = new Runnable() {
-        @Override
-        public void run() {
-            onBeaconServiceConnect();
-        }
-    };
+//    final Runnable distanceFromBeaconProcess = new Runnable() {
+//        @Override
+//        public void run() {
+//            onBeaconServiceConnect();
+//        }
+//    };
 
 
     public Navigate() {
@@ -198,12 +194,13 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        beaconManager = BeaconManager.getInstanceForApplication(getContext());
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
-        beaconManager.bind(this);
+//        beaconManager = BeaconManager.getInstanceForApplication(getContext());
+//        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+//        beaconManager.bind(this);
 
 
         rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
+        orienter = new Orientation();
 
 
         //------------------------ Search Bar Implementation--------------------------------------
@@ -274,11 +271,11 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         //--------------- End of Search Implimentation --------------------------------------------
 
         Log.d(TAG,"onCreateView");
-        beaconManager = BeaconManager.getInstanceForApplication(getContext());
-        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
-        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
-        beaconManager.bind(this);
+//        beaconManager = BeaconManager.getInstanceForApplication(getContext());
+//        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
+//        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
+//        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+//        beaconManager.bind(this);
 
 
         navigateButton = rootView.findViewById(R.id.navigate_button);
@@ -287,8 +284,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         textDirection = (TextView) rootView.findViewById(R.id.text);
         compassView = (CompassView) rootView.findViewById(R.id.compass);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        mSensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
-        accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
+        accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         magnetSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         green_dot = rootView.findViewById(R.id.greenDot);
         arrowView = rootView.findViewById(R.id.arrow);
@@ -351,20 +348,15 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         Log.d(TAG,"onPause");
 
         stopSensing();
-        mSensorManager.unregisterListener(mRadar, accSensor);
-        mSensorManager.unregisterListener(mRadar, magnetSensor);
+        mSensorManager.unregisterListener(this);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        sensorGravity = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorMagnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-
-        sensorManager.registerListener(this, sensorGravity, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, sensorMagnetic, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        registerSensors();
 
         if (!havePermissions()) {
             Log.i(TAG, "Requesting permissions needed for this app.");
@@ -406,7 +398,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
     public void onStop() {
         Log.d(TAG,"onStop");
         stopAllRunnables();
-        handler.removeCallbacks(distanceFromBeaconProcess);
+//        handler.removeCallbacks(distanceFromBeaconProcess);
 
         sensorManager.unregisterListener(this, sensorGravity);
         sensorManager.unregisterListener(this, sensorMagnetic);
@@ -483,19 +475,15 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
         assignClickListeners();
         configureSensors();
-
-        mSensorManager.registerListener(mRadar, accSensor, SensorManager.SENSOR_DELAY_GAME);
-        mSensorManager.registerListener(mRadar, magnetSensor, SensorManager.SENSOR_DELAY_GAME);
-
+        registerSensors();
     }
 
-    private void setNearestBeacon(Beacon beacon)
+    private void registerSensors()
     {
-        nearestBeacon = beacon;
-        green_dot.setVisibility(View.VISIBLE);
-        Log.d(TAG, "NEAREST BEACON SET! WE PROMISE! ");
-    }
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
 
+    }
 
     private void assignClickListeners()
     {
@@ -556,7 +544,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     private void configureSensors()
     {
-        sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+        sensorManager = (SensorManager) getContext().getSystemService(SENSOR_SERVICE);
         Sensor gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         Sensor accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
@@ -577,9 +565,9 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
 
     }
 
-    private void initializeBeaconDistance() {
-        distanceFromBeaconProcess.run();
-    }
+//    private void initializeBeaconDistance() {
+//        distanceFromBeaconProcess.run();
+//    }
 
     private void reachedDestination() {
         rootView.findViewById(R.id.stop_button).setVisibility(View.GONE);
@@ -589,7 +577,7 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         rootView.findViewById(R.id.check_point).setVisibility(View.GONE);
         rootView.findViewById(R.id.distance_label).setVisibility(View.GONE);
         rootView.findViewById(R.id.distance_from_beacon).setVisibility(View.GONE);
-        handler.removeCallbacks(distanceFromBeaconProcess);
+//        handler.removeCallbacks(distanceFromBeaconProcess);
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -612,106 +600,10 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         ((TextView)rootView.findViewById(R.id.check_point_label)).setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
 
-
-        if(nearestBeacon != null) {
-            Toast.makeText(getContext(),"Nearest Beacon Found", Toast.LENGTH_LONG).show();
-
-            for (int i = 0; i < map.length; i++) {
-                if (map[i].getName().equals(selectedShop)) {
-//                compassView.setBearing();
-                    for (int j = 0; j < map.length; j++) {
-                        if (map[j].getId().equals(nearestBeacon.getId1().toString())) {
-                            Log.d(TAG, "prepareNavigation: Setting direction array for Beacons");
-                            directions = map[j].getDirectionsTo(map[i].getId(), 4);
-                            Log.d(TAG, "prepareNavigationBeacon: Directions: " + MapPoint.flattenDirections(directions));
-                            if(directions.length > 1)
-                            {
-                                Log.d(TAG, "prepareNavigationBeacon: More than 1 direction");
-                                setNextBeacon(directions[0], directions[1]);
-                                popDirection();
-                            }else
-                            {
-                                reachedDestination();
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-        else{
-            Toast.makeText(getContext(),"Nearest Beacon not Found", Toast.LENGTH_LONG).show();
-        }
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
-
-        initializeBeaconDistance();
-    }
-
-    private void setNextBeacon(MapPoint currPoint, MapPoint nextPoint){
-        Log.d(TAG, "setNextBeacon: Setting nav from " + currPoint.toString() + " to " + nextPoint.toString());
-        Beacon newTarget = getBeaconFromRange(nextPoint.getId());
-        if(newTarget != null) {
-            Log.d(TAG, "setNextBeacon: newTarget: " + getMapPointName(newTarget.getId1().toString()));
-            Log.d(TAG, "setNextBeacon: Setting distance");
-            updateTargetBeacon(newTarget);
-        }
-    }
-
-    private void setNextBeacon(MapPoint currPoint, MapPoint nextPoint, double trueNorth){
-        compassView.setBearing((float) currPoint.getBearingTo(nextPoint.getId()));
-        arrowView.setRotation((float) (currPoint.getBearingTo(nextPoint.getId()) + trueNorth));
-        updateTextDirection((float) (currPoint.getBearingTo(nextPoint.getId()) + trueNorth));
-        setNextBeacon(currPoint,nextPoint);
-    }
-
-    private void updateTargetBeacon(Beacon target)
-    {
-        if(target != null)
-        {
-            setDistanceDetails(target);
-            targetBeacon = target;
-        }else
-        {
-            Log.d(TAG, "updateTargetBeacon: Null target");
-        }
-    }
-
-
-    private void setDistanceDetails(Beacon target)
-    {
-        String distanceLabel = "Distance from " + getMapPointName(target.getId1().toString());
-        ((TextView)rootView.findViewById(R.id.distance_label)).setText(distanceLabel);
-        double distance = target.getDistance();
-        final String distance_str = df2.format(distance) + "m";
-        ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText(distance_str);
-    }
-
-
-    private Beacon getBeaconFromRange(String id)
-    {
-        Log.d(TAG, "getBeaconFromRange: Checking for beacon matching id: " + id);
-        for (int i = 0; i < beaconsInRange.size(); i++)
-        {
-            Log.d(TAG, "getBeaconFromRange: Checking Beacon["+ i +"] " + beaconsInRange.get(i).getId1().toString());
-            if(beaconsInRange.get(i).getId1().toString().equals(id))
-            {
-                Log.d(TAG, "getBeaconFromRange: Found the right one! ["+i+"]");
-                return beaconsInRange.get(i);
-            }
-        }
-        Log.d(TAG, "getBeaconFromRange: Returned null on ID " + id);
-        return null;
-    }
-
-    private void popDirection(){
-        MapPoint[] newArray = new MapPoint[directions.length-1];
-
-        for (int i = 1; i < directions.length; i++) {
-            newArray[i-1] = directions[i];
-        }
-
-        directions = newArray;
+        MainActivity.navigator.setTargetID(MainActivity.map.idFromName(selectedShop));
+//        initializeBeaconDistance();
     }
 
     private void shareGeneral() {
@@ -743,181 +635,20 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         return (Math.toDegrees(Math.atan2(y, x))+360)%360;
     }
 
+
+
     @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-
-        /*final float alpha = 0.97f;
-
-        synchronized (this) {
-            boolean accelOrMagnetic = false;
-
-            // get accelerometer data
-            float[] smoothed;
-            if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                // we need to use a low pass filter to make data smoothed
-                smoothed = LowPassFilter.filter(sensorEvent.values, gravity);
-                gravity[0] = smoothed[0];
-                gravity[1] = smoothed[1];
-                gravity[2] = smoothed[2];
-                accelOrMagnetic = true;
-
-            } else if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                smoothed = LowPassFilter.filter(sensorEvent.values, geomagnetic);
-                geomagnetic[0] = smoothed[0];
-                geomagnetic[1] = smoothed[1];
-                geomagnetic[2] = smoothed[2];
-                accelOrMagnetic = true;
-
-            }
-
-
-
-            boolean success = SensorManager.getRotationMatrix(rotation, null, gravity, geomagnetic);
-            if (success) {
-                Toast.makeText(getContext(),"A", Toast.LENGTH_LONG).show();
-                SensorManager.getOrientation(rotation, orientation);
-                // Log.d(TAG, "azimuth (rad): " + azimuth);
-                float azimuth = (float) Math.toDegrees(orientation[0]); // orientation
-                azimuth = (azimuth + 360) % 360;
-
-                azimuth -= (float) bearing(-25.755742299999998, 28.232664699999997, -26.145576207592264, 28.179931640625004);
-                // Log.d(TAG, "azimuth (deg): " + azimuth);
-                compassView.setBearing(azimuth);
-                updateTextDirection(azimuth);
-            }
-            else{
-                Toast.makeText(getContext(),"B", Toast.LENGTH_LONG).show();
-                SensorManager.getOrientation(rotation, orientation);
-                // east degrees of true North
-                double bearing = orientation[0];
-
-                //angleLowpassFilter.add((float) bearing);
-
-                // convert from radians to degrees
-                //bearing = (Math.toDegrees(angleLowpassFilter.average()) + 360) % 360;
-                bearing = Math.toDegrees(bearing);
-
-                // fix difference between true North and magnetical North
-                if (geomagneticField != null) {
-                    bearing += geomagneticField.getDeclination();
-                }
-
-                // bearing must be in 0-360
-                if (bearing < 0) {
-                    bearing += 360;
-                }
-
-                // update compass view
-                compassView.setBearing((float) bearing);
-
-                updateTextDirection(bearing); // display text direction on screen
-            }
-        }*/
-
-
-
-
-
-        float accelX;
-        float accelY;
-        float accelZ;
-        float gyroX;
-        float gyroY;
-        float gyroZ;
-
-        switch(sensorEvent.sensor.getType())
+    public void onSensorChanged(SensorEvent event) {
+        float north = 180 - orienter.updateOrientation(event);
+        addSmoothing(north);
+        Log.d(TAG, "onSensorChanged: North: " + north);
+        Log.d(TAG, "onSensorChanged: Smoothed: North: " + getSmoothing());
+        if(navigator.isNavigating())
         {
-            case Sensor.TYPE_LINEAR_ACCELERATION:
-                accelX = sensorEvent.values[0];
-                accelY = sensorEvent.values[1];
-                accelZ = sensorEvent.values[2];
+            float bearing = (getSmoothing() + navigator.getBearing())%360;
 
-                break;
-            case Sensor.TYPE_GYROSCOPE:
-
-                gyroX = sensorEvent.values[0];
-                gyroY = sensorEvent.values[1];
-                gyroZ = sensorEvent.values[2];
-
-
-                break;
+            arrowView.setRotation(bearing);
         }
-
-        boolean accelOrMagnetic = false;
-
-        // get accelerometer data
-        float[] smoothed;
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            // we need to use a low pass filter to make data smoothed
-            smoothed = LowPassFilter.filter(sensorEvent.values, gravity);
-            gravity[0] = smoothed[0];
-            gravity[1] = smoothed[1];
-            gravity[2] = smoothed[2];
-            accelOrMagnetic = true;
-
-        } else if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-            smoothed = LowPassFilter.filter(sensorEvent.values, geomagnetic);
-            geomagnetic[0] = smoothed[0];
-            geomagnetic[1] = smoothed[1];
-            geomagnetic[2] = smoothed[2];
-            accelOrMagnetic = true;
-
-        }
-
-        // get rotation matrix to get gravity and magnetic data
-        SensorManager.getRotationMatrix(rotation, null, gravity, geomagnetic);
-        // get bearing to target
-        SensorManager.getOrientation(rotation, orientation);
-        // east degrees of true North
-        bearing = orientation[0];
-
-        //angleLowpassFilter.add((float) bearing);
-
-        // convert from radians to degrees
-        //bearing = (Math.toDegrees(angleLowpassFilter.average()) + 360) % 360;
-        bearing = Math.toDegrees(bearing);
-
-        // fix difference between true North and magnetical North
-        if (geomagneticField != null) {
-            bearing += geomagneticField.getDeclination();
-        }
-
-        // bearing must be in 0-360
-        if (bearing < 0) {
-            bearing += 360;
-        }
-
-        // update compass view
-        compassView.setBearing((float) bearing);
-
-        if (accelOrMagnetic) {
-            compassView.postInvalidate();
-        }
-
-        //updateTextDirection(bearing); // display text direction on screen
-
-        if(directions != null) {
-//                            Toast.makeText(getContext(),"Directions: " + MapPoint.flattenDirections(directions), Toast.LENGTH_LONG).show();
-
-            if (nearestBeacon.getId1().toString().equals(directions[directions.length - 1].getId())) {
-                if (distance <= 0.40) {
-                    reachedDestination();
-                }
-            } else if (nearestBeacon.getId1().toString().equals(directions[0].getId())) {
-                if (distance <= 0.40) {
-
-                    if (directions.length > 1) {
-                        setNextBeacon(directions[0], directions[1], bearing);
-                        Toast.makeText(getContext(),"Beacons set to: "+ directions[0].getName() + " => " + directions[1].getName(), Toast.LENGTH_LONG).show();
-                        popDirection();
-
-                    }
-//                                    Toast.makeText(getContext(),"POP DIRECTION!!!", Toast.LENGTH_LONG).show();
-
-                }
-            }
-        }
-
 
     }
 
@@ -988,8 +719,8 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             String latitude = "Latitude: " + loc.getLatitude();
             Log.v(TAG, latitude);
 
-            currentLat = loc.getLatitude();
-            currentLong = loc.getLongitude();
+//            currentLat = loc.getLatitude();
+//            currentLong = loc.getLongitude();
 
             //bearing(loc.getLongitude(), loc.getLatitude(), 0.0, 0.0);
 
@@ -1024,128 +755,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
         public void onStatusChanged(String provider, int status, Bundle extras) {}
     }
 
-    @Override
-    public void onBeaconServiceConnect() {
-        beaconManager.removeAllMonitorNotifiers();
-        beaconManager.addMonitorNotifier(new MonitorNotifier() {
-            @Override
-            public void didEnterRegion(Region region) {
-                Log.i(TAG, "I just saw a beacon for the first time!");
-            }
-
-            @Override
-            public void didExitRegion(Region region) {
-                Log.i(TAG, "I no longer see a beacon");
-            }
-
-            @Override
-            public void didDetermineStateForRegion(int state, Region region) {
-                Log.i(TAG, "I have just switched from seeing/not seeing beacons: "+state);
-            }
-        });
-
-        try {
-            beaconManager.startMonitoringBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
-            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-        } catch (RemoteException e) {    }
-
-        try {beaconManager.removeAllRangeNotifiers();
-            beaconManager.addRangeNotifier(new RangeNotifier() {
-                @Override
-                public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                    Log.d(TAG, "didRangeBeaconsInRegion: Entering Did Range");
-                    if (beacons.size() > 0) {
-//                        nearestBeacon = beacons.iterator().next();
-                        Log.d(TAG, "didRangeBeaconsInRegion: More than 0 beacons");
-
-                        Beacon currBeacon;
-                        String beconsStr = "";
-
-                        beaconsInRange.clear();
-
-                        Iterator iterator = beacons.iterator();
-                        while (iterator.hasNext()) {
-                            currBeacon = (Beacon) iterator.next();
-                            //System.out.println(iterator.next());
-                            beaconsInRange.add(currBeacon);
-                            beconsStr = beconsStr + " " + currBeacon.getDistance();
-
-
-                        }
-                        Log.d(TAG, "didRangeBeaconsInRegion: "+beconsStr);
-
-                        setNearestBeacon(beaconsInRange.get(0));
-                        Log.i(TAG, "The first beacon I see is about "+nearestBeacon.getDistance()+" meters away.");
-                        green_dot.setVisibility(View.VISIBLE);
-                        for (int i = 1; i < beaconsInRange.size(); i++) {
-                            if(nearestBeacon.getDistance() > beaconsInRange.get(i).getDistance()){
-                                setNearestBeacon(beaconsInRange.get(i));
-                            }
-                        }
-
-                        green_dot.setVisibility(View.VISIBLE);
-//                        Toast.makeText(getContext(),"Beacons: " + beconsStr + "Nearest beacon ID: " + nearestBeacon.getId1().toString(), Toast.LENGTH_LONG).show();
-
-
-
-                        double distance = nearestBeacon.getDistance();
-                        Log.d(TAG, "didRangeBeaconsInRegion: Checking if target");
-                        if(targetBeacon != null)
-                        {
-                            Log.d(TAG, "didRangeBeaconsInRegion: Target Distance Update");
-                            updateTargetBeacon(getBeaconFromRange(targetBeacon.getId1().toString()));
-                            Log.d(TAG, "didRangeBeaconsInRegion: Target Distance Updated!");
-                        }
-
-//                        String bluetoothAddress = beacons.iterator().next().getBluetoothAddress();
-
-
-
-                        if(directions != null) {
-//                            Toast.makeText(getContext(),"Directions: " + MapPoint.flattenDirections(directions), Toast.LENGTH_LONG).show();
-
-                            if (nearestBeacon.getId1().toString().equals(directions[directions.length - 1].getId())) {
-                                if (distance <= 0.20) {
-                                    reachedDestination();
-                                }
-                            } else if (nearestBeacon.getId1().toString().equals(directions[0].getId())) {
-                                if (distance <= 0.20) {
-
-                                    if (directions.length > 1) {
-                                        setNextBeacon(directions[0], directions[1], bearing);
-                                        Toast.makeText(getContext(),"Beacons set to: "+ directions[0].getName() + " => " + directions[1].getName(), Toast.LENGTH_LONG).show();
-                                        popDirection();
-
-                                    }
-//                                    Toast.makeText(getContext(),"POP DIRECTION!!!", Toast.LENGTH_LONG).show();
-
-                                }
-                            }
-                        }
-
-//                        Log.i(TAG,distance_str);
-                    }
-                }
-            });
-            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-        } catch (RemoteException e) {    }
-    }
-
-    @Override
-    public Context getApplicationContext(){
-        return getContext();
-    }
-
-    @Override
-    public void unbindService(ServiceConnection serviceConnection){
-
-    }
-
-    @Override
-    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i){
-        return false;
-    }
-
 
     private boolean havePermissions() {
         if (getContext() != null && PERMISSIONS != null) {
@@ -1156,18 +765,6 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
         }
         return true;
-    }
-
-    private String getMapPointName(String id)
-    {
-        for (int i = 0; i < map.length; i++)
-        {
-            if(map[i].getId().equals(id))
-            {
-                return map[i].getName();
-            }
-        }
-        return "Node not found";
     }
 
 
@@ -1239,5 +836,33 @@ public class Navigate extends Fragment implements BeaconConsumer, SensorEventLis
             }
         }
     }
+
+    private void addSmoothing(float orientation)
+    {
+        if(smoothing < orientationSmoothing.length)
+        {
+            orientationSmoothing[smoothing] = orientation;
+            smoothing++;
+        }else
+        {
+            for (int i = 0; i < orientationSmoothing.length-1; i++)
+            {
+                orientationSmoothing[i] = orientationSmoothing[i+1];
+            }
+            orientationSmoothing[orientationSmoothing.length-1] = orientation;
+        }
+    }
+
+    private float getSmoothing()
+    {
+        float sum = 0;
+        for (int i = 0; i < orientationSmoothing.length; i++)
+        {
+            sum += orientationSmoothing[i];
+        }
+        return sum/orientationSmoothing.length;
+    }
+
+
 
 }

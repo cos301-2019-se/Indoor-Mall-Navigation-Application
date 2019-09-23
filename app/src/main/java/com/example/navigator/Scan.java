@@ -483,6 +483,26 @@ public class Scan extends Fragment {
           objProduct = new Product("6008454002605","Counter Book",5.49,itemQty,imageUrl);
           ref.push().setValue(objProduct);
       }
+      else if(sessionId.equals("14402425")){
+          objProduct = new Product("14402425","Bandile",5.49,itemQty,imageUrl);
+          //ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("14309999")){
+          objProduct = new Product("14309999","Mpho",5.49,itemQty,imageUrl);
+          //ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("15107532")){
+          objProduct = new Product("15107532","Thabo",5.49,itemQty,imageUrl);
+          //ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("15348751")){
+          objProduct = new Product("15348751","Thomas",5.49,itemQty,imageUrl);
+          //ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("7353280248377711")){
+          objProduct = new Product("7353280248377711","Smart Shopper",5.49,itemQty,imageUrl);
+          //ref.push().setValue(objProduct);
+      }
 
 
     }
@@ -609,6 +629,27 @@ public class Scan extends Fragment {
             objProduct = new Product("6008454002605","Counter Book",5.49,itemQty,imageUrl);
             //ref.push().setValue(objProduct);
         }
+        else if(sessionId.equals("14402425")){
+            objProduct = new Product("14402425","Bandile",5.49,itemQty,imageUrl);
+            //ref.push().setValue(objProduct);
+        }
+        else if(sessionId.equals("14309999")){
+            objProduct = new Product("14309999","Mpho",5.49,itemQty,imageUrl);
+            //ref.push().setValue(objProduct);
+        }
+        else if(sessionId.equals("15107532")){
+            objProduct = new Product("15107532","Thabo",5.49,itemQty,imageUrl);
+            //ref.push().setValue(objProduct);
+        }
+        else if(sessionId.equals("15348751")){
+            objProduct = new Product("15348751","Thomas",5.49,itemQty,imageUrl);
+            //ref.push().setValue(objProduct);
+        }
+        else if(sessionId.equals("7353280248377711")){
+            objProduct = new Product("7353280248377711","Smart Shopper",5.49,itemQty,imageUrl);
+            //ref.push().setValue(objProduct);
+        }
+
 
         //
 

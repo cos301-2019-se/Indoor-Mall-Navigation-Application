@@ -19,72 +19,69 @@
  *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
  *
  */
-package com.example.navigator;
+        package com.example.navigator;
 
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.Toast;
+        import android.content.Context;
+        import android.content.Intent;
+        import android.graphics.Bitmap;
+        import android.graphics.BitmapFactory;
+        import android.os.Bundle;
+        import android.support.annotation.NonNull;
+        import android.support.v4.app.Fragment;
+        import android.util.Log;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.AdapterView;
+        import android.widget.Button;
+        import android.widget.ListView;
+        import android.widget.TableLayout;
+        import android.widget.TableRow;
+        import android.widget.TextView;
+        import android.widget.Toast;
 
-import com.example.navigator.utils.Installation;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+        import com.example.navigator.utils.Installation;
+        import com.google.android.gms.tasks.OnFailureListener;
+        import com.google.android.gms.tasks.OnSuccessListener;
+        import com.google.firebase.auth.FirebaseAuth;
+        import com.google.firebase.database.DataSnapshot;
+        import com.google.firebase.database.DatabaseError;
+        import com.google.firebase.database.DatabaseReference;
+        import com.google.firebase.database.FirebaseDatabase;
+        import com.google.firebase.database.Query;
+        import com.google.firebase.database.ValueEventListener;
+        import com.google.firebase.storage.FileDownloadTask;
+        import com.google.firebase.storage.FirebaseStorage;
+        import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.cert.PolicyNode;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+        import java.io.File;
+        import java.io.IOException;
+        import java.security.cert.PolicyNode;
+        import java.text.DecimalFormat;
+        import java.util.ArrayList;
+        import java.util.HashMap;
+        import java.util.List;
+        import java.util.Map;
 
-import adapters.CartProductListAdapter;
-import entities.CartProduct;
-
-import static android.app.Activity.DEFAULT_KEYS_DIALER;
-import static com.example.navigator.MainActivity.TAG;
+        import adapters.CartProductListAdapter;
+        import entities.CartProduct;
+        import static android.app.Activity.DEFAULT_KEYS_DIALER;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 
-public class
-Cart extends Fragment {
+public class Cart extends Fragment {
     private Context context = null;
     private ListView listViewProduct;
 
-//
+    //
     private static DecimalFormat df2 = new DecimalFormat("#.##");
 
     TextView overallTotal;
     ListView cartList;
-    Button buttonCheckout;
+    Button checkout;
 
     //Retrieve Images from FirebaseStorage
 
@@ -117,34 +114,27 @@ Cart extends Fragment {
         //List of Products to be placed in Cart
         final List<CartProduct> products = new ArrayList<CartProduct>();
 
-
-        buttonCheckout = (Button) view.findViewById(R.id.fetch);
-
-        buttonCheckout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getContext(),Login.class));
-            }
-        });
-
-
-
         //Point to Cart in DB
         cartRef = dbRef.child("Cart").child(deviceId);
-
 
         //List of Cart products
         listViewProduct = view.findViewById(R.id.listViewProduct);
 
+        checkout = view.findViewById(R.id.fetch);
+        checkout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(),Login.class));
+            }
+
+
+        });
+
+
         overallTotal = view.findViewById(R.id.overallTotal);
-
-        //final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
-
-        demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
         //Get Items From Database
         cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -170,45 +160,17 @@ Cart extends Fragment {
                     overallTotal.setText("R " + oTotal);
                 }
 
-
-                        imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                                aBitMap[0] = bitmap;
-                                //products.add(new CartProduct(id, productName, price, quantity,bitmap));
-                                //Toast.makeText(getContext(),"Local File name: " + localFile.getName() + " image name "+ product.getImageName() , Toast.LENGTH_LONG).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onClick(View v) {
-                                myTable.removeViewAt(curr);
-                                //CODE THAT REMOVES PRODUCT FROM DB GOES HERE
-                            public void onFailure(@NonNull Exception e) {
-
-                            }
-                        });
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products);
-
 
                 listViewProduct.setAdapter(productListAdapter);
 
                 //Toast.makeText(getContext(), "Size: " + products.size() + " Device ID: " + deviceId, Toast.LENGTH_LONG).show();
 
                 /*double oTotal = 0.00;
-
                 for(int i = 0; i< products.size();i++)
                 {
                     oTotal += Double.parseDouble(products.get(i).getTotalPrice());
                 }
-
-
-
                 overallTotal.setText("R " + oTotal);*/
             }
 
@@ -221,7 +183,6 @@ Cart extends Fragment {
 
 
         return view;
-
     }
-
 }
+

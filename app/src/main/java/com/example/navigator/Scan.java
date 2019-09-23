@@ -27,10 +27,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,11 +63,28 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import org.w3c.dom.Text;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,6 +107,7 @@ public class Scan extends Fragment {
   public static ImageView scanImage;
   public static Bitmap scanImageBitmap;
   public static EditText quantityValue;
+  Button generatePDF;
   Button buttonScan;
   Button comparePrice;
   Button buttonAddToCart;
@@ -98,6 +125,8 @@ public class Scan extends Fragment {
   String productNam = "";
   String productPrices = "";
   String AnotherOne = "Whatever";
+
+  PdfWriter writer;
 
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
@@ -127,6 +156,7 @@ public class Scan extends Fragment {
       productName = (TextView) view.findViewById((R.id.result_name));
       productPrice = (TextView) view.findViewById((R.id.result_price));
       buttonScan = (Button) view.findViewById(R.id.btn_scan);
+      generatePDF = (Button) view.findViewById(R.id.btn_pdf);
       buttonAddToCart = (Button) view.findViewById(R.id.btn_addToCart);
       addToWishList = (Button)  view.findViewById(R.id.btn_addToWishlist);
       comparePrice = (Button) view.findViewById(R.id.compare_price);
@@ -164,6 +194,13 @@ public class Scan extends Fragment {
           }
         });
       } catch (IOException e ) {}*/
+
+      generatePDF.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          createPdf2("123456789", "11-09-2019", "Bandile Dlamini");
+        }
+      });
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -471,4 +508,115 @@ public class Scan extends Fragment {
         ref.push().setValue(objProduct);
       }
     }
+
+
+  private void createPdf2(String invoceNum, String date, String customerName){
+
+    /*Paragraph p = new Paragraph();
+    Chunk c = new Chunk();
+    Image i = Image.getInstance("resources/images/fox.bmp");
+    c = new Chunk(i, 0, -24);
+    p.add(c);*/
+
+
+    Document document = new Document();
+    PdfPTable table = new PdfPTable(new float[] { 3, 2, 1, 1, 1 });
+    table.setWidthPercentage(100);
+    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+    table.addCell("Description");
+    table.addCell("Shop");
+    table.addCell("Unit Cost");
+    table.addCell("Qty");
+    table.addCell("Amount");
+    table.setHeaderRows(1);
+    PdfPCell[] cells = table.getRow(0).getCells();
+    for (int j=0;j<cells.length;j++){
+      cells[j].setBackgroundColor(BaseColor.GRAY);
+    }
+    for (int i=1;i<=10;i++){
+      table.addCell("Description:"+i);
+      table.addCell("Shop:"+i);
+      table.addCell("Cost:"+i);
+      table.addCell("Qty:"+i);
+      table.addCell("Amount:"+i);
+
+    }
+    try {
+      String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Indoor Mall Navigator/";
+      writer = PdfWriter.getInstance(document, new FileOutputStream(directory_path + "sample3.pdf"));
+      document.open();
+
+      Font H1=new Font(Font.FontFamily.TIMES_ROMAN,30.0f, Font.BOLD, BaseColor.BLACK);
+      Paragraph p = new Paragraph();
+
+      Drawable d = getResources().getDrawable(R.drawable.logo3);
+      BitmapDrawable bitDw = ((BitmapDrawable) d);
+      Bitmap bmp = bitDw.getBitmap();
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+      Image image = Image.getInstance(stream.toByteArray());
+      Chunk c = new Chunk(image, 0, -90);
+      p.add(c);
+      document.add(p);
+
+      p = new Paragraph("INVOICE", H1);
+      p.setAlignment(Paragraph.ALIGN_RIGHT);
+      document.add(p);
+      p = new Paragraph("Indoor Mall Navigator");
+      p.setAlignment(Paragraph.ALIGN_RIGHT);
+      document.add(p);
+      p = new Paragraph("Invoice No. " + invoceNum);
+      p.setAlignment(Paragraph.ALIGN_RIGHT);
+      document.add(p);
+      p = new Paragraph("Date: " + date);
+      p.setAlignment(Paragraph.ALIGN_RIGHT);
+      document.add(p);
+      p = new Paragraph("Billed To: " + customerName);
+      p.setAlignment(Paragraph.ALIGN_LEFT);
+      document.add(p);
+      p = new Paragraph("Address Line 1");
+      p.setAlignment(Paragraph.ALIGN_LEFT);
+      document.add(p);
+      p = new Paragraph("Address Line 2");
+      p.setAlignment(Paragraph.ALIGN_LEFT);
+      document.add(p);
+      p = new Paragraph("Address Line 3");
+      p.setAlignment(Paragraph.ALIGN_LEFT);
+      document.add(p);
+      p = new Paragraph("-");
+      document.add(p);
+
+
+      absoluteText("---------------------------------------------------------", 360, 40);
+      absoluteText("Total: ", 400, 20);
+
+      document.add(table);
+      document.close();
+      Toast.makeText(getContext(), "Done", Toast.LENGTH_LONG).show();
+    }
+    catch (Exception e){
+      e.printStackTrace();
+      Toast.makeText(getContext(), "Something wrong: " + e.toString(), Toast.LENGTH_LONG).show();
+    }
+
+  }
+
+
+  private void absoluteText(String text, int x, int y) {
+    try {
+      PdfContentByte cb = writer.getDirectContent();
+      BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+      cb.saveState();
+      cb.beginText();
+      cb.moveText(x, y);
+      cb.setFontAndSize(bf, 12);
+      cb.showText(text);
+      cb.endText();
+      cb.restoreState();
+    } catch (DocumentException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 }

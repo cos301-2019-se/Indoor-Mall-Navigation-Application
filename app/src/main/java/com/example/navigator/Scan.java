@@ -41,11 +41,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.navigator.utils.Installation;
+import com.example.navigator.utils.SearchDialog;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -94,10 +96,8 @@ public class Scan extends Fragment {
   SearchView searchView;
   ListView listView;
   ArrayList<String> list;
-  Button shopResult;
-  TextView closeSearch;
-  TextView shopStuff;
-  private View searchContainer;
+  private Button shopResult;
+  public static int activeShopIndex = 0;
   ArrayAdapter<String > adapter;
  // searchContainer.setVisibility(View.VISIBLE);
   public static boolean WishlistBoolean = false;
@@ -163,73 +163,53 @@ public class Scan extends Fragment {
       qtyContainer = (LinearLayout) view.findViewById(R.id.qtyContainer);
       addToCartContainer = (LinearLayout) view.findViewById(R.id.addToCartContainer);
       addToWishlistContainer = (LinearLayout) view.findViewById(R.id.addToWishlistContainer);
+      shopResult = (Button) view.findViewById(R.id.shop_name);
 
-      //Notify = (Button) view.findViewById(R.id.btn_notify);
-      rootRef = FirebaseDatabase.getInstance().getReference();
+        //Notify = (Button) view.findViewById(R.id.btn_notify);
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
 
-      /*
+        /*
       *   PHONE ID
       * */
-      final String deviceId = Installation.id(getContext());
+        final String deviceId = Installation.id(getContext());
 
         // Search Bar Implementation-------------------------------------------------------------
-        rootView = inflater.inflate(R.layout.fragment_navigate,container,false);
-        //navigateButton = rootView.findViewById(R.id.navigate_button);
-        searchView = (SearchView) rootView.findViewById(R.id.searchView);
-        shopResult = (Button) rootView.findViewById(R.id.shop_name);
-        closeSearch = (TextView) rootView.findViewById(R.id.dismiss_search);
-        listView = (ListView) rootView.findViewById(R.id.lv1);
-        shopStuff = (TextView) rootView.findViewById(R.id.search_btn);
-                list = new ArrayList<>();
+        searchView = (SearchView) view.findViewById(R.id.searchView);
+        listView = (ListView) view.findViewById(R.id.lv1);
+        list = new ArrayList<>();
+
+
+        ref = FirebaseDatabase.getInstance().getReference();
 
 
 
-        if(shopStuff != null) {
-            shopStuff.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    searchContainer.setVisibility(View.VISIBLE);
-
-                    ref = FirebaseDatabase.getInstance().getReference();
-
-                    ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                String ShopName = snapshot.child("name").getValue().toString();
-                                //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
-                                list.add(ShopName);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            });
-        }
-        closeSearch.setOnClickListener(new View.OnClickListener() {
+        ref.child("Shop").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                searchContainer.setVisibility(View.GONE);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String ShopName = snapshot.child("name").getValue().toString();
+                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
+                    list.add(ShopName);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
 
-        searchContainer = rootView.findViewById(R.id.search_container);
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1,list);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        if(!list.isEmpty()) {
+            shopResult.setText(list.get(activeShopIndex));
+        }
+        shopResult.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedShop = listView.getItemAtPosition(position).toString() ;
-                //navigateButton.setVisibility(View.VISIBLE);
-                shopResult.setText(selectedShop);
-                searchContainer.setVisibility(View.GONE);
+            public void onClick(View v) {
+                //searchContainer.setVisibility(View.VISIBLE);
 
+                SearchDialog searchDialog = new SearchDialog(getContext(), list, shopResult);
+                searchDialog.show();
             }
         });
 
@@ -314,13 +294,15 @@ public class Scan extends Fragment {
       comparePrice.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          otherShops = new ArrayList<>();
-          otherShops.add("Shoprite - R18.00");
-          otherShops.add("Pick 'n Pay - R20.00");
-          otherShops.add("Spar - R22.00");
-          ComparePriceDialog comparePriceDialog = new ComparePriceDialog(getContext(), scanImageBitmap, productName.getText().toString(), productPrice.getText().toString(),
-                  "Woolworths", otherShops);
-          comparePriceDialog.show();
+            if(!list.isEmpty()) {
+                otherShops = new ArrayList<>();
+                otherShops.add("Shoprite - R18.00");
+                otherShops.add("Pick 'n Pay - R20.00");
+                otherShops.add("Spar - R22.00");
+                ComparePriceDialog comparePriceDialog = new ComparePriceDialog(getContext(), scanImageBitmap, productName.getText().toString(), productPrice.getText().toString(),
+                        list.get(activeShopIndex), otherShops);
+                comparePriceDialog.show();
+            }
 
         }
 

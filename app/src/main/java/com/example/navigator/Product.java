@@ -27,6 +27,7 @@ public class Product {
 
     public String id;
     public String name;
+    public String shopResult;
     public double price;
     public int quantity;
     public String imageUrl;
@@ -43,6 +44,15 @@ public class Product {
 
     }
 
+    public Product(String id, String name, double price, int qty, String imageUrl,String shopName) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = qty;
+        this.imageUrl = imageUrl;
+        this.shopResult = shopName;
+
+    }
     public Product(String id, String name, double price, int qty, String imageUrl) {
         this.id = id;
         this.name = name;

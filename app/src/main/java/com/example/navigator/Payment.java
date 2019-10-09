@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import adapters.CartProductListAdapter;
+
 
 public class Payment extends AppCompatActivity implements View.OnClickListener {
 
@@ -24,7 +26,18 @@ public class Payment extends AppCompatActivity implements View.OnClickListener {
         eftImage = (ImageView) findViewById(R.id.imageEFT);
         totalCheckOutPrice = (TextView) findViewById(R.id.totalPrice);
 
-        
+        /*Calling the overall value
+         *
+         * Retrieve it from the display
+         *
+         * String sOverallTotal = localOverall.getText().toString().substring(2);
+         * double valueAsDouble = Double.parseDouble(sOverallTotal);
+         *
+         * */
+
+        String sOverallTotal = totalCheckOutPrice.getText().toString().substring(2);
+        totalCheckOutPrice.setText(sOverallTotal);
+
 
         debitImage.setOnClickListener(new View.OnClickListener() {
             @Override

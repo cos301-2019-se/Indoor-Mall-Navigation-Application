@@ -302,9 +302,4 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         Button deleteCartProduct;
         Button addToWishList;
     }
-
-
-
-
-
 }

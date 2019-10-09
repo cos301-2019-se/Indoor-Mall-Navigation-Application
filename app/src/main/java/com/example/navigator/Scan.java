@@ -501,7 +501,7 @@ public class Scan extends Fragment {
       }
       else if(sessionId.equals("7353280248377711")){
           objProduct = new Product("7353280248377711","Smart Shopper",5.49,itemQty,imageUrl);
-          //ref.push().setValue(objProduct);
+          ref.push().setValue(objProduct);
       }
 
 
@@ -647,7 +647,7 @@ public class Scan extends Fragment {
         }
         else if(sessionId.equals("7353280248377711")){
             objProduct = new Product("7353280248377711","Smart Shopper",5.49,itemQty,imageUrl);
-            //ref.push().setValue(objProduct);
+            ref.push().setValue(objProduct);
         }
 
 

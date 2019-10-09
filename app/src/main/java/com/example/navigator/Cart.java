@@ -156,6 +156,7 @@ public class Cart extends Fragment {
                     {
                         double temp = Double.parseDouble(products.get(i).getTotalPrice());
                         temp = (double) Math.round(temp*100)/100;
+                        
                         oTotal += temp;
                     }
 

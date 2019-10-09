@@ -341,6 +341,9 @@ public class Scan extends Fragment {
       });
 
 
+
+
+
       rootRef = FirebaseDatabase.getInstance().getReference();
       //database reference pointing to demo node
       demoRef = rootRef.child("Product");
@@ -360,13 +363,13 @@ public class Scan extends Fragment {
 
                 //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
 
-                AddProduct(sessionId,itemQuantity,imageUrl,shopResult.getText().toString());
+                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl,shopResult.getText().toString());//shopResult
+                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
               }
 
             }
@@ -531,6 +534,10 @@ public class Scan extends Fragment {
       else if(sessionId.equals("8892961606160")){
         objProduct = new Product("8892961606160","Spar Rewards Tag",2.50,itemQty,imageUrl,shopResult);
         ref.push().setValue(objProduct);
+      }
+      else if(sessionId.equals("7353280248377711")){
+          objProduct = new Product("7353280248377711","Smart Shopper Card",2.50,itemQty,imageUrl,shopResult);
+          ref.push().setValue(objProduct);
       }
 
 

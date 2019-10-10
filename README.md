@@ -2,68 +2,46 @@
 
 ## **Indoor Mall Navigation Application**
 
+###Project Description
+Indoor Mall Navigation App is a fully interactive mall guide of sorts which will allow users to easily ﬁnd shops as well as act as a shopping companion, allowing users to add items to a shopping cart to purchase and have delivered later. This system also aims to replace electronic maps using augmented reality to guide users to a selected store.
 
-**Documentation**
-* See SRS folder for our software requirements specification.
+###Documentation
+- <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Architectural%20Design%20Documentation/Brute_Force___Indoor_Mall_Navigation___Architectural_Design_and_Requirements.pdf" target="_blank">SRS & Architectural Design</a> <br>
 
-**Requirement Overview**
-* A User should be able to navigate to a desired store.
-* A User should be able to register on the system by creating an account.
-* A User should be able to log in once registered to view their profile and utilize other functionality.
-* A User should be able to view their current location and navigate to a desired location.
-* A User should be able to scan the barcode of a product.
-* A User should be able to scan the QRcode of a product. 
-* A User should be able to interact with their shopping cart.
-* A User should be able to interact with their wishlist.
-* A User should be able to have checked out items delivered.
-* The System should allow a CRUD functionality to admin (Maintenance) regarding a Mall's map.
+- <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/User%20Manual/COS_301___User_Manual___Indoor_Mall_Navigation%20(4).pdf" target="_blank">User Manual</a> <br>
 
-## **Team Members**
+- <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Coding%20Standards/Brute_Force___Indoor_Mall_Navigation___Coding_Standards.pdf" target="_blank">Coding Standards</a> <br>
 
-|Team Member | Details | 
-| :---         | :---         |    
-|**Mpho Mashaba**|    **u14309999**   |
-|**Profile** |[Github](https://github.com/MphoMashaba)|
-|**Overview**| I am currently dong my final year in BSc Information and knowledge systems. I like developing websites and producing music in my spare time along with other sports activities like rugby and basketball. I am a friendly person and i have the willingness to learn new things. |
-|**Position** |Final year BSc IT|
-|**Interests** | Meeting new people, Gaming , Gymming, Sports|
-|**Skills**|C++, C#, Java, HTML, PHP and JavaScript|
+- <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Testing%20Policy/Testing_Policy.pdf" target="_blank">Testing Policy</a> <br>
+##Project Management Tool
+- <a href="https://app.zenhub.com/workspaces/indoor-mall-navigation-tasks-5d1f45a3c1f68f721895cfa4/board?repos=182156349" target="_blank">Zenhub</a> <br>
 
-|Team Member | Details | 
-| :---         | :---         |  
-|**Thabo Ntsoane**|    **u15107532**   |
-|**Profile** |[Github](https://github.com/ThaboNtsoane)|
-|**Overview**|I'm a friendly, hard working person who is deteremined to better myself by learning different skill sets from the people I encounter in my life.|
-|**Position** |Final year BSc IT|
-|**Interests** |Chess and Soccer |
-|**Skills**|C++,C#,HTML,CSS,Bootstrap,php,SQL|
+## Team Members
+<details><summary> Select Member</summary><br>
+ - <details><summary>Thomas Honiball - **15348751**</summary>
+      - <a href="https://github.com/ThomasHoniball" target="_blank">Github</a> <br>
+      - <a href="https://github.com/ThomasHoniball" target="_blank">Linked In</a> <br>
+  </details>
+   -<details><summary>Thabo Ntsoane - **15107532**</summary>
+      - <a href="https://github.com/ThaboNtsoane" target="_blank">Github</a> <br>
+      - <a href="https://www.linkedin.com/in/thabo-ntsoane-40380a139/" target="_blank">Linked In</a> <br>
+  </details>
+  -<details><summary>Mpho Mashaba - **u14309999**</summary>
+      - <a href="https://github.com/MphoMashaba" target="_blank">Github</a> <br>
+      - <a href="https://www.linkedin.com/in/mpho-mashaba-07ab4615a/" target="_blank">Linked In</a> <br>
+  </details>
+  -<details><summary>Bandile Dlamini - **14402425**</summary>
+      - <a href="https://github.com/u14402425" target="_blank">Github</a> <br>
+      - <a href="https://www.linkedin.com/in/bandile-p-dlamini/" target="_blank">Linked In</a> <br>
+  </details>
+  -<details><summary>Munyadziwa Tshisimba - **u11034531**</summary>
+      - <a href="https://github.com/khodanit" target="_blank">Github</a> <br>
+      - <a href="https://www.linkedin.com/in/mpho-mashaba-07ab4615a/" target="_blank">Linked In</a> <br>
+  </details>
+</details>
 
-|Team Member | Details | 
-| :---         | :---         |  
-|**Thomas Honiball**|    **15348751**   |
-|**Profile** |[Github](https://github.com/ThomasHoniball)|
-|**Overview**|Team focused but individually driven programming|
-|**Position** |Final year BSc IT|
-|**Interests** |Gaming, Cooking, Writing and Offensive Security|
-|**Skills**|PHP, Java, Java script, CSS3, HTML, SQL, C#, Meteor JS, C++, Python, Experience with agile methodologies|
 
-|Team Member | Details | 
-| :---         | :---         |  
-|**Munyadziwa Tshisimba**|    **u11034531**   |
-|**Profile** |[Github](https://github.com/khodanit)|
-|**Overview**|Working Together, Fully Participating and Learning|
-|**Position** |Final year BSc IT|
-|**Interests** |Acoustic Guitar, Trying new things|
-|**Skills**|PHP, Java, Java script,  CSS3, HTML, SQL, C#, Unity|
 
-|Team Member | Details | 
-| :---         | :---         |  
-|**Bandile Dlamini**|    **14402425**   |
-|**Profile** |[Github]()|
-|**Overview**|Hard working and eager to learn new things|
-|**Position** |Final year Computer Science|
-|**Interests** |Robotics, Drones, Micro-Controllers, Software Development|
-|**Skills**|C, C++, C#, JAVA, JavaScript, PHP, .NET|
 
 
 

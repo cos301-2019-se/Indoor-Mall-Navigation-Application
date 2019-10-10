@@ -19,8 +19,8 @@
  *
 */
 package com.example.navigator;
-
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -36,8 +36,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.Installation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -50,7 +48,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import adapters.CartProductListAdapter;
 import adapters.WishListAdapter;
 import entities.CartProduct;
@@ -62,7 +59,13 @@ import entities.CartProduct;
 public class Wishlist extends Fragment {
 
     private ListView listWLViewProduct;
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
+    private FirebaseAuth firebaseAuth;
+    TextView demoValue;
+    ListView cartList;
+    DatabaseReference rootRef,demoRef,wishToCart;
     DatabaseReference dbRef,wlRef;
+
 
     public Wishlist() {
         // Required empty public constructor
@@ -108,7 +111,6 @@ public class Wishlist extends Fragment {
                 }
 
                 WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);
-
                 listWLViewProduct.setAdapter(wlProductListAdapter);
 
             }
@@ -117,6 +119,8 @@ public class Wishlist extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+
+
         });
         return view;
     }

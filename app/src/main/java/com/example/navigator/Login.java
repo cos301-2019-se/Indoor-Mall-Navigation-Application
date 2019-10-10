@@ -80,7 +80,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         buttonLogin = (Button) findViewById(R.id.buttonLogin);
         textViewSignup = (TextView) findViewById(R.id.textViewSignUp);
 
-
         buttonLogin.setOnClickListener(this);
         textViewSignup.setOnClickListener(this);
 
@@ -123,7 +122,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         if(task.isSuccessful()){
                             finish();
                             //start profile activity
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class)); //cant do new intent in OncompleteListner so getappli..context used
+                            startActivity(new Intent(getApplicationContext(),Payment.class)); //cant do new intent in OncompleteListner so getappli..context used
                         }
                         else{
                             Toast.makeText(getApplicationContext(), "Login Failed...Try Again", Toast.LENGTH_SHORT).show();

@@ -205,7 +205,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 double temp = Double.parseDouble(sOverallTotal);
 
 
-                temp -= Double.parseDouble(product.getTotalPrice());
+                temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
                 temp = (double) Math.round(temp*100)/100;
                 localOverall.setText("R " +roundToTwo.format(temp));
 
@@ -302,9 +302,4 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         Button deleteCartProduct;
         Button addToWishList;
     }
-
-
-
-
-
 }

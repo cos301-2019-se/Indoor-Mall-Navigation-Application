@@ -19,54 +19,54 @@
  *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
  *
  */
-package com.example.navigator;
+        package com.example.navigator;
 
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.Toast;
+        import android.content.Context;
+        import android.content.Intent;
+        import android.graphics.Bitmap;
+        import android.graphics.BitmapFactory;
+        import android.os.Bundle;
+        import android.support.annotation.NonNull;
+        import android.support.v4.app.Fragment;
+        import android.util.Log;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.AdapterView;
+        import android.widget.Button;
+        import android.widget.ListView;
+        import android.widget.TableLayout;
+        import android.widget.TableRow;
+        import android.widget.TextView;
+        import android.widget.Toast;
 
-import com.example.navigator.utils.Installation;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+        import com.example.navigator.utils.Installation;
+        import com.google.android.gms.tasks.OnFailureListener;
+        import com.google.android.gms.tasks.OnSuccessListener;
+        import com.google.firebase.auth.FirebaseAuth;
+        import com.google.firebase.database.DataSnapshot;
+        import com.google.firebase.database.DatabaseError;
+        import com.google.firebase.database.DatabaseReference;
+        import com.google.firebase.database.FirebaseDatabase;
+        import com.google.firebase.database.Query;
+        import com.google.firebase.database.ValueEventListener;
+        import com.google.firebase.storage.FileDownloadTask;
+        import com.google.firebase.storage.FirebaseStorage;
+        import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.cert.PolicyNode;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+        import java.io.File;
+        import java.io.IOException;
+        import java.security.cert.PolicyNode;
+        import java.text.DecimalFormat;
+        import java.util.ArrayList;
+        import java.util.HashMap;
+        import java.util.List;
+        import java.util.Map;
 
-import adapters.CartProductListAdapter;
-import entities.CartProduct;
-
-import static android.app.Activity.DEFAULT_KEYS_DIALER;
-import static com.example.navigator.MainActivity.TAG;
+        import adapters.CartProductListAdapter;
+        import entities.CartProduct;
+        import static android.app.Activity.DEFAULT_KEYS_DIALER;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,12 +75,13 @@ import static com.example.navigator.MainActivity.TAG;
 public class Cart extends Fragment {
     private Context context = null;
     private ListView listViewProduct;
-
-//
+    static double oTotal;
+    //
     private static DecimalFormat df2 = new DecimalFormat("#.##");
 
     TextView overallTotal;
     ListView cartList;
+    Button checkout;
 
     //Retrieve Images from FirebaseStorage
 
@@ -120,6 +121,17 @@ public class Cart extends Fragment {
         //List of Cart products
         listViewProduct = view.findViewById(R.id.listViewProduct);
 
+        checkout = view.findViewById(R.id.fetch);
+        checkout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(),Login.class));
+            }
+
+
+        });
+
+
         overallTotal = view.findViewById(R.id.overallTotal);
 
         //Get Items From Database
@@ -139,11 +151,11 @@ public class Cart extends Fragment {
                     //Add a product to list of Cart products
                     products.add(new CartProduct(id, productName, price, quantity, url));
 
-                    double oTotal = 0.00;
+                    //double oTotal = 0.00;
 
                     for(int i = 0; i< products.size();i++)
                     {
-                        double temp = Double.parseDouble(products.get(i).getTotalPrice());
+                        double temp = Double.parseDouble(products.get(i).getTotalPrice().replace(',','.'));
                         temp = (double) Math.round(temp*100)/100;
                         oTotal += temp;
                     }
@@ -161,20 +173,15 @@ public class Cart extends Fragment {
                 * */
 
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
-
                 listViewProduct.setAdapter(productListAdapter);
 
                 //Toast.makeText(getContext(), "Size: " + products.size() + " Device ID: " + deviceId, Toast.LENGTH_LONG).show();
 
                 /*double oTotal = 0.00;
-
                 for(int i = 0; i< products.size();i++)
                 {
                     oTotal += Double.parseDouble(products.get(i).getTotalPrice());
                 }
-
-
-
                 overallTotal.setText("R " + oTotal);*/
             }
 
@@ -184,8 +191,7 @@ public class Cart extends Fragment {
             }
         });
 
-
-
         return view;
     }
 }
+

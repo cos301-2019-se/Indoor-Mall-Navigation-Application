@@ -539,6 +539,10 @@ public class Scan extends Fragment {
           objProduct = new Product("7353280248377711","Smart Shopper Card",2.50,itemQty,imageUrl,shopResult);
           ref.push().setValue(objProduct);
       }
+      else if(sessionId.equals("0200625835623")){
+          objProduct = new Product("0200625835623","Clicks Club Card",0.99,itemQty,imageUrl,shopResult);
+          ref.push().setValue(objProduct);
+      }
 
 
     }

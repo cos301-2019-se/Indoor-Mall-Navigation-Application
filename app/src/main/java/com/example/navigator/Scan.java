@@ -298,15 +298,15 @@ public class Scan extends Fragment {
                 String sessionId = resultTextView.getText().toString();
 
                 //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
-                  AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
-                //AddProduct(sessionId,itemQuantity,imageUrl);
+                  // AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
+                AddProduct(sessionId,itemQuantity,imageUrl);
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
-                //AddProduct(sessionId,itemQuantity,imageUrl);
+                //AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
+                AddProduct(sessionId,itemQuantity,imageUrl);
               }
 
             }
@@ -334,15 +334,15 @@ public class Scan extends Fragment {
               if(dataSnapshot.child(deviceId).exists()){
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                  AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
-                //AddProduct(sessionId,itemQuantity,imageUrl);
+                //AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
+                AddProduct(sessionId,itemQuantity,imageUrl);
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                  AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
-                //AddProduct(sessionId,itemQuantity,imageUrl);
+                //AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
+                AddProduct(sessionId,itemQuantity,imageUrl);
               }
 
             }

@@ -288,6 +288,7 @@ public class Scan extends Fragment {
         public void onClick(View view) {
             CartBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Cart");
+          final DatabaseReference dbRef = ref;
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -297,14 +298,15 @@ public class Scan extends Fragment {
                 String sessionId = resultTextView.getText().toString();
 
                 //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
-
-                AddProduct(sessionId,itemQuantity,imageUrl);
+                  AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
+                //AddProduct(sessionId,itemQuantity,imageUrl);
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl);
+                AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
+                //AddProduct(sessionId,itemQuantity,imageUrl);
               }
 
             }
@@ -324,6 +326,7 @@ public class Scan extends Fragment {
         public void onClick(View v) {
             WishlistBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
+          final DatabaseReference dbRef = ref;
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -331,14 +334,15 @@ public class Scan extends Fragment {
               if(dataSnapshot.child(deviceId).exists()){
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-
-                AddProduct(sessionId,itemQuantity,imageUrl);
+                  AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
+                //AddProduct(sessionId,itemQuantity,imageUrl);
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl);
+                  AddProduct(sessionId,itemQuantity,imageUrl,deviceId);
+                //AddProduct(sessionId,itemQuantity,imageUrl);
               }
 
             }
@@ -499,7 +503,7 @@ public class Scan extends Fragment {
 
     }
 
-    public void AddProduct(String sessionId, final int itemQty, String imageUrl, final DatabaseReference dbRef){
+    public void AddProduct(String sessionId, final int itemQty, String imageUrl, String deviceID){
 
         if(sessionId.equals("5060466519077")){
             objProduct = new Product("5060466519077","Power Play",19.99,itemQty,imageUrl);
@@ -645,33 +649,101 @@ public class Scan extends Fragment {
 
         //
 
-        Query myQuery = dbRef.orderByChild("id").equalTo(objProduct.getId());
 
 
 
-        myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if(dataSnapshot.exists())
-                {
-                    int q =  Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
-                    q += objProduct.getQuantity();
-                    dataSnapshot.child("quantity").getRef().setValue(q);
-                }
-                else
-                {
-                    dbRef.push().setValue(objProduct);
-                }
+         if(CartBoolean == true)
+         {
 
 
-            }
+             final DatabaseReference connDB = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceID);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+             Toast.makeText(getContext(),"Device ID: " + deviceID, Toast.LENGTH_LONG).show();
+             Query myQuery = connDB.orderByChild("id").equalTo(objProduct.getId());
 
-            }
-        });
+             ValueEventListener valueEventListener = new ValueEventListener() {
+                 @Override
+                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                     for(DataSnapshot dataSnap : dataSnapshot.getChildren())
+                     {
+                         if(dataSnap.exists())
+                         {
+                             int q = Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
+                             q += objProduct.getQuantity();
+                             dataSnap.child("quantity").getRef().setValue(q);
+                         }
+                         else {
+                             Toast.makeText(getContext(),"Adding new item...", Toast.LENGTH_LONG).show();
+                             connDB.push().setValue(objProduct);
+                         }
+
+                     }
+                 }
+
+                 @Override
+                 public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                 }
+             };
+             //notifyDataSetChanged();
+             myQuery.addListenerForSingleValueEvent(valueEventListener);
+
+
+             /*
+             myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                 @Override
+                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                     if (dataSnapshot.child("quantity").getValue()!= null) {
+                         Toast.makeText(getContext(),"Increase quantity", Toast.LENGTH_LONG).show();
+                         int q = Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
+                         q += objProduct.getQuantity();
+                         dataSnapshot.child("quantity").getRef().setValue(q);
+
+
+                     } else {
+                         // Toast.makeText(getContext(),"Adding new item...", Toast.LENGTH_LONG).show();
+                         connDB.push().setValue(objProduct);
+                     }
+                 }
+
+                 @Override
+                 public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                 }
+             });*/
+             //Toast.makeText(getContext(),"Chose Cart", Toast.LENGTH_LONG).show();
+         }
+         else {
+             final DatabaseReference connDB = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceID);
+
+             Query myQuery = connDB.orderByChild("id").equalTo(objProduct.getId());
+
+             myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                 @Override
+                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                     if (dataSnapshot.child("quantity").getValue()!= null) {
+                         Toast.makeText(getContext(),"Increase quantity", Toast.LENGTH_LONG).show();
+                         int q = Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
+                         q += objProduct.getQuantity();
+                         dataSnapshot.child("quantity").getRef().setValue(q);
+
+
+                     } else {
+                         // Toast.makeText(getContext(),"Adding new item...", Toast.LENGTH_LONG).show();
+                         connDB.push().setValue(objProduct);
+                     }
+                 }
+
+                 @Override
+                 public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                 }
+             });
+         }
+
+
 
 
 

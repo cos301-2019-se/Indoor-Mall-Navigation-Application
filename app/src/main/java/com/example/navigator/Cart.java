@@ -116,6 +116,7 @@ public class Cart extends Fragment {
         //Point to Cart in DB
         cartRef = dbRef.child("Cart").child(deviceId);
 
+
         //List of Cart products
         listViewProduct = view.findViewById(R.id.listViewProduct);
 

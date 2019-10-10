@@ -42,15 +42,15 @@ Indoor Mall Navigation App is a fully interactive mall guide which will allow us
       - <a href="https://www.linkedin.com/in/bandile-p-dlamini/" target="_blank">Linked In</a> <br>
       - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/User%20Profiles/Bandile.md" target="_blank">User Profile</a> <br>
   </details>
-  <details><summary>Thomas Honiball - 15348751</summary>
-      - <a href="https://github.com/ThomasHoniball" target="_blank">Github</a> <br>
-      - <a href="https://github.com/ThomasHoniball" target="_blank">Linked In</a> <br>
-      - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/User%20Profiles/Thomas.md" target="_blank">User Profile</a> <br>
-  </details>
   <details><summary>Munyadziwa Tshisimba - u11034531</summary>
       - <a href="https://github.com/khodanit" target="_blank">Github</a> <br>
       - <a href="https://www.linkedin.com/in/khodani-tshisimba-198b32195/" target="_blank">Linked In</a> <br>
       - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/User%20Profiles/Khodani.md" target="_blank">User Profile</a> <br>
+  </details>
+  <details><summary>Thomas Honiball - 15348751</summary>
+      - <a href="https://github.com/ThomasHoniball" target="_blank">Github</a> <br>
+      - <a href="https://github.com/ThomasHoniball" target="_blank">Linked In</a> <br>
+      - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/User%20Profiles/Thomas.md" target="_blank">User Profile</a> <br>
   </details>
 </details>
 

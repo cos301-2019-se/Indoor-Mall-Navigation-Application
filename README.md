@@ -25,7 +25,7 @@ Indoor Mall Navigation App is a fully interactive mall guide which will allow us
 - <a href="https://app.zenhub.com/workspaces/indoor-mall-navigation-tasks-5d1f45a3c1f68f721895cfa4/board?repos=182156349" target="_blank">Zenhub</a> <br>
 
 ## **Team Members**
-<details><summary> Select Member</summary><br>
+<details><summary> Meet The Team</summary><br>
   
    <details><summary>Thabo Ntsoane - 15107532</summary>
       - <a href="https://github.com/ThaboNtsoane" target="_blank">Github</a> <br>

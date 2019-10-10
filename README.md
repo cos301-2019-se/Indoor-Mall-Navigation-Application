@@ -18,23 +18,23 @@ Indoor Mall Navigation App is a fully interactive mall guide of sorts which will
 
 ## **Team Members**
 <details><summary> Select Member</summary><br>
-  <details><summary>Thomas Honiball - **15348751**</summary>
+  <details><summary>Thomas Honiball - 15348751</summary>
       - <a href="https://github.com/ThomasHoniball" target="_blank">Github</a> <br>
       - <a href="https://github.com/ThomasHoniball" target="_blank">Linked In</a> <br>
   </details>
-   <details><summary>Thabo Ntsoane - **15107532**</summary>
+   <details><summary>Thabo Ntsoane - 15107532</summary>
       - <a href="https://github.com/ThaboNtsoane" target="_blank">Github</a> <br>
       - <a href="https://www.linkedin.com/in/thabo-ntsoane-40380a139/" target="_blank">Linked In</a> <br>
   </details>
-  <details><summary>Mpho Mashaba - **u14309999**</summary>
+  <details><summary>Mpho Mashaba - u14309999</summary>
       - <a href="https://github.com/MphoMashaba" target="_blank">Github</a> <br>
       - <a href="https://www.linkedin.com/in/mpho-mashaba-07ab4615a/" target="_blank">Linked In</a> <br>
   </details>
-  <details><summary>Bandile Dlamini - **14402425**</summary>
+  <details><summary>Bandile Dlamini - 14402425</summary>
       - <a href="https://github.com/u14402425" target="_blank">Github</a> <br>
       - <a href="https://www.linkedin.com/in/bandile-p-dlamini/" target="_blank">Linked In</a> <br>
   </details>
-  <details><summary>Munyadziwa Tshisimba - **u11034531**</summary>
+  <details><summary>Munyadziwa Tshisimba - u11034531</summary>
       - <a href="https://github.com/khodanit" target="_blank">Github</a> <br>
       - <a href="https://www.linkedin.com/in/mpho-mashaba-07ab4615a/" target="_blank">Linked In</a> <br>
   </details>

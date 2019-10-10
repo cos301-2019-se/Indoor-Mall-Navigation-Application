@@ -1,5 +1,18 @@
-package com.example.navigator;
+/*  Copyright: (c) Copyright 2019 University of Pretoria
+        *  Update History:*
+        *
+        *  Date        Author           Changes
+        *  --------------------------------------------
+        *  10/09/2019  Mpho Mashaba    Original
+        *
+        *  Functional Description: This program file implements the payment gateway of the system
+        *  Error Messages: None
+        *  Constraints: Can only be used if there are items that are being checked out
+        *  Assumptions: It is assumed that the user will be able to pay for items that were checked out from the cart.
+        *
+*/
 
+package com.example.navigator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -34,9 +47,8 @@ public class Payment extends AppCompatActivity implements View.OnClickListener {
          * double valueAsDouble = Double.parseDouble(sOverallTotal);
          *
          * */
-
         String sOverallTotal = totalCheckOutPrice.getText().toString().substring(2);
-        totalCheckOutPrice.setText(sOverallTotal);
+        totalCheckOutPrice.setText("TOTAL PRICE: R"+ String.valueOf(Cart.oTotal));
 
 
         debitImage.setOnClickListener(new View.OnClickListener() {
@@ -45,7 +57,6 @@ public class Payment extends AppCompatActivity implements View.OnClickListener {
                 Intent intent = new Intent(view.getContext(), CardInfo.class);
                 view.getContext().startActivity(intent);}
         });
-
     }
 
     @Override

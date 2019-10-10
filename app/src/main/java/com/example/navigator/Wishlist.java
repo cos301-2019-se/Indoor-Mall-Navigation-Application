@@ -19,7 +19,6 @@
  *
 */
 package com.example.navigator;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -112,7 +111,6 @@ public class Wishlist extends Fragment {
                 }
 
                 WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);
-
                 listWLViewProduct.setAdapter(wlProductListAdapter);
 
             }

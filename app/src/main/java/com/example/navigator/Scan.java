@@ -358,8 +358,8 @@ public class Scan extends Fragment {
         }
       });
 
-
       return view;
+
     }
     public void AddProduct(String sessionId, final int itemQty, String imageUrl){
 

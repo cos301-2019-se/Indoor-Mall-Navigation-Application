@@ -75,7 +75,7 @@
 public class Cart extends Fragment {
     private Context context = null;
     private ListView listViewProduct;
-
+    static double oTotal;
     //
     private static DecimalFormat df2 = new DecimalFormat("#.##");
 
@@ -150,13 +150,12 @@ public class Cart extends Fragment {
                     //Add a product to list of Cart products
                     products.add(new CartProduct(id, productName, price, quantity, url));
 
-                    double oTotal = 0.00;
+                    //double oTotal = 0.00;
 
                     for(int i = 0; i< products.size();i++)
                     {
-                        double temp = Double.parseDouble(products.get(i).getTotalPrice());
+                        double temp = Double.parseDouble(products.get(i).getTotalPrice().replace(',','.'));
                         temp = (double) Math.round(temp*100)/100;
-                        
                         oTotal += temp;
                     }
 
@@ -173,7 +172,6 @@ public class Cart extends Fragment {
                 * */
 
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
-
                 listViewProduct.setAdapter(productListAdapter);
 
                 //Toast.makeText(getContext(), "Size: " + products.size() + " Device ID: " + deviceId, Toast.LENGTH_LONG).show();
@@ -191,8 +189,6 @@ public class Cart extends Fragment {
 
             }
         });
-
-
 
         return view;
     }

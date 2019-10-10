@@ -1,9 +1,12 @@
+ <p align="center">
  <img src="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Architectural%20Design%20Documentation/up_logo.png" alt="UP"	title="UPLogo"  /> 
+ </p>
   
 
 # **Brute Force**
+<p align="center">
  <img src="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/IdoorMallNav_logo.jpeg" alt="UP"	title="UPLogo"  /> 
-
+</p>
 ## **Indoor Mall Navigation Application**
 
 ### **Project Description**

@@ -1,4 +1,4 @@
- <img src="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Architectural%20Design%20Documentation/up_logo.png" alt="UP"	title="UPLogo" width="100" height="100" /> 
+ <img src="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Architectural%20Design%20Documentation/up_logo.png" alt="UP"	title="UPLogo"  /> 
   
 
 # **Brute Force**

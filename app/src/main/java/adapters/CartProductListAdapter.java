@@ -2,13 +2,8 @@ package adapters;
 
 import entities.CartProduct;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
+
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +13,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.InputStream;
-import java.net.URL;
+
+import java.text.DecimalFormat;
 import java.util.List;
 import android.content.Context;
 import android.widget.Toast;
@@ -39,12 +34,12 @@ import com.squareup.picasso.Picasso;
 import static com.example.navigator.R.layout.cart_product_list_layout;
 
 
-
 public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
     private Context context;
     private List<CartProduct> products;
+    private TextView localOverall;
 
-
+    private static DecimalFormat roundToTwo = new DecimalFormat("#.##");
     //Get device ID
     final String deviceId = Installation.id(getContext());
 
@@ -53,10 +48,11 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
 
 
-    public CartProductListAdapter(Context context, List<CartProduct> products) {
+    public CartProductListAdapter(Context context, List<CartProduct> products, TextView oTotal) {
         super(context, R.layout.cart_product_list_layout, products);
         this.context = context;
         this.products = products;
+        this.localOverall = oTotal;
     }
 
     @NonNull
@@ -90,7 +86,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.totalPrice.setText(product.getTotalPrice());
 
         //Trying Drawable Method
-        //viewHolder.imageViewPhoto.setImageDrawable(LoadImageFromUrl(product.getImageUrl()));
         Picasso.with(context).load(product.getImageUrl()).into(viewHolder.imageViewPhoto);
         //new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
 
@@ -101,9 +96,18 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             @Override
             public void onClick(View v) {
                 //Updated quantity on display
-                viewHolder.textViewQuantity.setText(product.increaseQuantity());
-                viewHolder.totalPrice.setText(product.getTotalPrice());
-                notifyDataSetChanged();
+
+                product.increaseQuantity();
+                viewHolder.textViewQuantity.setText(product.getQuantity());
+                viewHolder.totalPrice.setText("R " + product.getTotalPrice());
+
+                //Get the double from cart
+                String sOverallTotal = localOverall.getText().toString().substring(2);
+                double temp = Double.parseDouble(sOverallTotal);
+
+                temp += Double.parseDouble(product.getPrice());
+                //temp = (double) Math.round(temp*100)/100;
+                localOverall.setText("R " +roundToTwo.format(temp));
 
                 //Query to find the ID
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
@@ -123,6 +127,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                     }
                 };
+                notifyDataSetChanged();
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
 
 
@@ -133,11 +138,35 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.decrementQuantity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Updated quantity on display
-                viewHolder.textViewQuantity.setText(product.decreaseQuantity());
-                viewHolder.totalPrice.setText(product.getTotalPrice());
-                notifyDataSetChanged();
+
+                String sOverallTotal = localOverall.getText().toString().substring(2);
+
+                double temp = Double.parseDouble(sOverallTotal);
+                double currPrice = Double.parseDouble(product.getPrice());
+                double currTotalPrice = Double.parseDouble(product.getTotalPrice());
+
+                if(currTotalPrice>currPrice) {
+
+                    temp -= Double.parseDouble(product.getPrice());
+                    temp = (double) Math.round(temp*100)/100;
+                    localOverall.setText("R " +roundToTwo.format(temp));
+
+                }
+
+                product.decreaseQuantity();
+
+                viewHolder.textViewQuantity.setText(product.getQuantity());
+                viewHolder.totalPrice.setText("R " + product.getTotalPrice());
+
+                //notifyDataSetChanged();
                 //Query to find the ID
+
+
+
+
+
+
+
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
 
@@ -147,7 +176,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         for(DataSnapshot dataSnap : dataSnapshot.getChildren())
                         {
                             dataSnap.child("quantity").getRef().setValue(product.getQuantity());
-
                         }
                     }
 
@@ -156,6 +184,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                     }
                 };
+                notifyDataSetChanged();
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
 
 
@@ -170,6 +199,15 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.deleteCartProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String sOverallTotal = localOverall.getText().toString().substring(2);
+
+                double temp = Double.parseDouble(sOverallTotal);
+
+
+                temp -= Double.parseDouble(product.getTotalPrice());
+                temp = (double) Math.round(temp*100)/100;
+                localOverall.setText("R " +roundToTwo.format(temp));
 
 
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
@@ -208,6 +246,15 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.addToWishList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String sOverallTotal = localOverall.getText().toString().substring(2);
+
+                double temp = Double.parseDouble(sOverallTotal);
+
+
+                temp -= Double.parseDouble(product.getTotalPrice());
+                temp = (double) Math.round(temp*100)/100;
+                localOverall.setText("R " +roundToTwo.format(temp));
+
                 wishDBRef.push().setValue(product);
                 Toast.makeText(getContext(),product.getName()+ " added to WishList ", Toast.LENGTH_LONG).show();
 
@@ -245,56 +292,19 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
     }
 
     private static class ViewHolder {
-        public static TextView textViewName;
-        public static TextView textViewQuantity;
-        public static TextView textViewPrice;
-        public static ImageView imageViewPhoto;
-        public static TextView totalPrice;
-        public static Button incrementQuantity;
+        public TextView textViewName;
+        public TextView textViewQuantity;
+        public TextView textViewPrice;
+        public ImageView imageViewPhoto;
+        public TextView totalPrice;
+        public Button incrementQuantity;
         Button decrementQuantity;
         Button deleteCartProduct;
         Button addToWishList;
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
 
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
 
-        protected Bitmap doInBackground(String[] urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
-
-    private Drawable LoadImageFromUrl(String url)
-    {
-        try{
-
-            //Toast.makeText(context.getApplicationContext(),url, Toast.LENGTH_LONG).show();
-            InputStream inStream = (InputStream) new URL(url).getContent();
-            Drawable drawable = Drawable.createFromStream(inStream,"product name");
-            return drawable;
-
-        } catch (Exception E)
-        {
-            return null;
-        }
-    }
 
 
 }

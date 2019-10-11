@@ -615,6 +615,12 @@ public class Navigate extends Fragment implements SensorEventListener,
                 reachedDestination();
             }
         });
+        MainActivity.navigator.setDistanceHandler(new BeaconNavigator.DistanceHandler(){
+            @Override
+            public void onDistanceChange(double distance) {
+                ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText("" + Math.round(distance*100)/100);
+            }
+        });
 //        initializeBeaconDistance();
     }
 

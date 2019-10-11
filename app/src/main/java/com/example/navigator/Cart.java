@@ -75,7 +75,8 @@
 public class Cart extends Fragment {
     private Context context = null;
     private ListView listViewProduct;
-    static double oTotal;
+    public static double oTotal;
+    public static List<CartProduct> products;
     //
     private static DecimalFormat df2 = new DecimalFormat("#.##");
 
@@ -112,7 +113,7 @@ public class Cart extends Fragment {
         dbRef = FirebaseDatabase.getInstance().getReference();
 
         //List of Products to be placed in Cart
-        final List<CartProduct> products = new ArrayList<CartProduct>();
+        products = new ArrayList<CartProduct>();
 
         //Point to Cart in DB
         cartRef = dbRef.child("Cart").child(deviceId);

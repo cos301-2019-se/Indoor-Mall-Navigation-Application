@@ -20,15 +20,14 @@
  *
  */
 package com.example.navigator;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -45,7 +44,6 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.navigator.utils.Installation;
 import com.example.navigator.utils.SearchDialog;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -57,18 +55,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import org.w3c.dom.Text;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 
 import adapters.ComparePriceDialog;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -104,7 +101,7 @@ public class Scan extends Fragment {
   ArrayAdapter<String > adapter;
  // searchContainer.setVisibility(View.VISIBLE);
   public static boolean WishlistBoolean = false;
-    public static boolean CartBoolean = false;
+  public static boolean CartBoolean = false;
   Button buttonScan;
   Button comparePrice;
   Button buttonAddToCart;
@@ -130,7 +127,7 @@ public class Scan extends Fragment {
   private DatabaseReference ref;
   Button buttonCheckout;
 
-  int itemQuantity;
+  int itemQuantity = 1;
 
   public static String imageUrl;
   //Retrieve images from DB
@@ -218,7 +215,6 @@ public class Scan extends Fragment {
                 searchDialog.show();
             }
         });
-
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -726,7 +722,6 @@ public class Scan extends Fragment {
 
 
     }
-
 
 }
 

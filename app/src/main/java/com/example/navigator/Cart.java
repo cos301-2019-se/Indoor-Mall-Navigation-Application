@@ -75,7 +75,7 @@
 public class Cart extends Fragment {
     private Context context = null;
     private ListView listViewProduct;
-    public static double oTotal;
+    public static double oTotal = 0.00;
     public static List<CartProduct> products;
     //
     private static DecimalFormat df2 = new DecimalFormat("#.##");
@@ -153,26 +153,23 @@ public class Cart extends Fragment {
                     //Add a product to list of Cart products
                     products.add(new CartProduct(id, productName, price, quantity, url,storeResult));
 
-                    //double oTotal = 0.00;
 
-                    for(int i = 0; i< products.size();i++)
-                    {
-                        double temp = Double.parseDouble(products.get(i).getTotalPrice().replace(',','.'));
-                        temp = (double) Math.round(temp*100)/100;
-                        oTotal += temp;
-                    }
 
-                    overallTotal.setText("R " + oTotal);
+
                 }
 
-                /*Calling the overall value
-                *
-                * Retrieve it from the display
-                *
-                * String sOverallTotal = localOverall.getText().toString().substring(2);
-                * double valueAsDouble = Double.parseDouble(sOverallTotal);
-                *
-                * */
+                oTotal = 0.00;
+
+                for(int i = 0; i< products.size();i++)
+                {
+                    double temp = Double.parseDouble(products.get(i).getTotalPrice().replace(',','.'));
+                    temp = (double) Math.round(temp*100)/100;
+                    oTotal += temp;
+                }
+
+                oTotal = (double) Math.round(oTotal*100)/100;
+
+                overallTotal.setText("R " + oTotal);
 
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
                 listViewProduct.setAdapter(productListAdapter);

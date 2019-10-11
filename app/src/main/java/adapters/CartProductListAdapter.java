@@ -3,13 +3,18 @@ package adapters;
 import entities.CartProduct;
 
 
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,7 +34,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
 
 import static com.example.navigator.R.layout.cart_product_list_layout;
 
@@ -72,6 +76,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             viewHolder.decrementQuantity = view.findViewById(R.id.decrementQuantity);
             viewHolder.deleteCartProduct = view.findViewById(R.id.deleteCartItem);
             viewHolder.addToWishList = view.findViewById(R.id.addToWishlist);
+            viewHolder.storeResult = view.findViewById(R.id.ShopResult);
 
             view.setTag(viewHolder);
         } else {
@@ -84,6 +89,36 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.textViewQuantity.setText(product.getQuantity());
         viewHolder.textViewPrice.setText("R " + product.getPrice());
         viewHolder.totalPrice.setText(product.getTotalPrice());
+
+        //List<String
+        int shopImage = R.drawable.exact;
+        final String tester = product.getStoreResult();
+
+        if(tester.equals("Woolworths"))
+        {
+            shopImage = R.drawable.woolworths;
+            //Toast.makeText(getContext()," Woolworths ", Toast.LENGTH_LONG).show();
+        }
+        else if(tester.equals("Pick n Pay"))
+        {
+            shopImage = R.drawable.pnp;
+        }
+        else if(tester.equals("Exclusive Books"))
+        {
+            shopImage = R.drawable.exclusive_books;
+        }
+        else if(tester.equals("CNA"))
+        {
+            shopImage = R.drawable.cna;
+        }
+        else if(tester.equals("Exact"))
+        {
+            //Toast.makeText(getContext()," Came here ", Toast.LENGTH_LONG).show();
+            shopImage = R.drawable.exact;
+        }
+
+        viewHolder.storeResult.setImageResource(shopImage);
+
 
         //Trying Drawable Method
         Picasso.with(context).load(product.getImageUrl()).into(viewHolder.imageViewPhoto);
@@ -301,5 +336,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         Button decrementQuantity;
         Button deleteCartProduct;
         Button addToWishList;
+        ImageView storeResult;
     }
 }

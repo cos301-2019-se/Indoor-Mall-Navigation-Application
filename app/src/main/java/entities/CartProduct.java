@@ -34,6 +34,8 @@ public class CartProduct implements Serializable{
     private String totalPrice;
     private String imageUrl;
     private Bitmap bmap;
+    private String storeResult;
+
 
     private static DecimalFormat roundToTwo = new DecimalFormat("#.##");
 
@@ -67,6 +69,25 @@ public class CartProduct implements Serializable{
         this.quantity = quantity;
         //this.photo = photo;
         this.imageUrl = imageUrl;
+
+        price.replace(',','.');
+        double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
+//        DecimalFormat decimal = new DecimalFormat("0.00");
+        //tPrice = roundToTwoPoint(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
+
+    }
+
+    public CartProduct(String id, String name, String price, String quantity, String imageUrl, String storeResult) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        //this.photo = photo;
+        this.imageUrl = imageUrl;
+        this.storeResult = storeResult;
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
@@ -184,6 +205,8 @@ public class CartProduct implements Serializable{
     }
 
     public String getTotalPrice(){return this.totalPrice;}
+
+    public String getStoreResult(){return this.storeResult;}
 
     public void setTotalPrice(String totalPrice)
     {

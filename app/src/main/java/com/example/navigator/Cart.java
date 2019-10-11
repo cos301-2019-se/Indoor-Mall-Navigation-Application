@@ -75,7 +75,7 @@
 public class Cart extends Fragment {
     private Context context = null;
     private ListView listViewProduct;
-    static double oTotal;
+    public static double oTotal;
     public static List<CartProduct> products;
     //
     private static DecimalFormat df2 = new DecimalFormat("#.##");

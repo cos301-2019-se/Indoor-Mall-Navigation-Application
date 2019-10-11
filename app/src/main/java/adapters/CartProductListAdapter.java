@@ -19,6 +19,7 @@ import java.util.List;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.example.navigator.Cart;
 import com.example.navigator.R;
 import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.Installation;
@@ -106,6 +107,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 double temp = Double.parseDouble(sOverallTotal);
 
                 temp += Double.parseDouble(product.getPrice());
+                Cart.oTotal = temp;
                 //temp = (double) Math.round(temp*100)/100;
                 localOverall.setText("R " +roundToTwo.format(temp));
 
@@ -149,6 +151,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                     temp -= Double.parseDouble(product.getPrice());
                     temp = (double) Math.round(temp*100)/100;
+                    Cart.oTotal = temp;
                     localOverall.setText("R " +roundToTwo.format(temp));
 
                 }

@@ -202,7 +202,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 String sOverallTotal = localOverall.getText().toString().substring(2);
 
-                double temp = Double.parseDouble(sOverallTotal);
+                double temp = Double.parseDouble(sOverallTotal.replace(',','.'));
 
 
                 temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
@@ -248,7 +248,8 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             public void onClick(View v) {
                 String sOverallTotal = localOverall.getText().toString().substring(2);
 
-                double temp = Double.parseDouble(sOverallTotal);
+
+                double temp = Double.parseDouble(sOverallTotal.replace(',','.'));
 
 
                 temp -= Double.parseDouble(product.getTotalPrice());

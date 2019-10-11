@@ -17,7 +17,8 @@ public class BeaconNavigator extends BeaconReader {
     private MapPoint nearestPoint = null;
     private double distanceThreshold = 0.4;
     private int pathIndex = 0;
-    public ArrivalHandler arrival = null;
+    private ArrivalHandler arrival = null;
+    private DistanceHandler distanceHandle = null;
 //    private boolean navigating = false;//Do we even need this?
 
     public BeaconNavigator() {
@@ -63,10 +64,14 @@ public class BeaconNavigator extends BeaconReader {
 
     private boolean distanceCheck() {
         Log.d(TAG, "distanceCheck: Distance " + nearest.getDistance());
+        if(distanceHandle != null)
+        {
+            distanceHandle.onDistanceChange(nearest.getDistance());
+        }
         return nearest.getDistance() <= distanceThreshold;
     }
 
-    public void navigate() {
+    private void navigate() {
         if (targetID != null) {
             if (nearestPoint != null) {
                 Log.d(TAG, "navigate: NearestPoint Is set and target is set");
@@ -140,6 +145,10 @@ public class BeaconNavigator extends BeaconReader {
         arrival = _onArrival;
     }
 
+    public void setDistanceHandler(DistanceHandler onDistanceChange){
+        distanceHandle = onDistanceChange;
+    }
+
 
 
     @Override
@@ -151,8 +160,16 @@ public class BeaconNavigator extends BeaconReader {
 
     public static class ArrivalHandler
     {
-        public ArrivalHandler(){};
+        public ArrivalHandler(){}
         public void onArrival()
+        {
+
+        }
+    }
+    public static class DistanceHandler
+    {
+        public DistanceHandler(){}
+        public void onDistanceChange(double distance)
         {
 
         }

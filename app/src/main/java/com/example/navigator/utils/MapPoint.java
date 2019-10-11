@@ -40,6 +40,15 @@ public class MapPoint {
         bearingNearby = new double[points];
     }
 
+    public MapPoint(MapPointWrapper wrapper)
+    {
+        name = wrapper.getName();
+        id = wrapper.getId();
+        nearby = new MapPoint[points];
+        distancesNearby = new double[points];
+        bearingNearby = new double[points];
+    }
+
     /**
      * The big boi constructor to set a MapPoint with name and id set as well as provided lists of MapPoints and Distances
      * @param _name Name to be set
@@ -93,8 +102,17 @@ public class MapPoint {
      */
     public void addTwoWayPoint(MapPoint point, double distance, double bearing)
     {
-        this.addPoint(point, distance, bearing);
-        point.addPoint(this, distance, 180+bearing);
+        if(!this.getNearby().contains(point.getId()))
+        {
+            this.addPoint(point, distance, bearing);
+
+
+        }
+        if(!point.getNearby().contains(this.getId()))
+        {
+            point.addPoint(this, distance, 180+bearing);
+
+        }
     }
 
     /**
@@ -382,6 +400,19 @@ public class MapPoint {
             }
         }
         return out;
+    }
+
+    public static MapPoint matchingID(List<MapPoint> list, String id)
+    {
+//        MapPoint result = null;
+        for (int i = 0; i < list.size(); i++)
+        {
+            if(list.get(i).getId().equals(id))
+            {
+                return list.get(i);
+            }
+        }
+        return null;
     }
 
 }

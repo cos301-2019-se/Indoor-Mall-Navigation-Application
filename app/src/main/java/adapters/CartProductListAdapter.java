@@ -104,7 +104,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 //Get the double from cart
                 String sOverallTotal = localOverall.getText().toString().substring(2);
-                double temp = Double.parseDouble(sOverallTotal);
+                double temp = Double.parseDouble(sOverallTotal.replace(",", "."));
 
                 temp += Double.parseDouble(product.getPrice());
                 Cart.oTotal = temp;
@@ -143,9 +143,9 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 String sOverallTotal = localOverall.getText().toString().substring(2);
 
-                double temp = Double.parseDouble(sOverallTotal);
+                double temp = Double.parseDouble(sOverallTotal.replace(",", "."));
                 double currPrice = Double.parseDouble(product.getPrice());
-                double currTotalPrice = Double.parseDouble(product.getTotalPrice());
+                double currTotalPrice = Double.parseDouble(product.getTotalPrice().replace(",", "."));
 
                 if(currTotalPrice>currPrice) {
 

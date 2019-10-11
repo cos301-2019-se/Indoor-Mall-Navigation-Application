@@ -574,13 +574,14 @@ public class Navigate extends Fragment implements SensorEventListener,
 //    }
 
     private void reachedDestination() {
-        rootView.findViewById(R.id.stop_button).setVisibility(View.GONE);
+//        rootView.findViewById(R.id.stop_button).setVisibility(View.GONE);
         rootView.findViewById(R.id.crosshairs).setVisibility(View.GONE);
         rootView.findViewById(R.id.compass).setVisibility(View.GONE);
         rootView.findViewById(R.id.check_point_label).setVisibility(View.GONE);
         rootView.findViewById(R.id.check_point).setVisibility(View.GONE);
         rootView.findViewById(R.id.distance_label).setVisibility(View.GONE);
         rootView.findViewById(R.id.distance_from_beacon).setVisibility(View.GONE);
+        rootView.findViewById(R.id.arrow).setVisibility(View.GONE);
 //        handler.removeCallbacks(distanceFromBeaconProcess);
 
         handler.postDelayed(new Runnable() {

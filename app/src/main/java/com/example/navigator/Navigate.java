@@ -511,6 +511,7 @@ public class Navigate extends Fragment implements SensorEventListener,
 
                 rootView.findViewById(R.id.instructions_container).setVisibility(View.VISIBLE);
                 rootView.findViewById(R.id.arrived_at_destination).setVisibility(View.GONE);
+                rootView.findViewById(R.id.arrow).setVisibility(View.VISIBLE);
                 rootView.findViewById(R.id.ar_container).setVisibility(View.GONE);
                 rootView.findViewById(R.id.camera_frame).setVisibility(View.GONE);
                 rootView.findViewById(R.id.ar_content_overlay).setVisibility(View.GONE);

@@ -188,6 +188,9 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
             p = new Paragraph("Billed To: " + customerName);
             p.setAlignment(Paragraph.ALIGN_LEFT);
             document.add(p);
+            p = new Paragraph("Customer Tel.: " + cardForm.getMobileNumber());
+            p.setAlignment(Paragraph.ALIGN_LEFT);
+            document.add(p);
             p = new Paragraph("Address Line 1");
             p.setAlignment(Paragraph.ALIGN_LEFT);
             document.add(p);

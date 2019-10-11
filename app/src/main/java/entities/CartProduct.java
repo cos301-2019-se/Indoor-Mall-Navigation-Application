@@ -1,10 +1,29 @@
 package entities;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.example.navigator.utils.Installation;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URL;
+import java.security.AccessController;
 import java.text.DecimalFormat;
 
+import static java.security.AccessController.getContext;
+
+
 public class CartProduct implements Serializable{
+    private Context context;
+
 
     //Each CardView Product will have the following
     private String id;
@@ -13,8 +32,11 @@ public class CartProduct implements Serializable{
     private String quantity;
     private int photo;
     private String totalPrice;
-    private String imageName;
+    private String imageUrl;
     private Bitmap bmap;
+
+    private static DecimalFormat roundToTwo = new DecimalFormat("#.##");
+
 
     public CartProduct() {
     }
@@ -25,45 +47,34 @@ public class CartProduct implements Serializable{
         this.price = price;
         this.quantity = quantity;
         this.photo = photo;
-        this.imageName = "";
+        this.imageUrl= "";
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-//        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = roundToTwoPoint(tPrice);
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
 
     }
 
-    public CartProduct(String id, String name, String price, String quantity, int photo, Bitmap b) {
+
+
+    public CartProduct(String id, String name, String price, String quantity, String imageUrl) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-        this.photo = photo;
-        this.bmap = b;
+        //this.photo = photo;
+        this.imageUrl = imageUrl;
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
 //        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = roundToTwoPoint(tPrice);
-        this.totalPrice = Double.toString(tPrice);
-
-    }
-
-    public CartProduct(String id, String name, String price, String quantity, Bitmap b) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.photo = photo;
-        this.bmap = b;
-
-        price.replace(',','.');
-        double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-//        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = roundToTwoPoint(tPrice);
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -73,13 +84,15 @@ public class CartProduct implements Serializable{
         this.price = price;
         this.quantity = quantity;
         this.photo = photo;
-        this.imageName = "";
+        this.imageUrl = "";
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
 //        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = Math.round(tPrice *100.00)/100.00;
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -89,14 +102,16 @@ public class CartProduct implements Serializable{
         this.price = price;
         this.quantity = quantity;
         this.photo = photo;
-        this.imageName = "";
+        this.imageUrl = "";
         this.bmap = b;
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
 //        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = roundToTwoPoint(tPrice);
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -149,7 +164,7 @@ public class CartProduct implements Serializable{
     public String decreaseQuantity()
     {
         int temp = Integer.parseInt(quantity);
-        if(temp>0)
+        if(temp>1)
             temp--;
         quantity = Integer.toString(temp);
         setTotalPrice(quantity,price);
@@ -178,18 +193,39 @@ public class CartProduct implements Serializable{
     public void setTotalPrice(String quantity, String price)
     {
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-//        DecimalFormat decimal = new DecimalFormat("0.00");
-        tPrice = roundToTwoPoint(tPrice);
-        this.totalPrice = Double.toString(tPrice);
+        //tPrice = roundToTwoPoint(tPrice);
+        //tPrice = (double) Math.round(tPrice*100)/100;
+        this.totalPrice = roundToTwo.format(tPrice);
+        //this.totalPrice = Double.toString(tPrice);
     }
 
-    public String getImageName() {
-        return this.imageName;
+    public String getImageUrl() {
+        return this.imageUrl;
     }
 
-    public void setImageName(String imageName) {
-        this.price = imageName;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
+
+    public Drawable getDrawable()
+    {
+
+        return LoadImageFromUrl(this.getImageUrl());
+    }
+
+    private static Drawable LoadImageFromUrl(String url)
+    {
+        try{
+            InputStream inStream = (InputStream) new URL(url).getContent();
+            Drawable drawable = Drawable.createFromStream(inStream,"product name");
+            return drawable;
+
+        } catch (Exception E)
+        {
+            return null;
+        }
+    }
+
 
 
 }

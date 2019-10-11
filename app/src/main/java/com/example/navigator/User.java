@@ -23,9 +23,13 @@ package com.example.navigator;
 
 
 public class User {
-    public String userid;
-    public String username;
-    public String email;
+    private String userid;
+    private String username;
+    private String email;
+    private String addressL1;
+    private String addressL2;
+    private String addressL3;
+    private String phoneNumber;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -35,6 +39,20 @@ public class User {
         this.userid=userid;
         this.username = username;
         this.email = email;
+        this.addressL1 = "";
+        this.addressL2 = "";
+        this.addressL3 = "";
+        this.phoneNumber = "";
+    }
+
+    public User(String userid, String username, String email, String addressL1, String addressL2, String addressL3, String phoneNumber) {
+        this.userid=userid;
+        this.username = username;
+        this.email = email;
+        this.addressL1 = addressL1;
+        this.addressL2 = addressL2;
+        this.addressL3 = addressL3;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getuserid() {
@@ -46,5 +64,18 @@ public class User {
     public String getemail() {
        return email;
     }
+    public String getaddressL1() {
+        return addressL1;
+    }
+    public String getAddressL2() {
+        return addressL1;
+    }
+    public String getAddressL3() {
+        return addressL2;
+    }
+    public String getphoneNumber() {
+        return phoneNumber;
+    }
+
 
 }

@@ -156,8 +156,6 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
             return;
         }
 
-
-
         //if validations are ok
         //show progress bar
 

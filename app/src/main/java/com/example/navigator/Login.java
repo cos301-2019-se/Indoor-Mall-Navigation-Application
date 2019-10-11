@@ -59,6 +59,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth firebaseAuth;
     private DatabaseReference rootRef,demoRef;
     private Product objProduct;
+    public static FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         buttonLogin = (Button) findViewById(R.id.buttonLogin);
         textViewSignup = (TextView) findViewById(R.id.textViewSignUp);
-
 
         buttonLogin.setOnClickListener(this);
         textViewSignup.setOnClickListener(this);
@@ -121,9 +121,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         progressDialog.dismiss();
                         if(task.isSuccessful()){
+
+                            user = firebaseAuth.getCurrentUser();
                             finish();
                             //start profile activity
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class)); //cant do new intent in OncompleteListner so getappli..context used
+                            startActivity(new Intent(getApplicationContext(),Payment.class)); //cant do new intent in OncompleteListner so getappli..context used
                         }
                         else{
                             Toast.makeText(getApplicationContext(), "Login Failed...Try Again", Toast.LENGTH_SHORT).show();

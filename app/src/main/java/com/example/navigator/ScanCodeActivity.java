@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -14,12 +15,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.navigator.utils.Installation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -50,18 +53,33 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
 
     @Override
     public void handleResult(final Result result) {
-        Scan.resultTextView.setText(result.getText());
+        Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.imageContainer).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.qtyContainer).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.addToCartContainer).setVisibility(View.VISIBLE);
+        Scan.view.findViewById(R.id.addToWishlistContainer).setVisibility(View.VISIBLE);
+        Scan.quantityValue.setText("1");
 
+        Scan.resultTextView.setText(result.getText());
         String imageURL = result.getText()+".jpg";
         try {
             final File localFile = File.createTempFile("images", "jpg");
             StorageReference storageLocation = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(imageURL);//imageURL
+            storageLocation.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Scan.imageUrl = uri.toString();
+                }
+            });
+
             storageLocation.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                     //Toast.makeText(getContext(), localFile.getName(),Toast.LENGTH_LONG).show();
                     Scan.scanImage.setImageBitmap(bitmap);
+                    Scan.scanImageBitmap = bitmap;
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -69,6 +87,37 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
                 }
             });
         } catch (IOException e ) {}
+
+        //Establish DB Connection
+        /*final String deviceId = Installation.id(this);
+        DatabaseReference DBRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+
+        if(Scan.WishlistBoolean == true)
+            DBRef = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+        else if(Scan.CartBoolean == true)
+            DBRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);*/
+
+        /*Query myQuery = DBRef.orderByChild("id").equalTo(product.getId());
+
+
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot dataSnap : dataSnapshot.getChildren())
+                {
+                    dataSnap.child("id").getRef().setValue();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        myQuery.addListenerForSingleValueEvent(valueEventListener);*/
+
+
 
         /**/
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {

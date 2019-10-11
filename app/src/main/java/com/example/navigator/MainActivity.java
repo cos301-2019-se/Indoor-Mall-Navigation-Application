@@ -89,7 +89,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     String[] PERMISSIONS = {
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
             android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.CAMERA
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     private boolean havePermissions() {

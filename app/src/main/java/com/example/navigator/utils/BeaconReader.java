@@ -49,22 +49,27 @@ public class BeaconReader
     {
         Log.d(TAG, "update: Updating beacons");
         inRange = new ArrayList<Beacon>(beacons);
-        setNearest(inRange.get(0));
+        int nearestInd = 0;
+//        setNearest(inRange.get(0));
         double distance = inRange.get(0).getDistance();
         for (int i = 1; i < inRange.size(); i++)
         {
             if(distance > inRange.get(i).getDistance())
             {
-                setNearest(inRange.get(i));
-                Log.d(TAG, "update: Setting nearest to: " + inRange.get(i).getId1());
+                distance = inRange.get(i).getDistance();
+                nearestInd = i;
+                Log.d(TAG, "update: Setting nearest to: " + inRange.get(i).getId1() + " distance was " + distance);
+
             }
         }
+        setNearest(inRange.get(nearestInd));
+
     }
 
     private void setNearest(Beacon beacon)
     {
         nearest = beacon;
-        Log.d(TAG, "setNearest: Setting nearest to: " + beacon.getId1());
+        Log.d(TAG, "setNearest: Setting nearest to: " + beacon.getId1() + " distance was " + beacon.getDistance());
     }
 
 

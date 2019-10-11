@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         MapPoint CNA, woolworths, pnp;
 
         CNA = new MapPoint("CNA", "00f0c1d6-7539-4ca7-b676-2b9a1e352f24");
-        woolworths = new MapPoint("Woolworths", "a038e0b7-505c-4340-a32a-13645a04cece");
+        woolworths = new MapPoint("Woolworths", "c4a514b8-0492-4249-9575-1fab2d059c44");
         pnp = new MapPoint("Pick 'n Pay", "4edf0c20-f1b0-4d0d-8c2e-fd0758057dfe");
 
         CNA.addTwoWayPoint(woolworths, 2.0, 90);

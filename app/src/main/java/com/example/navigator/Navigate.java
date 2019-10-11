@@ -73,6 +73,7 @@ import android.widget.VideoView;
 import com.example.navigator.interfaces.NavigationFragmentInteractionListener;
 import com.example.navigator.utils.AngleLowpassFilter;
 import com.example.navigator.utils.ArDisplayView;
+import com.example.navigator.utils.BeaconNavigator;
 import com.example.navigator.utils.CompassView;
 import com.example.navigator.utils.Installation;
 import com.example.navigator.utils.LowPassFilter;
@@ -100,6 +101,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import com.example.navigator.utils.BeaconNavigator;
+import com.example.navigator.utils.BeaconNavigator.ArrivalHandler;
+
 
 import static android.content.Context.SENSOR_SERVICE;
 import static com.example.navigator.MainActivity.map;
@@ -603,6 +607,12 @@ public class Navigate extends Fragment implements SensorEventListener,
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
         MainActivity.navigator.setTargetID(MainActivity.map.idFromName(selectedShop));
+        MainActivity.navigator.setArrival(new ArrivalHandler(){
+            @Override
+            public void onArrival() {
+                reachedDestination();
+            }
+        });
 //        initializeBeaconDistance();
     }
 

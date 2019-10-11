@@ -22,7 +22,9 @@
 package com.example.navigator;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -45,8 +47,11 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.navigator.utils.BeaconNavigator;
+import com.example.navigator.utils.BeaconReader;
 import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.FirebaseConn;
+import com.example.navigator.utils.Map;
 import com.example.navigator.utils.MapPoint;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
@@ -61,16 +66,24 @@ import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
 import java.util.Collection;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BeaconConsumer, NavigationFragmentInteractionListener {
     private TextView mTextMessage;
     protected static final String TAG = "MonitoringActivity";
-    private BeaconManager beaconManager;
     private static final int PERMISSIONS_REQUEST_CODE = 1111;
     private RelativeLayout mContainer;
     public MixpanelAPI mixpanel;
     public BottomNavigationView bottomNavigationView;
-    public static MapPoint[] map = null;
+    public static Map map = null;
+    public static BeaconNavigator navigator;
+    private BeaconManager manager;
+    private final Runnable distanceFromBeaconProcess = new Runnable() {
+        @Override
+        public void run() {
+            onBeaconServiceConnect();
+        }
+    };
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
@@ -153,7 +166,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         DatabaseConn.open(new FirebaseConn());
+        Log.i(TAG, "Beacon Reader Initialised");
+        manager = BeaconManager.getInstanceForApplication(this);
+        manager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        manager.bind(this);
         map = buildMiniMap();
+        navigator = new BeaconNavigator(map);
         setContentView(R.layout.activity_main);
 
         final String GO_TO = getIntent().getStringExtra("GO_TO");
@@ -171,15 +189,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         final Cart cartFragment = new Cart();
         final Scan scanFragment = new Scan();
         final Wishlist searchFragment = new Wishlist();
-
-
-        beaconManager = BeaconManager.getInstanceForApplication(this);
-        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
-        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
-        beaconManager.getBeaconParsers().add(new BeaconParser()
-                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
-        //        setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
-        beaconManager.bind(this);
 
         BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
                 = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -290,48 +299,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         }
     }
 
-    @Override
-    public void onBeaconServiceConnect() {
-        beaconManager.removeAllMonitorNotifiers();
-        beaconManager.addMonitorNotifier(new MonitorNotifier() {
-            @Override
-            public void didEnterRegion(Region region) {
-                Log.i(TAG, "I just saw an beacon for the first time!");
-            }
 
-            @Override
-            public void didExitRegion(Region region) {
-                Log.i(TAG, "I no longer see an beacon");
-            }
-
-            @Override
-            public void didDetermineStateForRegion(int state, Region region) {
-                Log.i(TAG, "I have just switched from seeing/not seeing beacons: "+state);
-            }
-        });
-
-        try {
-            beaconManager.startMonitoringBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
-        } catch (RemoteException e) {    }
-
-        try {beaconManager.removeAllRangeNotifiers();
-            beaconManager.addRangeNotifier(new RangeNotifier() {
-                @Override
-                public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                    if (beacons.size() > 0) {
-                        Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
-
-
-
-                        String str = "Beacon is " + beacons.iterator().next().getDistance() + "m away";
-
-                        Log.i(TAG,str);
-                    }
-                }
-            });
-            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-        } catch (RemoteException e) {    }
-    }
 
     private MapPoint[] buildTestMap()
     {
@@ -383,7 +351,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         root.addTwoWayPoint(not_quite, 10.5, 330);
         root.addTwoWayPoint(midpoint, 7.2, 120);
         root.addTwoWayPoint(little_further, 30.6, 180);
-
         data.insert("Map", root);
         data.insert("Map", almost_there);
         data.insert("Map", not_quite);
@@ -399,22 +366,54 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         return mapList;
     }
 
-    private MapPoint[] buildMiniMap()
+    private Map buildMiniMap()
     {
         DatabaseConn data = DatabaseConn.open();
-//        data.truncate("Map");
+        data.truncate("Map");
 
         MapPoint CNA, woolworths, pnp;
 
         CNA = new MapPoint("CNA", "00f0c1d6-7539-4ca7-b676-2b9a1e352f24");
-        woolworths = new MapPoint("Woolworths", "a038e0b7-505c-4340-a32a-13645a04cece");
+        woolworths = new MapPoint("Woolworths", "c4a514b8-0492-4249-9575-1fab2d059c44");
         pnp = new MapPoint("Pick 'n Pay", "4edf0c20-f1b0-4d0d-8c2e-fd0758057dfe");
 
         CNA.addTwoWayPoint(woolworths, 2.0, 90);
         woolworths.addTwoWayPoint(pnp, 4, 180);
-        MapPoint[] mapList = {CNA, woolworths, pnp};
-//        data.insert("Map", mapList);
-        return mapList;
+        Map map = new Map();
+        map.addPoint(CNA);
+        map.addPoint(woolworths);
+        map.addPoint(pnp);
+//        MapPoint[] mapList = {CNA, woolworths, pnp};
+        data.insert("Map", map);
+        return map;
+    }
+
+//    BeaconConsumer Overrides
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    manager.unbind(this);
+}
+@Override
+public void onBeaconServiceConnect() {
+    manager.removeAllRangeNotifiers();
+    manager.addRangeNotifier(new RangeNotifier() {
+        @Override
+        public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+            if (beacons.size() > 0) {
+//                Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
+                navigator.update(beacons);
+            }
+        }
+    });
+
+    try {
+        manager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+    } catch (RemoteException e) {    }
+}
+
+    private void initializeBeaconDistance() {
+        distanceFromBeaconProcess.run();
     }
 
 

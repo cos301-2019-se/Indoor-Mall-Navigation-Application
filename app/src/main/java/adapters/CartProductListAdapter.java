@@ -98,7 +98,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         if(tester.equals("Woolworths"))
         {
             shopImage = R.drawable.woolworths;
-            //Toast.makeText(getContext()," Woolworths ", Toast.LENGTH_LONG).show();
         }
         else if(tester.equals("Pick 'n Pay"))
         {
@@ -107,11 +106,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         else if(tester.equals("CNA"))
         {
             shopImage = R.drawable.cna;
-        }
-        else if(tester.equals("Exact"))
-        {
-            //Toast.makeText(getContext()," Came here ", Toast.LENGTH_LONG).show();
-            shopImage = R.drawable.exact;
         }
 
         viewHolder.storeResult.setImageResource(shopImage);

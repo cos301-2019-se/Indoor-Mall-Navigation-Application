@@ -100,11 +100,6 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         {
             shopImage = R.drawable.cna;
         }
-        else if(tester.equals("Exact"))
-        {
-            //Toast.makeText(getContext()," Came here ", Toast.LENGTH_LONG).show();
-            shopImage = R.drawable.exact;
-        }
 
         viewHolder.storeResult.setImageResource(shopImage);
 

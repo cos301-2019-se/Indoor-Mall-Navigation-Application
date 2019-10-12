@@ -16,7 +16,7 @@ Indoor Mall Navigation App is a fully interactive mall guide which will allow us
 ### **Documentation**
 - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/SRS%20Document/COS_301___Indoor_Mall_Navigation_SRS_document.pdf" target="_blank">SRS & Architectural Design</a> <br>
 
-- <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/User%20Manual/COS_301___User_Manual___Indoor_Mall_Navigation%20(4).pdf" target="_blank">User Manual</a> <br>
+- <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/User%20Manual/COS_301___User_Manual___Indoor_Mall_Navigation.pdf" target="_blank">User Manual</a> <br>
 
 - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Coding%20Standards/Brute_Force___Indoor_Mall_Navigation___Coding_Standards.pdf" target="_blank">Coding Standards</a> <br>
 

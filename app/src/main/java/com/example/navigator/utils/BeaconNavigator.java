@@ -19,6 +19,7 @@ public class BeaconNavigator extends BeaconReader {
     private int pathIndex = 0;
     private ArrivalHandler arrival = null;
     private DistanceHandler distanceHandle = null;
+    private BeaconFoundHandler beaconFound = null;
 //    private boolean navigating = false;//Do we even need this?
 
     public BeaconNavigator() {
@@ -43,11 +44,21 @@ public class BeaconNavigator extends BeaconReader {
         return targetID != null;
     }
 
+    @Override
+    protected void setNearest(Beacon beacon) {
+        Log.d(TAG, "setNearest: Child Class");
+        if(beaconFound != null)
+        {
+            Log.d(TAG, "setNearest: Running BeaconFoundHandler");
+            beaconFound.onBeaconFound();
+        }
+        super.setNearest(beacon);
+    }
 
     public void setTargetID(String id) {
         Log.d(TAG, "setTargetID: Set target to" + id);
         targetID = id;
-        if (nearestPoint != null) {
+        if (nearestPoint != null && targetID != null) {
             for (int i = 0; i < nodes.size(); i++) {
                 if (nodes.get(i).getId().equals(nearestPoint.getId())) {
                     setDirections(nodes.get(i).getDirectionsTo(targetID, nodes.size()));
@@ -57,9 +68,16 @@ public class BeaconNavigator extends BeaconReader {
     }
 
     private void setDirections(MapPoint[] directions) {
-        Log.d(TAG, "setDirections: Setting Directions to:  " + MapPoint.flattenDirections(directions));
-        this.directions = directions;
-        pathIndex = 0;
+        if(targetID != null)
+        {
+            Log.d(TAG, "setDirections: Setting Directions to:  " + MapPoint.flattenDirections(directions));
+            this.directions = directions;
+            pathIndex = 0;
+        }else
+        {
+            this.directions = null;
+        }
+
     }
 
     private boolean distanceCheck() {
@@ -125,7 +143,14 @@ public class BeaconNavigator extends BeaconReader {
     }
 
     public float getBearing() {
-        return (float) nearestPoint.getBearingTo(directions[pathIndex].getId());
+        if(nearestPoint != null)
+        {
+            return (float) nearestPoint.getBearingTo(directions[pathIndex].getId());
+        }else
+        {
+            return 0;
+        }
+
     }
 
     private MapPoint[] popDirection(MapPoint[] directions) {
@@ -149,7 +174,9 @@ public class BeaconNavigator extends BeaconReader {
         distanceHandle = onDistanceChange;
     }
 
-
+    public void setBeaconFound(BeaconFoundHandler beaconFound) {
+        this.beaconFound = beaconFound;
+    }
 
     @Override
     public void update(Collection<Beacon> beacons) {
@@ -170,6 +197,14 @@ public class BeaconNavigator extends BeaconReader {
     {
         public DistanceHandler(){}
         public void onDistanceChange(double distance)
+        {
+
+        }
+    }
+    public static class BeaconFoundHandler
+    {
+        public BeaconFoundHandler(){};
+        public void onBeaconFound()
         {
 
         }

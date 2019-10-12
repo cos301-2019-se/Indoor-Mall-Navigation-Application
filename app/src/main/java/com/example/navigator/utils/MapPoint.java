@@ -148,10 +148,13 @@ public class MapPoint {
     private MapPoint[] getDirectionsTo(String target_id, int numHops, String callerID)
     {
 
-        if(target_id.equals(this.id))
+        if(target_id != null && target_id.equals(this.id))
         {
             MapPoint[] me = {this};
             return me;
+        }else if (target_id == null)
+        {
+            return null;
         }else if(numHops == 0)
         {
             return null;

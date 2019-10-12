@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         manager.bind(this);
         map = buildMiniMap();
         navigator = new BeaconNavigator(map);
+
         setContentView(R.layout.activity_main);
 
         final String GO_TO = getIntent().getStringExtra("GO_TO");

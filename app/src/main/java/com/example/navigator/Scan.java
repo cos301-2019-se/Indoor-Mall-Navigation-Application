@@ -285,6 +285,8 @@ public class Scan extends Fragment {
       buttonAddToCart.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
+
             CartBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Cart");
           final DatabaseReference dbRef = ref;
@@ -323,6 +325,9 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View v) {
             WishlistBoolean = true;
+
+
+
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
           final DatabaseReference dbRef = ref;
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -479,7 +484,7 @@ public class Scan extends Fragment {
           objProduct = new Product("0200625835623","Clicks Club Card",0.99,itemQty,imageUrl,shopResult);
           ref.push().setValue(objProduct);
       }
-      
+
     }
 
 

@@ -146,7 +146,7 @@ public class Cart extends Fragment {
 
                         //Assign Item attributes from DB to each product attribute
                         final String productName = snapshot.child("name").getValue().toString();
-                        final String price = snapshot.child("price").getValue().toString();
+                        final String price = snapshot.child("price").getValue().toString().replace(',','.');
                         final String id = snapshot.child("id").getValue().toString();
                         final String quantity = snapshot.child("quantity").getValue().toString();
                         final String url = snapshot.child("imageUrl").getValue().toString();
@@ -177,9 +177,10 @@ public class Cart extends Fragment {
 
                 overallTotal.setText("R " + oTotal);
 
-                CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
-                listViewProduct.setAdapter(productListAdapter);
-
+                if(!products.isEmpty()) {
+                    CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
+                    listViewProduct.setAdapter(productListAdapter);
+                }
 
             }
 

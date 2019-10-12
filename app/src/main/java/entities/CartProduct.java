@@ -131,7 +131,7 @@ public class CartProduct implements Serializable{
     }
 
     public String getPrice() {
-        return this.price;
+        return this.price.replace(',','.');
     }
 
     public void setBmap(Bitmap b){this.bmap = b;}
@@ -182,7 +182,7 @@ public class CartProduct implements Serializable{
         this.photo = photo;
     }
 
-    public String getTotalPrice(){return this.totalPrice;}
+    public String getTotalPrice(){return this.totalPrice.replace(',','.');}
 
     public String getStoreResult(){return this.shopResult;}
 
@@ -195,6 +195,7 @@ public class CartProduct implements Serializable{
     {
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
         this.totalPrice = roundToTwo.format(tPrice);
+
     }
 
     public String getImageUrl() {

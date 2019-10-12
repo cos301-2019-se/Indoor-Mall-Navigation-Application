@@ -117,9 +117,10 @@ public class Wishlist extends Fragment {
 
                 }
 
-                WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);
-                listWLViewProduct.setAdapter(wlProductListAdapter);
-
+                if(!products.isEmpty()) {
+                    WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);
+                    listWLViewProduct.setAdapter(wlProductListAdapter);
+                }
             }
 
             @Override

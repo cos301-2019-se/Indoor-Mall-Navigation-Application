@@ -75,7 +75,7 @@
 public class Cart extends Fragment {
     private Context context = null;
     private ListView listViewProduct;
-    public static double oTotal;
+    public static double oTotal = 0.00;
     public static List<CartProduct> products;
     //
     private static DecimalFormat df2 = new DecimalFormat("#.##");
@@ -118,6 +118,7 @@ public class Cart extends Fragment {
         //Point to Cart in DB
         cartRef = dbRef.child("Cart").child(deviceId);
 
+
         //List of Cart products
         listViewProduct = view.findViewById(R.id.listViewProduct);
 
@@ -141,51 +142,46 @@ public class Cart extends Fragment {
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren())
                 {
-                    //Assign Item attributes from DB to each product attribute
-                    final String productName = snapshot.child("name").getValue().toString();
-                    final String price = snapshot.child("price").getValue().toString();
-                    final String id = snapshot.child("id").getValue().toString();
-                    final String quantity = snapshot.child("quantity").getValue().toString();
+                    if(snapshot.child("name").getValue()!=null) {
 
-                    final String url = snapshot.child("imageUrl").getValue().toString();
+                        //Assign Item attributes from DB to each product attribute
+                        final String productName = snapshot.child("name").getValue().toString();
+                        final String price = snapshot.child("price").getValue().toString().replace(',','.');
+                        final String id = snapshot.child("id").getValue().toString();
+                        final String quantity = snapshot.child("quantity").getValue().toString();
+                        final String url = snapshot.child("imageUrl").getValue().toString();
+                        final String storeResult;
+                        if(snapshot.child("shopResult").getValue()!=null)
+                            storeResult = snapshot.child("shopResult").getValue().toString();
+                        else
+                            storeResult = snapshot.child("storeResult").getValue().toString();
 
-                    //String imageName = snapshot.child("imageName").getValue().toString();
+                        //Add a product to list of Cart products
+                        products.add(new CartProduct(id, productName, price, quantity, url, storeResult));
 
-                    //Add a product to list of Cart products
-                    products.add(new CartProduct(id, productName, price, quantity, url));
-
-                    //double oTotal = 0.00;
-
-                    for(int i = 0; i< products.size();i++)
-                    {
-                        double temp = Double.parseDouble(products.get(i).getTotalPrice().replace(',','.'));
-                        temp = (double) Math.round(temp*100)/100;
-                        oTotal += temp;
                     }
 
-                    overallTotal.setText("R " + oTotal);
+
                 }
 
-                /*Calling the overall value
-                *
-                * Retrieve it from the display
-                *
-                * String sOverallTotal = localOverall.getText().toString().substring(2);
-                * double valueAsDouble = Double.parseDouble(sOverallTotal);
-                *
-                * */
+                oTotal = 0.00;
 
-                CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
-                listViewProduct.setAdapter(productListAdapter);
-
-                //Toast.makeText(getContext(), "Size: " + products.size() + " Device ID: " + deviceId, Toast.LENGTH_LONG).show();
-
-                /*double oTotal = 0.00;
                 for(int i = 0; i< products.size();i++)
                 {
-                    oTotal += Double.parseDouble(products.get(i).getTotalPrice());
+                    double temp = Double.parseDouble(products.get(i).getTotalPrice().replace(',','.'));
+                    temp = (double) Math.round(temp*100)/100;
+                    oTotal += temp;
                 }
-                overallTotal.setText("R " + oTotal);*/
+
+                oTotal = (double) Math.round(oTotal*100)/100;
+
+                overallTotal.setText("R " + oTotal);
+
+                if(!products.isEmpty()) {
+                    CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
+                    listViewProduct.setAdapter(productListAdapter);
+                }
+
             }
 
             @Override

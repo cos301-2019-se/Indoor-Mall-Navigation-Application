@@ -146,7 +146,10 @@ public class Cart extends Fragment {
                     final String price = snapshot.child("price").getValue().toString();
                     final String id = snapshot.child("id").getValue().toString();
                     final String quantity = snapshot.child("quantity").getValue().toString();
+
                     final String url = snapshot.child("imageUrl").getValue().toString();
+
+                    //String imageName = snapshot.child("imageName").getValue().toString();
 
                     //Add a product to list of Cart products
                     products.add(new CartProduct(id, productName, price, quantity, url));

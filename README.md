@@ -22,7 +22,7 @@ Indoor Mall Navigation App is a fully interactive mall guide which will allow us
 
 - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Testing%20Policy/Testing_Policy.pdf" target="_blank">Testing Policy</a> <br>
 
-<a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Installation%20Guide/COS_301___Installation_Manual.pdf" target="_blank">Installation Guide</a> <br>
+- <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Installation%20Guide/COS_301___Installation_Manual.pdf" target="_blank">Installation Guide</a> <br>
 
 
 ## **Project Management Tool**

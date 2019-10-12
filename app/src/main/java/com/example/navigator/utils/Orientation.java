@@ -51,9 +51,11 @@ public class Orientation {
     {
         if(isFlat())
         {
+            Log.d(TAG, "checkAzimuth: Flat");
             setAzimuth(orientation);
         }else
         {
+            Log.d(TAG, "checkAzimuth: Not Flat");
             setAzimuth(orientationFlipped);
         }
     }

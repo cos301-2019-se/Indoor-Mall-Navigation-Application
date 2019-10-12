@@ -159,7 +159,7 @@ public class Navigate extends Fragment implements SensorEventListener,
     private ArrayList<Beacon> beaconsInRange = new ArrayList<>();
     private double bearing = 180;
     private double distance;
-    private float[] orientationSmoothing = new float[15];
+    private float[] orientationSmoothing = new float[10];
     private int smoothing = 0;
 
 
@@ -665,15 +665,39 @@ public class Navigate extends Fragment implements SensorEventListener,
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float north = 180 - orienter.updateOrientation(event);
+        float north = Math.round(360-orienter.updateOrientation(event));
+        while(north > 360)
+        {
+            north -= 360;
+        }
         addSmoothing(north);
         Log.d(TAG, "onSensorChanged: North: " + north);
         Log.d(TAG, "onSensorChanged: Smoothed: North: " + getSmoothing());
         if(navigator.isNavigating())
         {
-            float bearing = (getSmoothing() + navigator.getBearing())%360;
+            float bearing = (getSmoothing() + navigator.getBearing());
+            if(bearing > 360)
+            {
+                bearing -= 360;
+            }
 
-            arrowView.setRotation(bearing);
+            float rotation = arrowView.getRotation();
+            if(rotation < bearing)
+            {
+                arrowView.setRotation((float)(rotation + 0.5));
+                if(rotation < bearing - 10)
+                {
+                    arrowView.setRotation((float)(rotation + 1));
+                }
+            }else if(rotation > bearing)
+            {
+                arrowView.setRotation((float)(rotation - 0.5));
+                if(rotation > bearing + 10)
+                {
+                    arrowView.setRotation((float)(rotation - 1));
+                }
+            }
+//            arrowView.setRotation(bearing);
         }
 
     }

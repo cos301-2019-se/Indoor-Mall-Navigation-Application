@@ -239,59 +239,7 @@ public class Scan extends Fragment {
           itemQuantity = count;
         }
       });
-/*
-      Notify.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-           //String pn ;
-          final String pp;
-          demoRef =rootRef.child("Product");
-          demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-              String result = "60018939";
-              for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                String snapResult =  snapshot.child("id").getValue().toString();
-                //.toString()
-                if(result.equals(snapResult)){
-                  //String productNam = snapshot.child("name").getValue().toString();
-                  //String productPrices = snapshot.child("price").getValue().toString();
 
-                  productNam = snapshot.child("name").getValue().toString();
-                  productPrices = snapshot.child("price").getValue().toString() ;
-                }
-              }
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-          });
-          AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-          builder.setCancelable(true);
-          builder.setTitle("Products running out");
-          builder.setMessage("the following Product in your wishlist is out of stock: \n"+productNam +"\n"+productPrices);
-          //\n "+productNam+"\n"+productPrices
-
-
-          builder.setNegativeButton("Remove", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-               // DialogInterface.cancel();
-            }
-          });
-          builder.setPositiveButton("Cart", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-          });
-          builder.show();
-        }
-      });*/
 
 
       comparePrice.setOnClickListener(new View.OnClickListener() {
@@ -320,24 +268,7 @@ public class Scan extends Fragment {
             startActivity(new Intent(getContext(),ScanCodeActivity.class));
 
 
-          //CHECK!
-         /* String barCode = resultTextView.getText().toString();
-          storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(barCode);
-          try {
-            final File localFile = File.createTempFile("images", "jpg");
-            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-              @Override
-              public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                scanImage.setImageBitmap(bitmap);
 
-              }
-            }).addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception exception) {
-              }
-            });
-          } catch (IOException e ) {}*/
         }
 
 
@@ -401,14 +332,13 @@ public class Scan extends Fragment {
               if(dataSnapshot.child(deviceId).exists()){
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-
-                AddProduct(sessionId,itemQuantity,imageUrl,shopResult.getText().toString());//shopResult
+                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl,shopResult.toString());//shopResult
+                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
               }
 
             }
@@ -549,8 +479,7 @@ public class Scan extends Fragment {
           objProduct = new Product("0200625835623","Clicks Club Card",0.99,itemQty,imageUrl,shopResult);
           ref.push().setValue(objProduct);
       }
-
-
+      
     }
 
 

@@ -3,13 +3,18 @@ package adapters;
 import entities.CartProduct;
 
 
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +24,7 @@ import java.util.List;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.example.navigator.Cart;
 import com.example.navigator.R;
 import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.Installation;
@@ -29,7 +35,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
 
 import static com.example.navigator.R.layout.cart_product_list_layout;
 
@@ -72,6 +77,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             viewHolder.decrementQuantity = view.findViewById(R.id.decrementQuantity);
             viewHolder.deleteCartProduct = view.findViewById(R.id.deleteCartItem);
             viewHolder.addToWishList = view.findViewById(R.id.addToWishlist);
+            viewHolder.storeResult = view.findViewById(R.id.ShopResult);
 
             view.setTag(viewHolder);
         } else {
@@ -84,6 +90,36 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.textViewQuantity.setText(product.getQuantity());
         viewHolder.textViewPrice.setText("R " + product.getPrice());
         viewHolder.totalPrice.setText(product.getTotalPrice());
+
+        //List<String
+        int shopImage = R.drawable.exact;
+        final String tester = product.getStoreResult();
+
+        if(tester.equals("Woolworths"))
+        {
+            shopImage = R.drawable.woolworths;
+            //Toast.makeText(getContext()," Woolworths ", Toast.LENGTH_LONG).show();
+        }
+        else if(tester.equals("Pick n Pay"))
+        {
+            shopImage = R.drawable.pnp;
+        }
+        else if(tester.equals("Exclusive Books"))
+        {
+            shopImage = R.drawable.exclusive_books;
+        }
+        else if(tester.equals("CNA"))
+        {
+            shopImage = R.drawable.cna;
+        }
+        else if(tester.equals("Exact"))
+        {
+            //Toast.makeText(getContext()," Came here ", Toast.LENGTH_LONG).show();
+            shopImage = R.drawable.exact;
+        }
+
+        viewHolder.storeResult.setImageResource(shopImage);
+
 
         //Trying Drawable Method
         Picasso.with(context).load(product.getImageUrl()).into(viewHolder.imageViewPhoto);
@@ -103,9 +139,10 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 //Get the double from cart
                 String sOverallTotal = localOverall.getText().toString().substring(2);
-                double temp = Double.parseDouble(sOverallTotal);
+                double temp = Double.parseDouble(sOverallTotal.replace(",", "."));
 
                 temp += Double.parseDouble(product.getPrice());
+                Cart.oTotal = temp;
                 //temp = (double) Math.round(temp*100)/100;
                 localOverall.setText("R " +roundToTwo.format(temp));
 
@@ -118,7 +155,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         for(DataSnapshot dataSnap : dataSnapshot.getChildren())
                         {
                             dataSnap.child("quantity").getRef().setValue(product.getQuantity());
-
                         }
                     }
 
@@ -130,7 +166,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 notifyDataSetChanged();
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
 
-
             }
         });
 
@@ -141,14 +176,15 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 String sOverallTotal = localOverall.getText().toString().substring(2);
 
-                double temp = Double.parseDouble(sOverallTotal);
+                double temp = Double.parseDouble(sOverallTotal.replace(",", "."));
                 double currPrice = Double.parseDouble(product.getPrice());
-                double currTotalPrice = Double.parseDouble(product.getTotalPrice());
+                double currTotalPrice = Double.parseDouble(product.getTotalPrice().replace(",", "."));
 
                 if(currTotalPrice>currPrice) {
 
                     temp -= Double.parseDouble(product.getPrice());
                     temp = (double) Math.round(temp*100)/100;
+                    Cart.oTotal = temp;
                     localOverall.setText("R " +roundToTwo.format(temp));
 
                 }
@@ -157,15 +193,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 viewHolder.textViewQuantity.setText(product.getQuantity());
                 viewHolder.totalPrice.setText("R " + product.getTotalPrice());
-
-                //notifyDataSetChanged();
-                //Query to find the ID
-
-
-
-
-
-
 
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
@@ -186,8 +213,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 };
                 notifyDataSetChanged();
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
-
-
 
 
             }
@@ -202,7 +227,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 String sOverallTotal = localOverall.getText().toString().substring(2);
 
-                double temp = Double.parseDouble(sOverallTotal);
+                double temp = Double.parseDouble(sOverallTotal.replace(',','.'));
 
 
                 temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
@@ -236,10 +261,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                     }
                 });
 
-
-
-
-
             }
         });
 
@@ -248,10 +269,10 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
             public void onClick(View v) {
                 String sOverallTotal = localOverall.getText().toString().substring(2);
 
-                double temp = Double.parseDouble(sOverallTotal);
 
+                double temp = Double.parseDouble(sOverallTotal.replace(',','.'));
 
-                temp -= Double.parseDouble(product.getTotalPrice());
+                temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
                 temp = (double) Math.round(temp*100)/100;
                 localOverall.setText("R " +roundToTwo.format(temp));
 
@@ -301,5 +322,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         Button decrementQuantity;
         Button deleteCartProduct;
         Button addToWishList;
+        ImageView storeResult;
     }
 }

@@ -99,20 +99,28 @@ public class Wishlist extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren())
                 {
                     //Assign Item attributes from DB to each product attribute
-                    String productName = snapshot.child("name").getValue().toString();
-                    String price = snapshot.child("price").getValue().toString();
-                    String id = snapshot.child("id").getValue().toString();
-                    String quantity = snapshot.child("quantity").getValue().toString();
-                    final String url = snapshot.child("imageUrl").getValue().toString();
+                    if(snapshot.exists()) {
+                        String productName = snapshot.child("name").getValue().toString();
+                        String price = snapshot.child("price").getValue().toString();
+                        String id = snapshot.child("id").getValue().toString();
+                        String quantity = snapshot.child("quantity").getValue().toString();
+                        final String url = snapshot.child("imageUrl").getValue().toString();
+                        final String storeResult;
+                        if(snapshot.child("shopResult").getValue()!=null)
+                             storeResult = snapshot.child("shopResult").getValue().toString();
+                        else
+                            storeResult = snapshot.child("storeResult").getValue().toString();
 
-                    //Add a product to list of Wishlist products
-                    products.add(new CartProduct(id, productName, price, quantity, url));
+                        //Add a product to list of Wishlist products
+                        products.add(new CartProduct(id, productName, price, quantity, url, storeResult));
+                    }
 
                 }
 
-                WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);
-                listWLViewProduct.setAdapter(wlProductListAdapter);
-
+                if(!products.isEmpty()) {
+                    WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);
+                    listWLViewProduct.setAdapter(wlProductListAdapter);
+                }
             }
 
             @Override

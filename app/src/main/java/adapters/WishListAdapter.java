@@ -73,6 +73,7 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
             viewHolder.imageViewPhoto = view.findViewById(R.id.imageViewPhotoWL);
             viewHolder.deleteFromWL = view.findViewById(R.id.deleteWishListItem);
             viewHolder.addToCart = view.findViewById(R.id.addToCart);
+            viewHolder.storeResult = view.findViewById(R.id.ShopResultWL);
 
             view.setTag(viewHolder);
         } else {
@@ -82,6 +83,34 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         viewHolder.textViewName.setText(product.getName());
         viewHolder.textViewPrice.setText("R " + product.getPrice());
         //viewHolder.imageViewPhoto.setImageResource(product.getPhoto());
+
+        int shopImage = R.drawable.exact;
+        final String tester = product.getStoreResult();
+
+        if(tester.equals("Woolworths"))
+        {
+            shopImage = R.drawable.woolworths;
+            //Toast.makeText(getContext()," Woolworths ", Toast.LENGTH_LONG).show();
+        }
+        else if(tester.equals("Pick n Pay"))
+        {
+            shopImage = R.drawable.pnp;
+        }
+        else if(tester.equals("Exclusive Books"))
+        {
+            shopImage = R.drawable.exclusive_books;
+        }
+        else if(tester.equals("CNA"))
+        {
+            shopImage = R.drawable.cna;
+        }
+        else if(tester.equals("Exact"))
+        {
+            //Toast.makeText(getContext()," Came here ", Toast.LENGTH_LONG).show();
+            shopImage = R.drawable.exact;
+        }
+
+        viewHolder.storeResult.setImageResource(shopImage);
 
         Picasso.with(context).load(product.getImageUrl()).into(viewHolder.imageViewPhoto);
         //new DownloadImageTask(viewHolder.imageViewPhoto).execute(product.getImageUrl());
@@ -170,6 +199,7 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         public static Button deleteFromWL;
         public static Button addToCart;
 
+        public static ImageView storeResult;
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {

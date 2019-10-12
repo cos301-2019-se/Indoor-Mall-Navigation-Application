@@ -665,7 +665,7 @@ public class Navigate extends Fragment implements SensorEventListener,
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float north = 360-orienter.updateOrientation(event);
+        float north = Math.round(360-orienter.updateOrientation(event));
         while(north > 360)
         {
             north -= 360;
@@ -676,14 +676,26 @@ public class Navigate extends Fragment implements SensorEventListener,
         if(navigator.isNavigating())
         {
             float bearing = (getSmoothing() + navigator.getBearing());
+            if(bearing > 360)
+            {
+                bearing -= 360;
+            }
 
             float rotation = arrowView.getRotation();
             if(rotation < bearing)
             {
-                arrowView.setRotation((float)(rotation + 1));
-            }else
+                arrowView.setRotation((float)(rotation + 0.5));
+                if(rotation < bearing - 10)
+                {
+                    arrowView.setRotation((float)(rotation + 1));
+                }
+            }else if(rotation > bearing)
             {
-                arrowView.setRotation((float)(rotation - 1));
+                arrowView.setRotation((float)(rotation - 0.5));
+                if(rotation > bearing + 10)
+                {
+                    arrowView.setRotation((float)(rotation - 1));
+                }
             }
 //            arrowView.setRotation(bearing);
         }

@@ -13,6 +13,9 @@
 ### **Project Description**
 Indoor Mall Navigation App is a fully interactive mall guide which will allow users to easily ﬁnd shops as well as act as a shopping companion, allowing users to add items to a shopping cart to purchase and have delivered later. This system also aims to replace electronic maps using augmented reality to guide users to a selected store.
 
+### **Demo Video**
+- <a href="https://youtu.be/R9D0FuuZDuk" target="_blank">Watch Demo Video</a> <br>
+
 ### **Documentation**
 - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/SRS%20Document/COS_301___Indoor_Mall_Navigation_SRS_document.pdf" target="_blank">SRS & Architectural Design</a> <br>
 

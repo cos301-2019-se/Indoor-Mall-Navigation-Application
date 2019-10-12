@@ -15,11 +15,12 @@ public class BeaconNavigator extends BeaconReader {
     private String targetID = null;
     private MapPoint[] directions = null;
     private MapPoint nearestPoint = null;
-    private double distanceThreshold = 0.4;
+    private double distanceThreshold = 0.8;
     private int pathIndex = 0;
     private ArrivalHandler arrival = null;
     private DistanceHandler distanceHandle = null;
     private BeaconFoundHandler beaconFound = null;
+
 //    private boolean navigating = false;//Do we even need this?
 
     public BeaconNavigator() {
@@ -107,7 +108,12 @@ public class BeaconNavigator extends BeaconReader {
                     }
                 } else if (directions[pathIndex].getId().equals(nearestPoint.getId())) {
                     Log.d(TAG, "navigate: Nearest Point is the next node to reach");
-                    if (distanceCheck()) {
+                    if(pathIndex == 0)
+                    {
+                        Log.d(TAG, "navigate: Starting at nearest point and moving swiftly onwards");
+                        pathIndex++;
+
+                    }else if (distanceCheck()) {
                         Log.d(TAG, "navigate: Time to go to the next node");
                         pathIndex++;
                     } else {
@@ -145,7 +151,20 @@ public class BeaconNavigator extends BeaconReader {
     public float getBearing() {
         if(nearestPoint != null)
         {
-            return (float) nearestPoint.getBearingTo(directions[pathIndex].getId());
+
+            if(nearestPoint.getId().equals(directions[pathIndex].getId()))
+            {
+                if(pathIndex != 0)
+                {
+                    return (float) directions[pathIndex-1].getBearingTo(nearestPoint.getId());
+                }else
+                {
+                    return 0;
+                }
+            }else
+            {
+                return (float) nearestPoint.getBearingTo(directions[pathIndex].getId());
+            }
         }else
         {
             return 0;

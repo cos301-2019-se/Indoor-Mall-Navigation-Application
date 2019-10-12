@@ -66,7 +66,7 @@ public class BeaconReader
 
     }
 
-    private void setNearest(Beacon beacon)
+    protected void setNearest(Beacon beacon)
     {
         nearest = beacon;
         Log.d(TAG, "setNearest: Setting nearest to: " + beacon.getId1() + " distance was " + beacon.getDistance());

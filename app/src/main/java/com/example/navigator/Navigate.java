@@ -343,6 +343,12 @@ public class Navigate extends Fragment implements SensorEventListener,
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG,"onCreate");
         super.onCreate(savedInstanceState);
+        navigator.setBeaconFound(new BeaconNavigator.BeaconFoundHandler(){
+            @Override
+            public void onBeaconFound() {
+                rootView.findViewById(R.id.greenDot).setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 
@@ -515,6 +521,7 @@ public class Navigate extends Fragment implements SensorEventListener,
                 rootView.findViewById(R.id.ar_container).setVisibility(View.GONE);
                 rootView.findViewById(R.id.camera_frame).setVisibility(View.GONE);
                 rootView.findViewById(R.id.ar_content_overlay).setVisibility(View.GONE);
+                navigator.setTargetID(null);
 
 
                 listView.setVisibility(View.VISIBLE);
@@ -621,6 +628,7 @@ public class Navigate extends Fragment implements SensorEventListener,
                 ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText("" + Math.round(distance*100)/100);
             }
         });
+
 //        initializeBeaconDistance();
     }
 

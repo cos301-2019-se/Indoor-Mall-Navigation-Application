@@ -1,6 +1,7 @@
 package com.example.navigator;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -48,6 +49,8 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.dismiss();
                             Toast.makeText(CardInfo.this, "Thank you for purchase", Toast.LENGTH_LONG).show();
+
+
                         }
                     });
                     alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

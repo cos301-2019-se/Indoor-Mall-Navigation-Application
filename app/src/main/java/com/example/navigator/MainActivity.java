@@ -274,6 +274,22 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
                 }).show();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            manager.stopRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+        } catch (RemoteException e) {    }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            manager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+        } catch (RemoteException e) {    }
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -377,6 +393,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
         CNA = new MapPoint("CNA", "00f0c1d6-7539-4ca7-b676-2b9a1e352f24");
         woolworths = new MapPoint("Woolworths", "4edf0c20-f1b0-4d0d-8c2e-fd0758057dfe");
         pnp = new MapPoint("Pick 'n Pay", "c4a514b8-0492-4249-9575-1fab2d059c44");
+
+//        Khodani: 00f0c1d6-7539-4ca7-b676-2b9a1e352f24
+//        Thomas: c4a514b8-0492-4249-9575-1fab2d059c44
+//        Bandile_1: 4edf0c20-f1b0-4d0d-8c2e-fd0758057dfe
+//        Thabo: a038e0b7-505c-4340-a32a-13645a04cece
+//        Mpho:
 
 
         CNA.addTwoWayPoint(woolworths, 2.0, 90);

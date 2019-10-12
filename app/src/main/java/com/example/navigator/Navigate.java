@@ -343,6 +343,18 @@ public class Navigate extends Fragment implements SensorEventListener,
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG,"onCreate");
         super.onCreate(savedInstanceState);
+        MainActivity.navigator.setArrival(new ArrivalHandler(){
+            @Override
+            public void onArrival() {
+                reachedDestination();
+            }
+        });
+        MainActivity.navigator.setDistanceHandler(new BeaconNavigator.DistanceHandler(){
+            @Override
+            public void onDistanceChange(double distance) {
+                ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText("" + Math.round(distance*100)/100);
+            }
+        });
         navigator.setBeaconFound(new BeaconNavigator.BeaconFoundHandler(){
             @Override
             public void onBeaconFound() {
@@ -616,18 +628,7 @@ public class Navigate extends Fragment implements SensorEventListener,
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
         MainActivity.navigator.setTargetID(MainActivity.map.idFromName(selectedShop));
-        MainActivity.navigator.setArrival(new ArrivalHandler(){
-            @Override
-            public void onArrival() {
-                reachedDestination();
-            }
-        });
-        MainActivity.navigator.setDistanceHandler(new BeaconNavigator.DistanceHandler(){
-            @Override
-            public void onDistanceChange(double distance) {
-                ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText("" + Math.round(distance*100)/100);
-            }
-        });
+
 
 //        initializeBeaconDistance();
     }
@@ -675,13 +676,17 @@ public class Navigate extends Fragment implements SensorEventListener,
         Log.d(TAG, "onSensorChanged: Smoothed: North: " + getSmoothing());
         if(navigator.isNavigating())
         {
-            float bearing = (getSmoothing() + navigator.getBearing());
+            float bearing = navigator.getBearing();
+            Log.d(TAG, "onSensorChanged: GetBearing: " + bearing);
+            bearing += getSmoothing();
+            Log.d(TAG, "onSensorChanged: Bearing with north: " + bearing);
             if(bearing > 360)
             {
                 bearing -= 360;
             }
 
             float rotation = arrowView.getRotation();
+            Log.d(TAG, "onSensorChanged: Rotation: " + rotation);
             if(rotation < bearing)
             {
                 arrowView.setRotation((float)(rotation + 0.5));

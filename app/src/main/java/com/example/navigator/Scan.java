@@ -402,7 +402,7 @@ public class Scan extends Fragment {
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
 
-                AddProduct(sessionId,itemQuantity,imageUrl,shopResult.getText().toString());//shopResult
+                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
               }
               else {
                 ref.push().setValue(deviceId);

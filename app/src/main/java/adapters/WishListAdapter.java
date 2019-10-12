@@ -92,7 +92,7 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
             shopImage = R.drawable.woolworths;
             //Toast.makeText(getContext()," Woolworths ", Toast.LENGTH_LONG).show();
         }
-        else if(tester.equals("Pick n Pay"))
+        else if(tester.equals("Pick 'n Pay"))
         {
             shopImage = R.drawable.pnp;
         }

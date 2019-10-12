@@ -142,18 +142,24 @@ public class Cart extends Fragment {
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren())
                 {
-                    //Assign Item attributes from DB to each product attribute
-                    final String productName = snapshot.child("name").getValue().toString();
-                    final String price = snapshot.child("price").getValue().toString();
-                    final String id = snapshot.child("id").getValue().toString();
-                    final String quantity = snapshot.child("quantity").getValue().toString();
-                    final String url = snapshot.child("imageUrl").getValue().toString();
-                    final String storeResult = snapshot.child("shopResult").getValue().toString();
+                    if(snapshot.child("name").getValue()!=null) {
 
-                    //Add a product to list of Cart products
-                    products.add(new CartProduct(id, productName, price, quantity, url,storeResult));
+                        //Assign Item attributes from DB to each product attribute
+                        final String productName = snapshot.child("name").getValue().toString();
+                        final String price = snapshot.child("price").getValue().toString();
+                        final String id = snapshot.child("id").getValue().toString();
+                        final String quantity = snapshot.child("quantity").getValue().toString();
+                        final String url = snapshot.child("imageUrl").getValue().toString();
+                        final String storeResult;
+                        if(snapshot.child("shopResult").getValue()!=null)
+                            storeResult = snapshot.child("shopResult").getValue().toString();
+                        else
+                            storeResult = snapshot.child("storeResult").getValue().toString();
 
+                        //Add a product to list of Cart products
+                        products.add(new CartProduct(id, productName, price, quantity, url, storeResult));
 
+                    }
 
 
                 }
@@ -174,14 +180,7 @@ public class Cart extends Fragment {
                 CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
                 listViewProduct.setAdapter(productListAdapter);
 
-                //Toast.makeText(getContext(), "Size: " + products.size() + " Device ID: " + deviceId, Toast.LENGTH_LONG).show();
 
-                /*double oTotal = 0.00;
-                for(int i = 0; i< products.size();i++)
-                {
-                    oTotal += Double.parseDouble(products.get(i).getTotalPrice());
-                }
-                overallTotal.setText("R " + oTotal);*/
             }
 
             @Override

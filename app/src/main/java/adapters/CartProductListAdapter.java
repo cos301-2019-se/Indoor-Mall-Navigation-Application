@@ -155,7 +155,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                         for(DataSnapshot dataSnap : dataSnapshot.getChildren())
                         {
                             dataSnap.child("quantity").getRef().setValue(product.getQuantity());
-
                         }
                     }
 
@@ -166,7 +165,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 };
                 notifyDataSetChanged();
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
-
 
             }
         });
@@ -196,15 +194,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 viewHolder.textViewQuantity.setText(product.getQuantity());
                 viewHolder.totalPrice.setText("R " + product.getTotalPrice());
 
-                //notifyDataSetChanged();
-                //Query to find the ID
-
-
-
-
-
-
-
                 Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
 
 
@@ -224,8 +213,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 };
                 notifyDataSetChanged();
                 myQuery.addListenerForSingleValueEvent(valueEventListener);
-
-
 
 
             }
@@ -274,10 +261,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                     }
                 });
 
-
-
-
-
             }
         });
 
@@ -288,7 +271,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
 
                 double temp = Double.parseDouble(sOverallTotal.replace(',','.'));
-
 
                 temp -= Double.parseDouble(product.getTotalPrice());
                 temp = (double) Math.round(temp*100)/100;

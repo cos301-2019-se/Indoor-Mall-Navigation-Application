@@ -1,24 +1,14 @@
 package entities;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.example.navigator.utils.Installation;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
-import java.security.AccessController;
 import java.text.DecimalFormat;
 
-import static java.security.AccessController.getContext;
+
 
 
 public class CartProduct implements Serializable{
@@ -34,7 +24,7 @@ public class CartProduct implements Serializable{
     private String totalPrice;
     private String imageUrl;
     private Bitmap bmap;
-    private String storeResult;
+    private String shopResult;
 
 
     private static DecimalFormat roundToTwo = new DecimalFormat("#.##");
@@ -72,30 +62,25 @@ public class CartProduct implements Serializable{
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-//        DecimalFormat decimal = new DecimalFormat("0.00");
-        //tPrice = roundToTwoPoint(tPrice);
-        //tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = roundToTwo.format(tPrice);
-        //this.totalPrice = Double.toString(tPrice);
+
 
     }
 
-    public CartProduct(String id, String name, String price, String quantity, String imageUrl, String storeResult) {
+    public CartProduct(String id, String name, String price, String quantity, String imageUrl, String shopResult) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         //this.photo = photo;
         this.imageUrl = imageUrl;
-        this.storeResult = storeResult;
+        this.shopResult = shopResult;
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-//        DecimalFormat decimal = new DecimalFormat("0.00");
-        //tPrice = roundToTwoPoint(tPrice);
-        //tPrice = (double) Math.round(tPrice*100)/100;
+
         this.totalPrice = roundToTwo.format(tPrice);
-        //this.totalPrice = Double.toString(tPrice);
+
 
     }
 
@@ -109,11 +94,7 @@ public class CartProduct implements Serializable{
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-//        DecimalFormat decimal = new DecimalFormat("0.00");
-        //tPrice = roundToTwoPoint(tPrice);
-        //tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = roundToTwo.format(tPrice);
-        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -128,9 +109,6 @@ public class CartProduct implements Serializable{
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-//        DecimalFormat decimal = new DecimalFormat("0.00");
-        //tPrice = roundToTwoPoint(tPrice);
-        //tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = roundToTwo.format(tPrice);
         //this.totalPrice = Double.toString(tPrice);
 
@@ -156,9 +134,9 @@ public class CartProduct implements Serializable{
         return this.price;
     }
 
-    public void setBmap(Bitmap b){this.bmap = b;};
+    public void setBmap(Bitmap b){this.bmap = b;}
 
-    public Bitmap getBmap(){return this.bmap;};
+    public Bitmap getBmap(){return this.bmap;}
 
     public void setPrice(String price) {
         this.price = price;
@@ -206,7 +184,7 @@ public class CartProduct implements Serializable{
 
     public String getTotalPrice(){return this.totalPrice;}
 
-    public String getStoreResult(){return this.storeResult;}
+    public String getStoreResult(){return this.shopResult;}
 
     public void setTotalPrice(String totalPrice)
     {
@@ -216,10 +194,7 @@ public class CartProduct implements Serializable{
     public void setTotalPrice(String quantity, String price)
     {
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        //tPrice = roundToTwoPoint(tPrice);
-        //tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = roundToTwo.format(tPrice);
-        //this.totalPrice = Double.toString(tPrice);
     }
 
     public String getImageUrl() {
@@ -232,7 +207,6 @@ public class CartProduct implements Serializable{
 
     public Drawable getDrawable()
     {
-
         return LoadImageFromUrl(this.getImageUrl());
     }
 

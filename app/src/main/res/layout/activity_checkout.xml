@@ -11,9 +11,18 @@
         android:orientation="vertical"
         android:background="@color/white">
 
+
+        <ImageView
+            android:id="@+id/indoor"
+            android:layout_width = "match_parent"
+            android:layout_height = "100dp"
+            android:background="@drawable/indoor" />
+
         <TextView
+            android:id="@+id/totalPrice"
             android:textColor="#FF0000"
             android:layout_marginTop="20dp"
+            android:textSize="25dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TOTAL PRICE:  R"
@@ -28,7 +37,6 @@
             android:text="Please select payment method"
             android:textColor="@color/black"
             android:textStyle="bold|italic" />
-
         <TextView
             android:textColor="#000"
             android:layout_marginTop="60dp"

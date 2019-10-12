@@ -1,5 +1,18 @@
-package com.example.navigator;
+/*  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author           Changes
+ *  --------------------------------------------
+ *  10/09/2019  Mpho Mashaba    Original
+ *
+ *  Functional Description: This program file allows users to add card information for payment
+ *  Error Messages: None
+ *  Constraints: Can only be used if user adds credit card information
+ *  Assumptions: It is assumed that the user will be able to add their card information successfully .
+ *
+ */
 
+package com.example.navigator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,7 +56,8 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
                             "Card expiry date: " + cardForm.getExpirationDateEditText().getText().toString() + "\n" +
                             "Card CVV: " + cardForm.getCvv() + "\n" +
                             "Postal code: " + cardForm.getPostalCode() + "\n" +
-                            "Phone number: " + cardForm.getMobileNumber());
+                            "Phone number: " + cardForm.getMobileNumber() + "\n" +
+                            "Total price: R" + Cart.oTotal );
                     alertBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {

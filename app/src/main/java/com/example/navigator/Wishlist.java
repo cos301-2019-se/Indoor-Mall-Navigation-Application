@@ -19,7 +19,6 @@
  *
 */
 package com.example.navigator;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,8 +36,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.navigator.utils.DatabaseConn;
 import com.example.navigator.utils.Installation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -60,21 +57,16 @@ import entities.CartProduct;
  * A simple {@link Fragment} subclass.
  */
 public class Wishlist extends Fragment {
-    SearchView searchView;
-    ListView listView;
-    ArrayList<String> list;
-    ArrayList<String> listProductNames;
-    ArrayAdapter<String > adapter;
-    Button sub;
-    DatabaseReference ref;
-    Product objProduct;
-    private Context context = null;
+
     private ListView listWLViewProduct;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     private FirebaseAuth firebaseAuth;
     TextView demoValue;
     ListView cartList;
     DatabaseReference rootRef,demoRef,wishToCart;
+    DatabaseReference dbRef,wlRef;
+
+
     public Wishlist() {
         // Required empty public constructor
     }
@@ -83,117 +75,42 @@ public class Wishlist extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wishlist, container, false);
-        final String deviceId = Installation.id(getContext());
-        demoValue = (TextView) view.findViewById(R.id.tvValue);
-        rootRef = FirebaseDatabase.getInstance().getReference();
-        //database reference pointing to Product node
-        final List<CartProduct> products = new ArrayList<CartProduct>();
-        demoRef = rootRef.child("Wishlist").child(deviceId);
 
+        //Get Device ID
+        final String deviceId = Installation.id(getContext());
+
+        //Retrieve Database Reference
+        dbRef = FirebaseDatabase.getInstance().getReference();
+
+        //List of Products to be placed in Wishlist
+        final List<CartProduct> products = new ArrayList<CartProduct>();
+
+        //Point to Wishlist in DB
+        wlRef = dbRef.child("Wishlist").child(deviceId);
+
+        //List of Wishlist products
         listWLViewProduct = view.findViewById(R.id.listWLViewProduct);
-        wishToCart = rootRef.child("Cart");
-        //final TableLayout myTable = (TableLayout)view.findViewById(R.id.);
-        final ArrayList<String>  list = new ArrayList<>();
-        final ArrayList<String>  IDList = new ArrayList<>();
-        final ArrayList<String>  listProductNames = new ArrayList<>();
-        //final TableLayout myTable = (TableLayout) view.findViewById(R.id.myTableLayout);
-        demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        //Get Items From Database
+        wlRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int count = 1;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+                    //Assign Item attributes from DB to each product attribute
                     String productName = snapshot.child("name").getValue().toString();
-                    String barCode  = snapshot.child("id").getValue().toString();
-                    IDList.add(snapshot.getKey());
-                    list.add(barCode);
-                    listProductNames.add(productName);
                     String price = snapshot.child("price").getValue().toString();
-                    String priceProduct = productName + " R"+ price;
                     String id = snapshot.child("id").getValue().toString();
                     String quantity = snapshot.child("quantity").getValue().toString();
-                    //price = "R price;
-                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
-                    //list.add(priceProduct);
-                    //final int curr = count;
-                    //final String currProductName = productName;
-                    //for (int i = 0; i <2; i++) {
+                    final String url = snapshot.child("imageUrl").getValue().toString();
 
-                    products.add(new CartProduct(id, productName, price, quantity, R.drawable.thumb1));
-                    /*
-                    TableRow tableRow = new TableRow(getContext());
+                    //Add a product to list of Wishlist products
+                    products.add(new CartProduct(id, productName, price, quantity, url));
 
-                    // Set new table row layout parameters.
-                    TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-                    tableRow.setLayoutParams(layoutParams);
-
-                    // Add a TextView in the first column.
-                    TextView name = new TextView(getContext());
-                    name.setText(productName);
-                    tableRow.addView(name);
-                    // Add a TextView in the first column.
-                    TextView aPrice = new TextView(getContext());
-                    aPrice.setText(price);
-                    tableRow.addView(aPrice);
-
-                    // Add a button in the second column
-                    ImageButton button1 = new ImageButton(getContext());
-                    button1.setImageResource(R.drawable.ic_shopping_cart_black_24dp);
-                    button1.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            myTable.removeViewAt(curr);
-                            //CODE THAT ADDS TO CART FROM WISHLIST GOES HERE
-                            String y = listProductNames.get(curr-1);
-                            Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
-                            DatabaseConn data = DatabaseConn.open();
-
-                            applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
-                                        Product addToCart = new Product();
-                                        addToCart.id = appleSnapshot.child("id").getValue().toString();
-                                        addToCart.name = appleSnapshot.child("name").getValue().toString();
-                                        addToCart.price = Double.parseDouble(appleSnapshot.child("price").getValue().toString());
-                                        wishToCart.push().setValue(addToCart);
-                                        appleSnapshot.getRef().removeValue();
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                            Toast.makeText(getContext(),"Item added to Cart", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    tableRow.addView(button1);
-                    ImageButton button = new ImageButton(getContext());
-                    button.setImageResource(R.drawable.ic_delete_black_24dp);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            myTable.removeViewAt(curr);
-                            String y = listProductNames.get(curr-1);
-                            String yID = list.get(curr-1);
-//                            Toast.makeText(getContext(),y + " has ID: " + yID + " and is element " + IDList.get(curr-1), Toast.LENGTH_LONG).show();
-                            Query applesQuery = demoRef.orderByChild("name").equalTo(listProductNames.get(curr-1));
-
-                            DatabaseConn data = DatabaseConn.open();
-                            data.delete("Wishlist", IDList.get(curr-1));
-
-                            Toast.makeText(getContext(),"Item deleted from Wish list", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    tableRow.addView(button);
-                    myTable.addView(tableRow,count);
-                    //increment counter
-                    count++;*/
                 }
 
                 WishListAdapter wlProductListAdapter = new WishListAdapter(getContext(), products);
-
                 listWLViewProduct.setAdapter(wlProductListAdapter);
 
             }

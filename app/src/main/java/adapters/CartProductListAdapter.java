@@ -92,30 +92,20 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
         viewHolder.totalPrice.setText(product.getTotalPrice());
 
         //List<String
-        int shopImage = R.drawable.exact;
+        int shopImage = R.drawable.ic_store_black_24dp;
         final String tester = product.getStoreResult();
 
         if(tester.equals("Woolworths"))
         {
             shopImage = R.drawable.woolworths;
-            //Toast.makeText(getContext()," Woolworths ", Toast.LENGTH_LONG).show();
         }
-        else if(tester.equals("Pick n Pay"))
+        else if(tester.equals("Pick 'n Pay"))
         {
             shopImage = R.drawable.pnp;
-        }
-        else if(tester.equals("Exclusive Books"))
-        {
-            shopImage = R.drawable.exclusive_books;
         }
         else if(tester.equals("CNA"))
         {
             shopImage = R.drawable.cna;
-        }
-        else if(tester.equals("Exact"))
-        {
-            //Toast.makeText(getContext()," Came here ", Toast.LENGTH_LONG).show();
-            shopImage = R.drawable.exact;
         }
 
         viewHolder.storeResult.setImageResource(shopImage);

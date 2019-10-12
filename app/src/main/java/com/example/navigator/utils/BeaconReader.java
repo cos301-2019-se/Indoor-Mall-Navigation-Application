@@ -52,8 +52,9 @@ public class BeaconReader
         int nearestInd = 0;
 //        setNearest(inRange.get(0));
         double distance = inRange.get(0).getDistance();
-        for (int i = 1; i < inRange.size(); i++)
+        for (int i = 0; i < inRange.size(); i++)
         {
+            Log.d(TAG, "update: Beacons in range: #" + i + " " + inRange.get(i).getId1().toString() + " distance: " + inRange.get(i).getDistance());
             if(distance > inRange.get(i).getDistance())
             {
                 distance = inRange.get(i).getDistance();

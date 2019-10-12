@@ -159,7 +159,7 @@ public class Navigate extends Fragment implements SensorEventListener,
     private ArrayList<Beacon> beaconsInRange = new ArrayList<>();
     private double bearing = 180;
     private double distance;
-    private float[] orientationSmoothing = new float[15];
+    private float[] orientationSmoothing = new float[10];
     private int smoothing = 0;
 
 
@@ -343,6 +343,18 @@ public class Navigate extends Fragment implements SensorEventListener,
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG,"onCreate");
         super.onCreate(savedInstanceState);
+        MainActivity.navigator.setArrival(new ArrivalHandler(){
+            @Override
+            public void onArrival() {
+                reachedDestination();
+            }
+        });
+        MainActivity.navigator.setDistanceHandler(new BeaconNavigator.DistanceHandler(){
+            @Override
+            public void onDistanceChange(double distance) {
+                ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText("" + Math.round(distance*100)/100);
+            }
+        });
         navigator.setBeaconFound(new BeaconNavigator.BeaconFoundHandler(){
             @Override
             public void onBeaconFound() {
@@ -616,18 +628,7 @@ public class Navigate extends Fragment implements SensorEventListener,
         TextView checkPoint = (TextView) rootView.findViewById(R.id.check_point);
         checkPoint.setText(selectedShop);
         MainActivity.navigator.setTargetID(MainActivity.map.idFromName(selectedShop));
-        MainActivity.navigator.setArrival(new ArrivalHandler(){
-            @Override
-            public void onArrival() {
-                reachedDestination();
-            }
-        });
-        MainActivity.navigator.setDistanceHandler(new BeaconNavigator.DistanceHandler(){
-            @Override
-            public void onDistanceChange(double distance) {
-                ((TextView)rootView.findViewById(R.id.distance_from_beacon)).setText("" + Math.round(distance*100)/100);
-            }
-        });
+
 
 //        initializeBeaconDistance();
     }
@@ -665,15 +666,43 @@ public class Navigate extends Fragment implements SensorEventListener,
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float north = 180 - orienter.updateOrientation(event);
+        float north = Math.round(360-orienter.updateOrientation(event));
+        while(north > 360)
+        {
+            north -= 360;
+        }
         addSmoothing(north);
         Log.d(TAG, "onSensorChanged: North: " + north);
         Log.d(TAG, "onSensorChanged: Smoothed: North: " + getSmoothing());
         if(navigator.isNavigating())
         {
-            float bearing = (getSmoothing() + navigator.getBearing())%360;
+            float bearing = navigator.getBearing();
+            Log.d(TAG, "onSensorChanged: GetBearing: " + bearing);
+            bearing += getSmoothing();
+            Log.d(TAG, "onSensorChanged: Bearing with north: " + bearing);
+            if(bearing > 360)
+            {
+                bearing -= 360;
+            }
 
-            arrowView.setRotation(bearing);
+            float rotation = arrowView.getRotation();
+            Log.d(TAG, "onSensorChanged: Rotation: " + rotation);
+            if(rotation < bearing)
+            {
+                arrowView.setRotation((float)(rotation + 0.5));
+                if(rotation < bearing - 10)
+                {
+                    arrowView.setRotation((float)(rotation + 1));
+                }
+            }else if(rotation > bearing)
+            {
+                arrowView.setRotation((float)(rotation - 0.5));
+                if(rotation > bearing + 10)
+                {
+                    arrowView.setRotation((float)(rotation - 1));
+                }
+            }
+//            arrowView.setRotation(bearing);
         }
 
     }

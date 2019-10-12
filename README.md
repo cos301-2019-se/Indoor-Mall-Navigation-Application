@@ -21,6 +21,10 @@ Indoor Mall Navigation App is a fully interactive mall guide which will allow us
 - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Coding%20Standards/Brute_Force___Indoor_Mall_Navigation___Coding_Standards.pdf" target="_blank">Coding Standards</a> <br>
 
 - <a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Documentation/Testing%20Policy/Testing_Policy.pdf" target="_blank">Testing Policy</a> <br>
+
+<a href="https://github.com/cos301-2019-se/Indoor-Mall-Navigation-Application/blob/master/Installation%20Guide/COS_301___Installation_Manual.pdf" target="_blank">Installation Guide</a> <br>
+
+
 ## **Project Management Tool**
 - <a href="https://app.zenhub.com/workspaces/indoor-mall-navigation-tasks-5d1f45a3c1f68f721895cfa4/board?repos=182156349" target="_blank">Zenhub</a> <br>
 

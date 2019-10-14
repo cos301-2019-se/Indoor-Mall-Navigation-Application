@@ -195,6 +195,10 @@ public class Cart extends Fragment {
             });
 
         }
+        else
+        {
+            Toast.makeText(getContext(), "Your Cart is empty. Please add products", Toast.LENGTH_LONG).show();
+        }
 
         return view;
     }

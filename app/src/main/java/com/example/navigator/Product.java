@@ -31,6 +31,7 @@ public class Product {
     public double price;
     public int quantity;
     public String imageUrl;
+    public String idShopResult;
 
     public Product() {
 
@@ -51,6 +52,7 @@ public class Product {
         this.quantity = qty;
         this.imageUrl = imageUrl;
         this.shopResult = shopName;
+        this.idShopResult = id + shopName;
 
     }
     public Product(String id, String name, double price, int qty, String imageUrl) {
@@ -69,6 +71,7 @@ public class Product {
         return price;
     }
     public int getQuantity() {return quantity; }
+    public String getIdShopResult(){return idShopResult;}
 
     public String getImageUrl() {
         return this.imageUrl;

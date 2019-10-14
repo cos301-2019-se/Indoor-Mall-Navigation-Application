@@ -25,6 +25,7 @@ public class CartProduct implements Serializable{
     private String imageUrl;
     private Bitmap bmap;
     private String shopResult;
+    private String idShopResult;
 
 
     private static DecimalFormat roundToTwo = new DecimalFormat("#.##");
@@ -75,6 +76,7 @@ public class CartProduct implements Serializable{
         //this.photo = photo;
         this.imageUrl = imageUrl;
         this.shopResult = shopResult;
+        this.idShopResult = id + shopResult;
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
@@ -210,6 +212,8 @@ public class CartProduct implements Serializable{
     {
         return LoadImageFromUrl(this.getImageUrl());
     }
+
+    public String getIdShopResult(){return this.idShopResult;}
 
     private static Drawable LoadImageFromUrl(String url)
     {

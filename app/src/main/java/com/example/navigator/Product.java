@@ -53,6 +53,15 @@ public class Product {
         this.shopResult = shopName;
 
     }
+    public Product(String id, String name, String price, int qty, String imageUrl,String shopName) {
+        this.id = id;
+        this.name = name;
+        this.price = Double.parseDouble(price.replace("R",""));
+        this.quantity = qty;
+        this.imageUrl = imageUrl;
+        this.shopResult = shopName;
+
+    }
     public Product(String id, String name, double price, int qty, String imageUrl) {
         this.id = id;
         this.name = name;

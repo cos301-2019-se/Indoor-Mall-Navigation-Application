@@ -123,14 +123,7 @@ public class Cart extends Fragment {
         listViewProduct = view.findViewById(R.id.listViewProduct);
 
         checkout = view.findViewById(R.id.fetch);
-        checkout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getContext(),Login.class));
-            }
 
-
-        });
 
 
         overallTotal = view.findViewById(R.id.overallTotal);
@@ -189,6 +182,19 @@ public class Cart extends Fragment {
 
             }
         });
+
+        if(oTotal>0) {
+
+            checkout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(getContext(), Login.class));
+                }
+
+
+            });
+
+        }
 
         return view;
     }

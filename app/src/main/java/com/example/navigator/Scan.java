@@ -237,7 +237,9 @@ public class Scan extends Fragment {
             if(shopResult.getText().toString().equals("Shop Name")|| shopResult.getText().toString().equals("SHOP NAME"))
             {    Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();}
             else
-            {startActivity(new Intent(getContext(),ScanCodeActivity.class));}
+            {
+                startActivity(new Intent(getContext(),ScanCodeActivity.class));
+            }
 
 
 
@@ -250,11 +252,11 @@ public class Scan extends Fragment {
       //database reference pointing to demo node
       demoRef = rootRef.child("Product");
 
-      String sessionId = resultTextView.getText().toString();
+      final String sessionId = resultTextView.getText().toString();
 
         //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
 
-        AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+
 
 
 
@@ -265,6 +267,7 @@ public class Scan extends Fragment {
 
           ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
           final DatabaseReference cartRef = ref;
+            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
 
           //Establish DB Connection to check if same item exists in the database
             Query myQuery = cartRef.orderByChild("idShopResult").equalTo(objProduct.getIdShopResult());
@@ -316,6 +319,8 @@ public class Scan extends Fragment {
 
         @Override
         public void onClick(View v) {
+
+            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
             itemFound = false;
             WishlistBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");

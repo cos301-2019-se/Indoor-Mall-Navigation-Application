@@ -264,10 +264,11 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View view) {
             String displayedShop = shopResult.getText().toString();
+            Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();
             if(displayedShop == "SHOP NAME" || displayedShop == "Shop Name")
-                Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();
+            {    Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();}
             else
-                startActivity(new Intent(getContext(),ScanCodeActivity.class));
+            {startActivity(new Intent(getContext(),ScanCodeActivity.class));}
 
 
 

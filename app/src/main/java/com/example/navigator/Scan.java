@@ -169,7 +169,7 @@ public class Scan extends Fragment {
       shopResult = (Button) view.findViewById(R.id.shop_name);
 
         //Notify = (Button) view.findViewById(R.id.btn_notify);
-        rootRef = FirebaseDatabase.getInstance().getReference();
+      rootRef = FirebaseDatabase.getInstance().getReference();
 
 
         /*

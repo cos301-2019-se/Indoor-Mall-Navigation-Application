@@ -36,6 +36,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseUser;
@@ -169,16 +170,34 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                     //user is registerd
                     //start profile activity
                     progressDialog.hide();
+
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                            .setDisplayName(editTextUsername.getText().toString()).build();
+
+                    user.updateProfile(profileUpdates)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        //Log.d(TAG, "User profile updated.");
+                                    }
+                                }
+                            });
+
                     Toast.makeText(Signup.this,"Registerd Successfully",Toast.LENGTH_SHORT).show();
                     finish();
                     //start profile activity
+
+
                     onAuthSuccess(task.getResult().getUser());
                     startActivity(new Intent(getApplicationContext(),Login.class));
                 }
 
                 else{
                     progressDialog.hide();
-                    Toast.makeText(Signup.this,"Could'nt Register, Email already exist",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Signup.this,"Couldn't Register, Email already exist",Toast.LENGTH_SHORT).show();
                 }
 
             }

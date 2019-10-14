@@ -20,6 +20,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import com.braintreepayments.cardform.view.CardForm;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -65,6 +71,8 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cardinformation);
 
+
+
         cardForm = findViewById(R.id.card_form);
         buy = findViewById(R.id.btnBuy);
 
@@ -96,7 +104,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
 
                             String curDateTime = getDateTime();
                             String curFullDateTime = getFullDateTime();
-                            createClientInvoice(Cart.products, curDateTime, curFullDateTime, Login.user.getDisplayName());
+                            createClientInvoice(Cart.products, curDateTime, curFullDateTime, Login.user.getEmail());
 
                         }
                     });
@@ -147,7 +155,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
 
         for (int i = 0; i < products.size(); i++){
             table.addCell(products.get(i).getName());
-            table.addCell("");
+            table.addCell(products.get(i).getStoreResult());
             table.addCell("R" + products.get(i).getPrice());
             table.addCell("" + products.get(i).getQuantity());
             double no = Double.valueOf(products.get(i).getPrice()) * Integer.valueOf(products.get(i).getQuantity());
@@ -318,25 +326,6 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
     {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         return df.format(new Date());
-    }
-
-
-
-    private ArrayList<Product> getDummyProducts()
-    {
-        ArrayList<Product> products = new ArrayList<>();
-
-        products.add(new Product("5060466519077","Power Play",19.99,1));
-        products.add(new Product("8718114642871","Vaseline Lip T",23.99,2));
-        products.add(new Product("6009635830536","Manuscript Book",10.99,5));
-        products.add(new Product("6009695584912","Bioplus",4.99,4));
-        products.add(new Product("6003326009584","Flying Fish Pressed Lemmon",15.99,1));
-        products.add(new Product("6009690380038","Oasis Still 500ml",9.99,8));
-        products.add(new Product("60018939","Vaseline Blueseal",23.99,5));
-        products.add(new Product("6001120602871","Jungle Bar",10.99,2));
-        products.add(new Product("6001120624972","Sour Jelly Beans",22.99,2));
-
-        return products;
     }
 
     private void absoluteText(String text, int x, int y) {

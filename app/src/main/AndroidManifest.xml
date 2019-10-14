@@ -2,16 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.navigator">
 
+
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature android:name="android.hardware.sensor.compass" />
     <uses-feature android:name="android.hardware.sensor.gyroscope" />
     <uses-feature android:name="android.hardware.sensor.accelerometer" />
+    <uses-feature android:name="android.hardware.camera.ar" />
+
+
 
     <!-- Rendering OpenGL -->
     <uses-feature
@@ -34,6 +40,8 @@
         <activity android:name=".Login"></activity>
         <activity android:name=".Signup"></activity>
         <activity android:name=".ScanCodeActivity"></activity>
+        <activity android:name=".Payment"></activity>
+        <activity android:name=".CardInfo"></activity>
 
         <activity
             android:name=".MainActivity"
@@ -54,5 +62,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data android:name="com.google.ar.core" android:value="required" />
+
     </application>
 </manifest>

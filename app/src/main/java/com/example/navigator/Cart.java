@@ -191,16 +191,14 @@ public class Cart extends Fragment {
                     if(oTotal>0) {
                         startActivity(new Intent(getContext(), Login.class));
                     }
+                    else
+                    {
+                        Toast.makeText(getContext(), "Your Cart is empty. Please add products", Toast.LENGTH_LONG).show();
+                    }
                 }
-
 
             });
 
-        }
-        else
-        {
-            Toast.makeText(getContext(), "Your Cart is empty. Please add products", Toast.LENGTH_LONG).show();
-        }
 
         return view;
     }

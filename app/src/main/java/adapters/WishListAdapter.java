@@ -92,7 +92,6 @@ WishListAdapter extends ArrayAdapter<CartProduct>{
         if(tester.equals("Woolworths"))
         {
             shopImage = R.drawable.woolworths;
-            //Toast.makeText(getContext()," Woolworths ", Toast.LENGTH_LONG).show();
         }
         else if(tester.equals("Pick 'n Pay"))
         {

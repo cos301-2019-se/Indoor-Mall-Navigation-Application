@@ -263,9 +263,11 @@ public class Scan extends Fragment {
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-
-
-            startActivity(new Intent(getContext(),ScanCodeActivity.class));
+            String displayedShop = shopResult.getText().toString();
+            if(displayedShop == "SHOP NAME" || displayedShop == "Shop Name")
+                Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();
+            else
+                startActivity(new Intent(getContext(),ScanCodeActivity.class));
 
 
 

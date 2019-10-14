@@ -222,6 +222,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
                 temp = (double) Math.round(temp*100)/100;
+                Cart.oTotal = temp;
                 localOverall.setText("R " +roundToTwo.format(temp));
 
 
@@ -264,6 +265,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
                 temp = (double) Math.round(temp*100)/100;
+                Cart.oTotal = temp;
                 localOverall.setText("R " +roundToTwo.format(temp));
 
                 wishDBRef.push().setValue(product);

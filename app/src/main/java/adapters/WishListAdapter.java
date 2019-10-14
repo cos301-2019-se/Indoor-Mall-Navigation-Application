@@ -41,7 +41,8 @@ import com.squareup.picasso.Picasso;
 
 import static com.example.navigator.R.layout.wish_list_product_layout;
 
-public class WishListAdapter extends ArrayAdapter<CartProduct>{
+public class
+WishListAdapter extends ArrayAdapter<CartProduct>{
 
     private Context context;
     private List<CartProduct> products;
@@ -52,7 +53,8 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
     DatabaseReference cartDBRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
     DatabaseReference wishDBRef = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
 
-    //Query myQuery = tempDBRef.orderByChild("id").equalTo(false);
+    //Query myQuery =
+    // 0tempDBRef.orderByChild("id").equalTo(false);
 
 
     public WishListAdapter(Context context, List<CartProduct> products) {
@@ -90,7 +92,6 @@ public class WishListAdapter extends ArrayAdapter<CartProduct>{
         if(tester.equals("Woolworths"))
         {
             shopImage = R.drawable.woolworths;
-            //Toast.makeText(getContext()," Woolworths ", Toast.LENGTH_LONG).show();
         }
         else if(tester.equals("Pick 'n Pay"))
         {

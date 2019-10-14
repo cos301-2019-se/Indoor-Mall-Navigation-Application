@@ -10,8 +10,9 @@
  *
  *  Date        Author           Changes
  *  --------------------------------------------
- *  09/07/2019  Mpho Mashaba    Original
- *  01/08/2019  Thabo Ntsoane   version 1.0.1
+ *  09/07/2019  Mpho Mashaba        Origina l
+ *  01/08/2019  Thabo Ntsoane       version 1.1
+ *  05/08/2019  Khodani Tshisimba   Version 1.2, Cart Functionality
  *
  *  Functional Description: This program file add's a product to the wishlist.
  *  Error Messages: None
@@ -73,23 +74,17 @@
  */
 
 public class Cart extends Fragment {
+
+    //Object Declarations
     private Context context = null;
     private ListView listViewProduct;
     public static double oTotal = 0.00;
     public static List<CartProduct> products;
-    //
-    private static DecimalFormat df2 = new DecimalFormat("#.##");
-
     TextView overallTotal;
     ListView cartList;
     Button checkout;
-
-    //Retrieve Images from FirebaseStorage
-
-
-
     DatabaseReference dbRef,cartRef;
-    FirebaseStorage storage;
+
     public Cart() {
     }
 
@@ -118,24 +113,16 @@ public class Cart extends Fragment {
         //Point to Cart in DB
         cartRef = dbRef.child("Cart").child(deviceId);
 
-
         //List of Cart products
         listViewProduct = view.findViewById(R.id.listViewProduct);
 
+        //Retrieve Checkout Button
         checkout = view.findViewById(R.id.fetch);
-        checkout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getContext(),Login.class));
-            }
 
-
-        });
-
-
+        //Retrieve Overall Total
         overallTotal = view.findViewById(R.id.overallTotal);
 
-        //Get Items From Database
+        //Retrieve Items From Database
         cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -150,6 +137,8 @@ public class Cart extends Fragment {
                         final String id = snapshot.child("id").getValue().toString();
                         final String quantity = snapshot.child("quantity").getValue().toString();
                         final String url = snapshot.child("imageUrl").getValue().toString();
+
+                        //Store Result Returning one of the two following values
                         final String storeResult;
                         if(snapshot.child("shopResult").getValue()!=null)
                             storeResult = snapshot.child("shopResult").getValue().toString();
@@ -164,8 +153,10 @@ public class Cart extends Fragment {
 
                 }
 
+                //Re-assign Overall Total
                 oTotal = 0.00;
 
+                //Loop Through Cart once opened to get total value
                 for(int i = 0; i< products.size();i++)
                 {
                     double temp = Double.parseDouble(products.get(i).getTotalPrice().replace(',','.'));
@@ -173,10 +164,11 @@ public class Cart extends Fragment {
                     oTotal += temp;
                 }
 
+                //Rounding Value to set to Cart Display
                 oTotal = (double) Math.round(oTotal*100)/100;
-
                 overallTotal.setText("R " + oTotal);
 
+                //Send created products to Cart Product Adapter which will generate items
                 if(!products.isEmpty()) {
                     CartProductListAdapter productListAdapter = new CartProductListAdapter(getContext(), products, overallTotal);
                     listViewProduct.setAdapter(productListAdapter);
@@ -189,6 +181,24 @@ public class Cart extends Fragment {
 
             }
         });
+
+
+
+        //Actions to happen when Checkout button is clicked
+        checkout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(oTotal>0) {
+                        startActivity(new Intent(getContext(), Login.class));
+                    }
+                    else
+                    {
+                        Toast.makeText(getContext(), "Your Cart is empty. Please add products", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+            });
+
 
         return view;
     }

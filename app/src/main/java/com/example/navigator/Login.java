@@ -49,7 +49,6 @@ import static android.widget.Toast.LENGTH_LONG;
 
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
-
     private Button buttonLogin;
     private EditText editTextEmail;
     private EditText editTextPassword;

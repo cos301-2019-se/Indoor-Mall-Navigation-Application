@@ -183,12 +183,14 @@ public class Cart extends Fragment {
             }
         });
 
-        if(oTotal>0) {
+
 
             checkout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(getContext(), Login.class));
+                    if(oTotal>0) {
+                        startActivity(new Intent(getContext(), Login.class));
+                    }
                 }
 
 

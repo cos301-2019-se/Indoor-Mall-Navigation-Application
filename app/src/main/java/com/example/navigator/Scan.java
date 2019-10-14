@@ -260,13 +260,13 @@ public class Scan extends Fragment {
 
       });
 
-      final String displayedShop = shopResult.getText().toString();
+      
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
             //Toast.makeText(getContext(), "/"+displayedShop+"/", Toast.LENGTH_LONG).show();
-            if(displayedShop.equals("Shop Name")|| displayedShop.equals("SHOP NAME"))
+            if(shopResult.getText().toString().equals("Shop Name")|| shopResult.getText().toString().equals("SHOP NAME"))
             {    Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();}
             else
             {startActivity(new Intent(getContext(),ScanCodeActivity.class));}

@@ -20,36 +20,31 @@
  *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
  *
  */
+
+
 package com.example.navigator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.navigator.utils.Installation;
 import com.example.navigator.utils.SearchDialog;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,15 +54,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import adapters.ComparePriceDialog;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -81,9 +68,6 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class Scan extends Fragment {
   private Context context;
-  private StorageReference mStorageRef; //Retrieving images from DB.
-  private ZXingScannerView mScannerView;
-  private DatabaseReference databaseReference1,databaseReference3,unameref;
   public static TextView resultTextView;
   public static TextView productName;
   public static TextView productPrice;
@@ -91,17 +75,11 @@ public class Scan extends Fragment {
   public static Bitmap scanImageBitmap;
   public static EditText quantityValue;
   /*search*/
-  String selectedShop = "";
-  private View rootView;
-  private ViewGroup inflateContainer;
-  private LayoutInflater inflater;
   SearchView searchView;
   ListView listView;
   ArrayList<String> list;
   private Button shopResult;
   public static int activeShopIndex = 0;
-  ArrayAdapter<String > adapter;
- // searchContainer.setVisibility(View.VISIBLE);
   public static boolean WishlistBoolean = false;
   public static boolean CartBoolean = false;
   Button buttonScan;
@@ -127,6 +105,7 @@ public class Scan extends Fragment {
   Button buttonCheckout;
 
   int itemQuantity = 1;
+  public static boolean itemFound = false;
 
   public static String imageUrl;
   //Retrieve images from DB
@@ -210,9 +189,6 @@ public class Scan extends Fragment {
             });
         }
 
-
-
-
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -274,11 +250,11 @@ public class Scan extends Fragment {
       //database reference pointing to demo node
       demoRef = rootRef.child("Product");
 
-        String sessionId = resultTextView.getText().toString();
+      String sessionId = resultTextView.getText().toString();
 
         //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
 
-        AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));
+        AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
 
 
 
@@ -286,34 +262,52 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View view) {
           CartBoolean = true;
-          ref = FirebaseDatabase.getInstance().getReference().child("Cart");
-          final DatabaseReference dbRef = ref;
-          ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-              if(dataSnapshot.child(deviceId).exists()){
-                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
+          ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+          final DatabaseReference cartRef = ref;
 
-                //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
+          //Establish DB Connection to check if same item exists in the database
+            Query myQuery = cartRef.orderByChild("idShopResult").equalTo(objProduct.getIdShopResult());
 
-                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
-              }
-              else {
-                ref.push().setValue(deviceId);
-                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
-              }
+            myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists())
+                    {
+                        itemFound = true;
+                        int tempQuantity = Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
+                        tempQuantity += objProduct.getQuantity();
+                        dataSnapshot.child("quantity").getRef().setValue(tempQuantity);
+                    }
+                }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            if(!itemFound) {
+
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.child(deviceId).exists()) {
+                            ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+                            ref.push().setValue(objProduct);
+                        } else {
+                            ref.push().setValue(deviceId);//shopResult
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-          });
           Toast.makeText(getContext(),"Item added to Cart", Toast.LENGTH_LONG).show();
         }
       });
@@ -322,54 +316,55 @@ public class Scan extends Fragment {
 
         @Override
         public void onClick(View v) {
+            itemFound = false;
             WishlistBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
-          final DatabaseReference dbRef = ref;
-          ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            final DatabaseReference WLRef = ref;
 
-              if(dataSnapshot.child(deviceId).exists()){
-                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
-              }
-              else {
-                ref.push().setValue(deviceId);
-                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
-              }
-            }
+            //Establish DB Connection to check if same item exists in the database
+            Query myQuery = WLRef.orderByChild("idShopResult").equalTo(objProduct.getIdShopResult());
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists())
+                    {
+                        itemFound = true;
+                        int tempQuantity = Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
+                        tempQuantity += objProduct.getQuantity();
+                        dataSnapshot.child("quantity").getRef().setValue(tempQuantity);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            if(!itemFound) {
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.child(deviceId).exists()) {
+                            ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+                            ref.push().setValue(objProduct);
+                        } else {
+                            ref.push().setValue(deviceId);//shopResult
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
             }
-          });
           Toast.makeText(getContext(),"Item added to Wish list", Toast.LENGTH_LONG).show();
         }
       });
 
-      Query myQuery = ref.orderByChild("idShopResult").equalTo(objProduct.getIdShopResult());
 
-      myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-          @Override
-          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-              if(dataSnapshot.exists())
-              {
-                  dataSnapshot.child("quantity").getRef().setValue(objProduct.getQuantity());
-              }
-              else
-              {
-                  ref.push().setValue(objProduct);
-              }
-          }
-
-          @Override
-          public void onCancelled(@NonNull DatabaseError databaseError) {
-
-          }
-      });
 
 
       return view;
@@ -377,7 +372,7 @@ public class Scan extends Fragment {
 
     public void AddProduct(String sessionId,String PName,String pPrice, final int itemQty, String imageUrl,String shopResult){
       objProduct = new Product(sessionId,PName,pPrice,itemQty,imageUrl,shopResult);
-      ref.push().setValue(objProduct);
+      //ref.push().setValue(objProduct);
     }
 }
 

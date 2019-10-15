@@ -252,9 +252,6 @@ public class Scan extends Fragment {
       //database reference pointing to demo node
       demoRef = rootRef.child("Product");
 
-      final String sessionId = resultTextView.getText().toString();
-
-        //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
 
 
 
@@ -267,7 +264,7 @@ public class Scan extends Fragment {
 
           ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
           final DatabaseReference cartRef = ref;
-            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+
 
           //Establish DB Connection to check if same item exists in the database
             Query myQuery = cartRef.orderByChild("idShopResult").equalTo(objProduct.getIdShopResult());
@@ -279,8 +276,9 @@ public class Scan extends Fragment {
                     {
                         itemFound = true;
                         int tempQuantity = Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
-                        tempQuantity += objProduct.getQuantity();
+                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
                         dataSnapshot.child("quantity").getRef().setValue(tempQuantity);
+
                     }
                 }
 
@@ -299,8 +297,12 @@ public class Scan extends Fragment {
                         if (dataSnapshot.child(deviceId).exists()) {
                             ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                             ref.push().setValue(objProduct);
+                            String sessionId = resultTextView.getText().toString();
+                            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
                         } else {
                             ref.push().setValue(deviceId);//shopResult
+                            String sessionId = resultTextView.getText().toString();
+                            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
                         }
 
                     }
@@ -320,7 +322,7 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View v) {
 
-            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+
             itemFound = false;
             WishlistBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
@@ -336,8 +338,9 @@ public class Scan extends Fragment {
                     {
                         itemFound = true;
                         int tempQuantity = Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
-                        tempQuantity += objProduct.getQuantity();
+                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
                         dataSnapshot.child("quantity").getRef().setValue(tempQuantity);
+
                     }
                 }
 
@@ -355,8 +358,12 @@ public class Scan extends Fragment {
                         if (dataSnapshot.child(deviceId).exists()) {
                             ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                             ref.push().setValue(objProduct);
+                            String sessionId = resultTextView.getText().toString();
+                            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
                         } else {
                             ref.push().setValue(deviceId);//shopResult
+                            String sessionId = resultTextView.getText().toString();
+                            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
                         }
                     }
 

@@ -13,6 +13,7 @@
  */
 
 package com.example.navigator;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,6 +26,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -57,6 +59,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import com.example.navigator.MainHelpers.GMailSender;
 
 import entities.CartProduct;
 
@@ -344,5 +347,29 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendMessage() {
+        final ProgressDialog dialog = new ProgressDialog(getApplicationContext());
+        dialog.setTitle("Sending Merchant Invoices");
+        dialog.setMessage("Please wait");
+        dialog.show();
+        Thread sender = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Indoor Mall Navigator/Invoice1910151124.pdf";
+                    GMailSender sender = new GMailSender("brute.force.cos301@gmail.com", "Dr0n3s&Stuff");
+                    sender.sendMail("EmailSender App",
+                            "Merchant Invoices from Indoor Mall Navigator",
+                            "brute.force.cos301@gmail.com",
+                            "dlaminibandile7@gmail.com", directory_path);
+                    dialog.dismiss();
+                } catch (Exception e) {
+                    Log.e("mylog", "Error: " + e.getMessage());
+                }
+            }
+        });
+        sender.start();
     }
 }

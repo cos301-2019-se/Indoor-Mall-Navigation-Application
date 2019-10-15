@@ -1,3 +1,24 @@
+/**
+ *
+ *  File Name: CartProduct.java (path: app/src/main/java/com.example.navigator/utils/CartProduct.java)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author              Changes
+ *  --------------------------------------------
+ *  14/10/2019  Khodani Tshisimba   Original 1.0, Defines Cart Product Object
+ *
+ *  Functional Description: This program file Scan's a product to a Cart or Wishlist.
+ *  Error Messages: None
+ *  Constraints: Can only be used if Items are available
+ *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
+ *
+ */
+
 package entities;
 import android.content.Context;
 import android.graphics.Bitmap;

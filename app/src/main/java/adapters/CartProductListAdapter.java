@@ -1,6 +1,6 @@
 /**
  *
- *  File Name: CartProduct.java (path: app/src/main/java/com.example.navigator/utils/CartProduct.java)
+ *  File Name: CartProductListAdapter.java (path: app/src/main/java/com.example.navigator/utils/CartProduct.java)
  *  Version: 1.0
  *  Author: Brute Force - Database Management
  *  Project: Indoor Mall Navigation
@@ -154,7 +154,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 temp += Double.parseDouble(product.getPrice());
                 Cart.oTotal = temp;
-                //temp = (double) Math.round(temp*100)/100;
+
                 localOverall.setText("R " +roundToTwo.format(temp));
 
                 //Query to find the ID
@@ -171,7 +171,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                             for (DataSnapshot productItem : deviceChildren) {
                                 if(productItem.child("shopResult").exists())
                                 {
-                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+
                                     String store = productItem.child("shopResult").getValue().toString();
                                     String productId = productItem.child("id").getValue().toString();
                                     if(store.equals(product.getStoreResult()) && productId.equals(product.getId()))

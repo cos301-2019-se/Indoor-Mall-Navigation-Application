@@ -112,7 +112,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
             });
         } catch (IOException e ) {}
 
-       
+
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

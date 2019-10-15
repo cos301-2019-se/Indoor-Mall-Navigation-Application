@@ -64,7 +64,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
     Button buy;
     AlertDialog.Builder alertBuilder;
     PdfWriter writer;
-    final int SEND_SMS_PERMISSION_REQUEST_CODE = 1;
+   // final int SEND_SMS_PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,13 +74,13 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
         cardForm = findViewById(R.id.card_form);
         buy = findViewById(R.id.btnBuy);
 
-        buy.setEnabled(false);
+       /* buy.setEnabled(false);
         if(checkPermission(Manifest.permission.SEND_SMS)){
             buy.setEnabled(true);
         }
         else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS},SEND_SMS_PERMISSION_REQUEST_CODE);
-        }
+        } */
 
         cardForm.cardRequired(true)
                 .expirationRequired(true)

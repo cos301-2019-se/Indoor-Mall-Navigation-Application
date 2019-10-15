@@ -131,7 +131,7 @@ WishListAdapter extends ArrayAdapter<CartProduct>{
                                         String toDelete = productItem.getKey();
                                         DatabaseConn data = DatabaseConn.open();
                                         Toast.makeText(getContext(),product.getName()+ " removed from Cart ", Toast.LENGTH_LONG).show();
-                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        data.delete("Wishlist",deviceId+"/"+toDelete);
                                         removeFromList(currProduct);
 
 
@@ -147,7 +147,7 @@ WishListAdapter extends ArrayAdapter<CartProduct>{
                                         String toDelete = productItem.getKey();
                                         DatabaseConn data = DatabaseConn.open();
                                         Toast.makeText(getContext(),product.getName()+ " removed from Cart ", Toast.LENGTH_LONG).show();
-                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        data.delete("Wishlist",deviceId+"/"+toDelete);
                                         removeFromList(currProduct);
                                     }
                                 }
@@ -177,8 +177,6 @@ WishListAdapter extends ArrayAdapter<CartProduct>{
 
                         if (dataSnapshot.exists()) {
 
-                            //
-
                             DataSnapshot deviceSnapshot = dataSnapshot;
                             //Unique Key in database
                             Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
@@ -194,13 +192,13 @@ WishListAdapter extends ArrayAdapter<CartProduct>{
                                         String toDelete = productItem.getKey();
                                         DatabaseConn data = DatabaseConn.open();
 
-                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        data.delete("Wishlist",deviceId+"/"+toDelete);
                                         removeFromList(currProduct);
                                     }
                                 }
                                 else if(productItem.child("storeResult").exists())
                                 {
-                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context.getApplicationContext(),"found it " , Toast.LENGTH_LONG).show();
                                     String store = productItem.child("storeResult").getValue().toString();
                                     String productId = productItem.child("id").getValue().toString();
                                     if(store.equals(product.getStoreResult()) && productId.equals(sessionId))
@@ -208,15 +206,12 @@ WishListAdapter extends ArrayAdapter<CartProduct>{
                                         String toDelete = productItem.getKey();
                                         DatabaseConn data = DatabaseConn.open();
 
-                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        data.delete("Wishlist",deviceId+"/"+toDelete);
                                         removeFromList(currProduct);
 
                                     }
                                 }
                             }
-
-
-
                         }
                     }
 

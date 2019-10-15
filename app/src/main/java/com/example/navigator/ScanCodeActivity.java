@@ -139,6 +139,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
                        for (DataSnapshot store : storeChildren) {
                            if(store.child("shop").getValue().toString().equals(Scan.passIndex)){
                                //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                               foundFlag = true;
                                productPrices = store.child("price").getValue().toString();
                            }
                            else{
@@ -149,15 +150,14 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
                        }
                        //String productPrices = snapshot.child("price").getValue().toString();
                         if(otherShops.isEmpty()){
-                            Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.INVISIBLE);
+                            Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.GONE);
                         }
                         else{
                             Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
                         }
-
                        Scan.productName.setText(productNam);
                        Scan.productPrice.setText("R"+productPrices);
-                       foundFlag = true;
+
                        break;
                    }
                }
@@ -172,7 +172,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
                    Toast.makeText(getApplicationContext(),"Product not on System", Toast.LENGTH_LONG).show();
                }
                else {
-                   Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
+                   //Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
                    Scan.view.findViewById(R.id.imageContainer).setVisibility(View.VISIBLE);
                    Scan.view.findViewById(R.id.qtyContainer).setVisibility(View.VISIBLE);
                    Scan.view.findViewById(R.id.addToCartContainer).setVisibility(View.VISIBLE);

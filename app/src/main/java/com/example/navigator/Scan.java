@@ -8,10 +8,11 @@
  *  Copyright: (c) Copyright 2019 University of Pretoria
  *  Update History:*
  *
- *  Date        Author           Changes
+ *  Date        Author              Changes
  *  --------------------------------------------
- *  08/07/2019  Mpho  Mashaba    Original
- *  01/08/2019  Thabo Ntsoane    Version 1.0.1
+ *  08/07/2019  Mpho  Mashaba       Original
+ *  01/08/2019  Thabo Ntsoane       Version 1.1
+ *  14/10/2019  Khodani Tshisimba   Version 1.2, Validate Scan
  *
  *  Functional Description: This program file Scan's a product to a Cart or Wishlist.
  *  Error Messages: None
@@ -233,8 +234,6 @@ public class Scan extends Fragment {
         }
       });
 
-
-
       comparePrice.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -251,16 +250,22 @@ public class Scan extends Fragment {
                         list.get(activeShopIndex), otherShops);
                 comparePriceDialog.show();
             }
-
         }
-
-
       });
+
 
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            startActivity(new Intent(getContext(),ScanCodeActivity.class));
+
+            //Toast.makeText(getContext(), "/"+displayedShop+"/", Toast.LENGTH_LONG).show();
+            if(shopResult.getText().toString().equals("Shop Name")|| shopResult.getText().toString().equals("SHOP NAME"))
+            {    Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();}
+            else
+            {startActivity(new Intent(getContext(),ScanCodeActivity.class));}
+
+
+
         }
 
 

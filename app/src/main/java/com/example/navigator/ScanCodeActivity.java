@@ -31,6 +31,7 @@ import com.google.zxing.Result;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
@@ -42,6 +43,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
     ZXingScannerView ScannerView;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef;
+    public static ArrayList<String> otherShops = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +126,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                boolean foundFlag = false;
+               otherShops.clear();
                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                    String snapResult =  snapshot.child("id").getValue().toString();
                    if(result.toString().equals(snapResult)){
@@ -136,15 +139,25 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
                        for (DataSnapshot store : storeChildren) {
                            if(store.child("shop").getValue().toString().equals(Scan.passIndex)){
                                //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                               foundFlag = true;
                                productPrices = store.child("price").getValue().toString();
+                           }
+                           else{
+                                String output = "It's R"+store.child("price").getValue().toString()+ " at "+store.child("shop").getValue().toString();
+                                otherShops.add(output);
                            }
                            //Contact c = contact.getValue(Contact.class);
                        }
                        //String productPrices = snapshot.child("price").getValue().toString();
-
+                        if(otherShops.isEmpty()){
+                            Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.GONE);
+                        }
+                        else{
+                            Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
+                        }
                        Scan.productName.setText(productNam);
                        Scan.productPrice.setText("R"+productPrices);
-                       foundFlag = true;
+
                        break;
                    }
                }
@@ -159,7 +172,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
                    Toast.makeText(getApplicationContext(),"Product not on System", Toast.LENGTH_LONG).show();
                }
                else {
-                   Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
+                   //Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
                    Scan.view.findViewById(R.id.imageContainer).setVisibility(View.VISIBLE);
                    Scan.view.findViewById(R.id.qtyContainer).setVisibility(View.VISIBLE);
                    Scan.view.findViewById(R.id.addToCartContainer).setVisibility(View.VISIBLE);

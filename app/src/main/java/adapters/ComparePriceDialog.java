@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.navigator.R;
+import com.example.navigator.ScanCodeActivity;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,7 @@ public class ComparePriceDialog extends Dialog{
         this.productName = productName;
         this.price = price;
         this.shop = shop;
-        this.otherShops = otherShops;
+        this.otherShops = ScanCodeActivity.otherShops;
         this.scanImageBitmap = scanImageBitmap;
     }
 
@@ -51,15 +52,14 @@ public class ComparePriceDialog extends Dialog{
         TextView prodShop = findViewById(R.id.textViewShopName);
         prodShop.setText(shop);
         ListView otherShopsListView = findViewById(R.id.othershops_lv);
-        /*otherShopsListView.setOnClickListener(new AdapterView.OnItemClickListener(){
-        });
+
         Button close = findViewById(R.id.close_btn);
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
-        });*/
+        });
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(c, android.R.layout.simple_list_item_1, otherShops);
         otherShopsListView.setAdapter(arrayAdapter);

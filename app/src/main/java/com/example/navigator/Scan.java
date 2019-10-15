@@ -161,13 +161,16 @@ public class Scan extends Fragment {
         list = new ArrayList<>();
         ref = FirebaseDatabase.getInstance().getReference();
 
-        ref.child("Shop").addValueEventListener(new ValueEventListener() {
+
+        ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+
                     String ShopName = snapshot.child("name").getValue().toString();
-                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     list.add(ShopName);
                     Log.d("Shop DB Connection","");
                 }
@@ -179,8 +182,11 @@ public class Scan extends Fragment {
             }
         });
 
-        if(!list.isEmpty()) {
-            shopResult.setText(list.get(activeShopIndex));
+
+        if(!list.isEmpty())
+        {shopResult.setText(list.get(activeShopIndex));}
+
+
             shopResult.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -188,7 +194,7 @@ public class Scan extends Fragment {
                     searchDialog.show();
                 }
             });
-        }
+
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -230,6 +236,7 @@ public class Scan extends Fragment {
                         list.get(activeShopIndex), otherShops);
                 comparePriceDialog.show();
             }
+
         }
       });
 
@@ -272,7 +279,9 @@ public class Scan extends Fragment {
 
 
           //Establish DB Connection to check if same item exists in the database
-            Query myQuery = cartRef.orderByChild("idShopResult").equalTo(objProduct.getIdShopResult());
+            String idShop = resultTextView.getText().toString() + shopResult.getText().toString();
+            Toast.makeText(getContext(),idShop, Toast.LENGTH_LONG).show();
+            Query myQuery = cartRef.orderByChild("idShopResult").equalTo(idShop);
 
             myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -283,7 +292,6 @@ public class Scan extends Fragment {
                         int tempQuantity = Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
                         tempQuantity += Integer.parseInt(quantityValue.getText().toString());
                         dataSnapshot.child("quantity").getRef().setValue(tempQuantity);
-
                     }
                 }
 
@@ -301,9 +309,10 @@ public class Scan extends Fragment {
 
                         if (dataSnapshot.child(deviceId).exists()) {
                             ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-                            ref.push().setValue(objProduct);
+
                             String sessionId = resultTextView.getText().toString();
                             AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+                            ref.push().setValue(objProduct);
                         } else {
                             ref.push().setValue(deviceId);//shopResult
                             String sessionId = resultTextView.getText().toString();
@@ -334,7 +343,9 @@ public class Scan extends Fragment {
             final DatabaseReference WLRef = ref;
 
             //Establish DB Connection to check if same item exists in the database
-            Query myQuery = WLRef.orderByChild("idShopResult").equalTo(objProduct.getIdShopResult());
+            String idShop = resultTextView.getText().toString() + shopResult.getText().toString();
+
+            Query myQuery = WLRef.orderByChild("idShopResult").equalTo(idShop);
 
             myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

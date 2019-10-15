@@ -281,6 +281,7 @@ public class Scan extends Fragment {
                         if (dataSnapshot.child(deviceId).exists()) {
 
                             //
+                            boolean foundItem = false;
                             DataSnapshot deviceSnapshot = dataSnapshot.child(deviceId);
                             //Unique Kes in database
                             Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
@@ -296,6 +297,7 @@ public class Scan extends Fragment {
                                         int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
                                         tempQuantity += Integer.parseInt(quantityValue.getText().toString());
                                         productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
                                     }
                                 }
                                 else if(productItem.child("storeResult").exists())
@@ -308,13 +310,16 @@ public class Scan extends Fragment {
                                         int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
                                         tempQuantity += Integer.parseInt(quantityValue.getText().toString());
                                         productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
                                     }
                                 }
-                                else {
-                                    ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-                                    AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
-                                }
+
                                 //Contact c = contact.getValue(Contact.class);
+                            }
+                            if(!foundItem)
+                            {
+                                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+                                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
                             }
 
 
@@ -349,31 +354,9 @@ public class Scan extends Fragment {
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
             final DatabaseReference WLRef = ref;
 
-            //Establish DB Connection to check if same item exists in the database
-            /*String idShop = resultTextView.getText().toString() + shopResult.getText().toString();
 
-            Query myQuery = WLRef.orderByChild("idShopResult").equalTo(idShop);
 
-            myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists())
-                    {
-                        itemFound = true;
-                        int tempQuantity = Integer.parseInt(dataSnapshot.child("quantity").getValue().toString());
-                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
-                        dataSnapshot.child("quantity").getRef().setValue(tempQuantity);
 
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });*/
-
-            if(!itemFound) {
                 WLRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -384,6 +367,7 @@ public class Scan extends Fragment {
                             //Unique Kes in database
                             Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
                             String sessionId = resultTextView.getText().toString();
+                            boolean foundItem = false;
                             for (DataSnapshot productItem : deviceChildren) {
                                 if(productItem.child("shopResult").exists())
                                 {
@@ -395,6 +379,7 @@ public class Scan extends Fragment {
                                         int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
                                         tempQuantity += Integer.parseInt(quantityValue.getText().toString());
                                         productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
                                     }
                                 }
                                 else if(productItem.child("storeResult").exists())
@@ -407,13 +392,18 @@ public class Scan extends Fragment {
                                         int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
                                         tempQuantity += Integer.parseInt(quantityValue.getText().toString());
                                         productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
                                     }
                                 }
-                                else {
-                                    ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-                                    AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
-                                }
+
+
                                 //Contact c = contact.getValue(Contact.class);
+                            }
+
+                            if(!foundItem)
+                            {
+                                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+                                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
                             }
 
 
@@ -429,7 +419,7 @@ public class Scan extends Fragment {
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                     }
                 });
-            }
+
           Toast.makeText(getContext(),"Item added to Wish list", Toast.LENGTH_LONG).show();
         }
       });

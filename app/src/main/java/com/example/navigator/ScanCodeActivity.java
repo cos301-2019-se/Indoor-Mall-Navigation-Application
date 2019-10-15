@@ -128,7 +128,19 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
                    String snapResult =  snapshot.child("id").getValue().toString();
                    if(result.toString().equals(snapResult)){
                        String productNam = snapshot.child("name").getValue().toString();
-                       String productPrices = snapshot.child("price").getValue().toString();
+
+                       //Get specific price for specific shop.
+                       DataSnapshot storeSnapshot = snapshot.child("store");
+                       Iterable<DataSnapshot> storeChildren = storeSnapshot.getChildren();
+                       String productPrices = "0.00";
+                       for (DataSnapshot store : storeChildren) {
+                           if(store.child("shop").getValue().toString().equals(Scan.passIndex)){
+                               //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                               productPrices = store.child("price").getValue().toString();
+                           }
+                           //Contact c = contact.getValue(Contact.class);
+                       }
+                       //String productPrices = snapshot.child("price").getValue().toString();
 
                        Scan.productName.setText(productNam);
                        Scan.productPrice.setText("R"+productPrices);

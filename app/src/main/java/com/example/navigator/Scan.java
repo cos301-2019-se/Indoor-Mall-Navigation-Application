@@ -89,6 +89,8 @@ public class Scan extends Fragment {
   public static ImageView scanImage;
   public static Bitmap scanImageBitmap;
   public static EditText quantityValue;
+  /*test*/
+   public static String passIndex;
   /*search*/
   String selectedShop = "";
   private View rootView;
@@ -145,7 +147,7 @@ public class Scan extends Fragment {
                              Bundle savedInstanceState) {
      // mStorageRef = FirebaseStorage.getInstance();//Retrieving From DB
       //StorageReference storageRef = mStorageRef.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("android.jpg");
-        populateCompare();//populatesCompare
+        //populateCompare();//populatesCompare
       // Inflate the layout for this fragment
       view = inflater.inflate(R.layout.fragment_scan, container, false);
       resultTextView = (TextView) view.findViewById(R.id.result_text);
@@ -261,14 +263,11 @@ public class Scan extends Fragment {
             //Toast.makeText(getContext(), "/"+displayedShop+"/", Toast.LENGTH_LONG).show();
             if(shopResult.getText().toString().equals("Shop Name")|| shopResult.getText().toString().equals("SHOP NAME"))
             {    Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();}
-            else
-            {startActivity(new Intent(getContext(),ScanCodeActivity.class));}
-
-
-
+            else {
+                passIndex = list.get(activeShopIndex);
+                startActivity(new Intent(getContext(), ScanCodeActivity.class));
+            }
         }
-
-
       });
 
       rootRef = FirebaseDatabase.getInstance().getReference();

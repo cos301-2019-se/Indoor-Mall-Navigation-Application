@@ -123,17 +123,51 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               //int count = 1;
+               boolean foundFlag = false;
                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                    String snapResult =  snapshot.child("id").getValue().toString();
                    if(result.toString().equals(snapResult)){
                        String productNam = snapshot.child("name").getValue().toString();
-                       String productPrices = snapshot.child("price").getValue().toString();
+
+                       //Get specific price for specific shop.
+                       DataSnapshot storeSnapshot = snapshot.child("store");
+                       Iterable<DataSnapshot> storeChildren = storeSnapshot.getChildren();
+                       String productPrices = "0.00";
+                       for (DataSnapshot store : storeChildren) {
+                           if(store.child("shop").getValue().toString().equals(Scan.passIndex)){
+                               //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                               productPrices = store.child("price").getValue().toString();
+                           }
+                           //Contact c = contact.getValue(Contact.class);
+                       }
+                       //String productPrices = snapshot.child("price").getValue().toString();
 
                        Scan.productName.setText(productNam);
                        Scan.productPrice.setText("R"+productPrices);
+                       foundFlag = true;
+                       break;
                    }
                }
+               if (foundFlag == false){
+                   Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.INVISIBLE);
+                   Scan.view.findViewById(R.id.imageContainer).setVisibility(View.INVISIBLE);
+                   Scan.view.findViewById(R.id.qtyContainer).setVisibility(View.INVISIBLE);
+                   Scan.view.findViewById(R.id.addToCartContainer).setVisibility(View.INVISIBLE);
+                   Scan.view.findViewById(R.id.addToWishlistContainer).setVisibility(View.INVISIBLE);
+                   Scan.view.findViewById(R.id.result_name).setVisibility(View.INVISIBLE);
+                   Scan.view.findViewById(R.id.result_price).setVisibility(View.INVISIBLE);
+                   Toast.makeText(getApplicationContext(),"Product not on System", Toast.LENGTH_LONG).show();
+               }
+               else {
+                   Scan.view.findViewById(R.id.compare_price_container).setVisibility(View.VISIBLE);
+                   Scan.view.findViewById(R.id.imageContainer).setVisibility(View.VISIBLE);
+                   Scan.view.findViewById(R.id.qtyContainer).setVisibility(View.VISIBLE);
+                   Scan.view.findViewById(R.id.addToCartContainer).setVisibility(View.VISIBLE);
+                   Scan.view.findViewById(R.id.addToWishlistContainer).setVisibility(View.VISIBLE);
+                   Scan.view.findViewById(R.id.result_name).setVisibility(View.VISIBLE);
+                   Scan.view.findViewById(R.id.result_price).setVisibility(View.VISIBLE);
+               }
+
            }
            @Override
            public void onCancelled(@NonNull DatabaseError databaseError) {

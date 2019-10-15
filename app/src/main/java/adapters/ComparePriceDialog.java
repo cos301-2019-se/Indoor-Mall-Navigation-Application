@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -50,13 +51,15 @@ public class ComparePriceDialog extends Dialog{
         TextView prodShop = findViewById(R.id.textViewShopName);
         prodShop.setText(shop);
         ListView otherShopsListView = findViewById(R.id.othershops_lv);
+        /*otherShopsListView.setOnClickListener(new AdapterView.OnItemClickListener(){
+        });
         Button close = findViewById(R.id.close_btn);
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
-        });
+        });*/
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(c, android.R.layout.simple_list_item_1, otherShops);
         otherShopsListView.setAdapter(arrayAdapter);

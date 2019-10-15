@@ -8,10 +8,11 @@
  *  Copyright: (c) Copyright 2019 University of Pretoria
  *  Update History:*
  *
- *  Date        Author           Changes
+ *  Date        Author              Changes
  *  --------------------------------------------
- *  08/07/2019  Mpho  Mashaba    Original
- *  01/08/2019  Thabo Ntsoane    Version 1.0.1
+ *  08/07/2019  Mpho  Mashaba       Original
+ *  01/08/2019  Thabo Ntsoane       Version 1.1
+ *  14/10/2019  Khodani Tshisimba   Version 1.2, Validate Scan
  *
  *  Functional Description: This program file Scan's a product to a Cart or Wishlist.
  *  Error Messages: None
@@ -88,6 +89,8 @@ public class Scan extends Fragment {
   public static ImageView scanImage;
   public static Bitmap scanImageBitmap;
   public static EditText quantityValue;
+  /*test*/
+   public static String passIndex;
   /*search*/
   String selectedShop = "";
   private View rootView;
@@ -114,11 +117,9 @@ public class Scan extends Fragment {
   private LinearLayout addToCartContainer;
   private LinearLayout addToWishlistContainer;
   public ArrayList<String> otherShops = null;
+  public ArrayList<Product> compareProducts = new ArrayList<>();
   public static View view;
-  Button Notify;
-  String productNam = "";
-  String productPrices = "";
-  String AnotherOne = "Whatever";
+
 
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
@@ -146,7 +147,7 @@ public class Scan extends Fragment {
                              Bundle savedInstanceState) {
      // mStorageRef = FirebaseStorage.getInstance();//Retrieving From DB
       //StorageReference storageRef = mStorageRef.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("android.jpg");
-
+        //populateCompare();//populatesCompare
       // Inflate the layout for this fragment
       view = inflater.inflate(R.layout.fragment_scan, container, false);
       resultTextView = (TextView) view.findViewById(R.id.result_text);
@@ -170,8 +171,7 @@ public class Scan extends Fragment {
 
         //Notify = (Button) view.findViewById(R.id.btn_notify);
         rootRef = FirebaseDatabase.getInstance().getReference();
-
-
+        
         /*
       *   PHONE ID
       * */
@@ -181,11 +181,7 @@ public class Scan extends Fragment {
         searchView = (SearchView) view.findViewById(R.id.searchView);
         listView = (ListView) view.findViewById(R.id.lv1);
         list = new ArrayList<>();
-
-
         ref = FirebaseDatabase.getInstance().getReference();
-
-
 
         ref.child("Shop").addValueEventListener(new ValueEventListener() {
             @Override
@@ -240,43 +236,39 @@ public class Scan extends Fragment {
         }
       });
 
-
-
       comparePrice.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             if(!list.isEmpty()) {
                 otherShops = new ArrayList<>();
-                otherShops.add("Shoprite - R18.00");
-                otherShops.add("Pick 'n Pay - R20.00");
-                otherShops.add("Spar - R22.00");
+                for(int i =0; i < compareProducts.size(); i++)
+                {
+                    if(compareProducts.get(i).id.equals(resultTextView.getText().toString())){
+                        otherShops.add("It's R"+compareProducts.get(i).price + " at " + compareProducts.get(i).shopResult);
+                    }
+                }
+
                 ComparePriceDialog comparePriceDialog = new ComparePriceDialog(getContext(), scanImageBitmap, productName.getText().toString(), productPrice.getText().toString(),
                         list.get(activeShopIndex), otherShops);
                 comparePriceDialog.show();
             }
-
         }
-
-
       });
+
 
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
-
-            startActivity(new Intent(getContext(),ScanCodeActivity.class));
-
-
-
+            //Toast.makeText(getContext(), "/"+displayedShop+"/", Toast.LENGTH_LONG).show();
+            if(shopResult.getText().toString().equals("Shop Name")|| shopResult.getText().toString().equals("SHOP NAME"))
+            {    Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();}
+            else {
+                passIndex = list.get(activeShopIndex);
+                startActivity(new Intent(getContext(), ScanCodeActivity.class));
+            }
         }
-
-
       });
-
-
-
-
 
       rootRef = FirebaseDatabase.getInstance().getReference();
       //database reference pointing to demo node
@@ -285,9 +277,7 @@ public class Scan extends Fragment {
       buttonAddToCart.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-
-
-            CartBoolean = true;
+          CartBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Cart");
           final DatabaseReference dbRef = ref;
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -300,13 +290,13 @@ public class Scan extends Fragment {
 
                 //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
 
-                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));
+                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
+                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
               }
 
             }
@@ -325,9 +315,6 @@ public class Scan extends Fragment {
         @Override
         public void onClick(View v) {
             WishlistBoolean = true;
-
-
-
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
           final DatabaseReference dbRef = ref;
           ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -337,15 +324,14 @@ public class Scan extends Fragment {
               if(dataSnapshot.child(deviceId).exists()){
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
+                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
               }
               else {
                 ref.push().setValue(deviceId);
                 ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
                 String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
+                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
               }
-
             }
 
             @Override
@@ -355,166 +341,26 @@ public class Scan extends Fragment {
           Toast.makeText(getContext(),"Item added to Wish list", Toast.LENGTH_LONG).show();
         }
       });
-
       return view;
-
     }
-    public void AddProduct(String sessionId, final int itemQty, String imageUrl,String shopResult){
-      if(sessionId.equals("5060466519077")){
-        objProduct = new Product("5060466519077","Power Play",19.99,itemQty,imageUrl, shopResult);
-        ref.push().setValue(objProduct);
-      }
-      //DEMO PRODUCTS
-      else if(sessionId.equals("80050025")){
-        objProduct = new Product("80050025","Tic Tac Orange",6.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001120081577")){
-        objProduct = new Product("6001120081577","Mint Imperials",11.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009510802542")){
-        objProduct = new Product("6009510802542","Doritos Chili",7.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009612470151")){
-        objProduct = new Product("6009612470151","aQuelle Marula",9.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009612470878")){
-        objProduct = new Product("6009612470878","aQuelle Pineapple",9.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009704170686")){
-        objProduct = new Product("6009704170686","Eet-Sum-Mor",6.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009704170693")){
-        objProduct = new Product("6009704170693","Tennis Biscuits",6.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("8718114642871")){
-        objProduct = new Product("8718114642871","Vaseline Lip T",23.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009635830536")){
-        objProduct = new Product("6009635830536","Manuscript Book",10.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009695584912")){
-        objProduct = new Product("6009695584912","Bioplus",4.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6003326009584")){
-        objProduct = new Product("6003326009584","Flying Fish Pressed Lemmon",15.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009690380038")){
-        objProduct = new Product("6009690380038","Oasis Still 500ml",9.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("60018939")){
-        objProduct = new Product("60018939","Vaseline Blueseal",23.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001120602871")){
-        objProduct = new Product("6001120602871","Jungle Bar",10.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001120624972")){
-        objProduct = new Product("6001120624972","Sour Jelly Beans",22.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001007091521")){
-        objProduct = new Product("6001007091521","Cream Soda",15.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6007652000574")){
-        objProduct = new Product("6007652000574","Short Hand Note Book",21.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("036002914585")){
-        objProduct = new Product("036002914585","Aluminium Hiking Flask",139.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("503993116")){
-        objProduct = new Product("503993116","round neck shirt",129.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("90586523150")){
-        objProduct = new Product("90586523150","leather shoes",599.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001275000003")){
-        objProduct = new Product("6001275000003","Jungle Oats",28.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009510804812")){
-        objProduct = new Product("6009510804812","Lays Salted",14.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001069206611")){
-        objProduct = new Product("6001069206611","Lays Sour Cream",14.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("5449000107787")){
-        objProduct = new Product("5449000107787","Valpre Spring Water",9.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001076025038")){
-        objProduct = new Product("6001076025038","Eno",30.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001076037079")){
-        objProduct = new Product("6001076037079","Grand-PA",45.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9781259080791")){
-        objProduct = new Product("9781259080791","Object Oriented Software Engineering",849.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9780842371513")){
-        objProduct = new Product("9780842371513","Through Gates of Splendor - E.E",59.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009677500053")){
-        objProduct = new Product("6009677500053","Bene Water",9.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9781433506321")){
-        objProduct = new Product("9781433506321","Don't Waste Your Life - J.P",74.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9780805016888")){
-        objProduct = new Product("9780805016888","Asthma & Exercise - N.G",49.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9781259080791")){
-        objProduct = new Product("9781259080791","OO Software Engineering - D.C.K",849.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9781741818444")){
-        objProduct = new Product("9781741818444","Simply Guitar - S.M",24.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009612470045")){
-        objProduct = new Product("6009612470045","aQuelle Still Water",8.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("8892961606160")){
-        objProduct = new Product("8892961606160","Spar Rewards Tag",2.50,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("7353280248377711")){
-          objProduct = new Product("7353280248377711","Smart Shopper Card",2.50,itemQty,imageUrl,shopResult);
-          ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("0200625835623")){
-          objProduct = new Product("0200625835623","Clicks Club Card",0.99,itemQty,imageUrl,shopResult);
-          ref.push().setValue(objProduct);
-      }
 
+    public void AddProduct(String sessionId,String PName,String pPrice, final int itemQty, String imageUrl,String shopResult){
+      objProduct = new Product(sessionId,PName,pPrice,itemQty,imageUrl,shopResult);
+      ref.push().setValue(objProduct);
     }
+
+/*
+    public void populateCompare (){
+        //tic
+        compareProducts.add(new Product("80050025","Tic Tac Orange",10.00, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Woolworths"));
+        compareProducts.add(new Product("80050025","Tic Tac Orange",9.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Pick 'n Pay"));
+        //dor
+        compareProducts.add(new Product("6009510802542","Doritos Chili",9.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Pick 'n Pay"));
+        compareProducts.add(new Product("6009510802542","Doritos Chili",6.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","CNA"));
+        //eet
+        compareProducts.add(new Product("6009704170686","Eet-Sum-Mor",7.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Pick 'n Pay"));
+        compareProducts.add(new Product("6009704170686","Eet-Sum-Mor",4.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Woolworths"));
+    }*/
 }
 
 

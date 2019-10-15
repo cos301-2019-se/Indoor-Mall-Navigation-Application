@@ -1,3 +1,25 @@
+/**
+ *
+ *  File Name: Scan.js (path: app/src/main/java/com.example.navigator/utils/ScanCodeActivity.js)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author              Changes
+ *  --------------------------------------------
+ *  08/07/2019  Bandile Dlamini       Original
+ *  01/08/2019  Thabo Ntsoane       Version 1.1
+ *  14/10/2019  Khodani Tshisimba   Version 1.2, Validate Scan
+ *
+ *  Functional Description: Performs Scan functionality.
+ *  Error Messages: None
+ *  Constraints: Can only be used if Items are available
+ *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
+ *
+ */
 package com.example.navigator;
 
 import android.content.Context;
@@ -90,38 +112,7 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
             });
         } catch (IOException e ) {}
 
-        //Establish DB Connection
-        /*final String deviceId = Installation.id(this);
-        DatabaseReference DBRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-
-        if(Scan.WishlistBoolean == true)
-            DBRef = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
-        else if(Scan.CartBoolean == true)
-            DBRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);*/
-
-        /*Query myQuery = DBRef.orderByChild("id").equalTo(product.getId());
-
-
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot dataSnap : dataSnapshot.getChildren())
-                {
-                    dataSnap.child("id").getRef().setValue();
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        myQuery.addListenerForSingleValueEvent(valueEventListener);*/
-
-
-
-        /**/
+       
         demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

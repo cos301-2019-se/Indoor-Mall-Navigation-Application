@@ -349,7 +349,7 @@ public class Scan extends Fragment {
       ref.push().setValue(objProduct);
     }
 
-
+/*
     public void populateCompare (){
         //tic
         compareProducts.add(new Product("80050025","Tic Tac Orange",10.00, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Woolworths"));
@@ -360,7 +360,7 @@ public class Scan extends Fragment {
         //eet
         compareProducts.add(new Product("6009704170686","Eet-Sum-Mor",7.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Pick 'n Pay"));
         compareProducts.add(new Product("6009704170686","Eet-Sum-Mor",4.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Woolworths"));
-    }
+    }*/
 }
 
 

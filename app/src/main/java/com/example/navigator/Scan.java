@@ -114,6 +114,7 @@ public class Scan extends Fragment {
   private LinearLayout addToCartContainer;
   private LinearLayout addToWishlistContainer;
   public ArrayList<String> otherShops = null;
+  public ArrayList<Product> compareProducts = new ArrayList<>();
   public static View view;
 
 
@@ -143,7 +144,7 @@ public class Scan extends Fragment {
                              Bundle savedInstanceState) {
      // mStorageRef = FirebaseStorage.getInstance();//Retrieving From DB
       //StorageReference storageRef = mStorageRef.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("android.jpg");
-
+        populateCompare();//populatesCompare
       // Inflate the layout for this fragment
       view = inflater.inflate(R.layout.fragment_scan, container, false);
       resultTextView = (TextView) view.findViewById(R.id.result_text);
@@ -239,9 +240,13 @@ public class Scan extends Fragment {
         public void onClick(View view) {
             if(!list.isEmpty()) {
                 otherShops = new ArrayList<>();
-                otherShops.add("Shoprite - R18.00");
-                otherShops.add("Pick 'n Pay - R20.00");
-                otherShops.add("Spar - R22.00");
+                for(int i =0; i < compareProducts.size(); i++)
+                {
+                    if(compareProducts.get(i).id.equals(resultTextView.getText().toString())){
+                        otherShops.add("It's R"+compareProducts.get(i).price + " at " + compareProducts.get(i).shopResult);
+                    }
+                }
+
                 ComparePriceDialog comparePriceDialog = new ComparePriceDialog(getContext(), scanImageBitmap, productName.getText().toString(), productPrice.getText().toString(),
                         list.get(activeShopIndex), otherShops);
                 comparePriceDialog.show();
@@ -338,6 +343,13 @@ public class Scan extends Fragment {
     public void AddProduct(String sessionId,String PName,String pPrice, final int itemQty, String imageUrl,String shopResult){
       objProduct = new Product(sessionId,PName,pPrice,itemQty,imageUrl,shopResult);
       ref.push().setValue(objProduct);
+    }
+
+
+    public void populateCompare (){
+        compareProducts.add(new Product("80050025","Tic Tac Orange",10.00, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Woolworths"));
+        compareProducts.add(new Product("80050025","Tic Tac Orange",9.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Pick 'n Pay"));
+
     }
 }
 

@@ -158,14 +158,42 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 localOverall.setText("R " +roundToTwo.format(temp));
 
                 //Query to find the ID
-                Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
-
-                ValueEventListener valueEventListener = new ValueEventListener() {
+                cartDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot dataSnap : dataSnapshot.getChildren())
-                        {
-                            dataSnap.child("quantity").getRef().setValue(product.getQuantity());
+
+                        if (dataSnapshot.exists()) {
+
+                            DataSnapshot deviceSnapshot = dataSnapshot;
+                            //Unique Key in database
+                            Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
+                            String sessionId = product.getId();
+                            for (DataSnapshot productItem : deviceChildren) {
+                                if(productItem.child("shopResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("shopResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(product.getStoreResult()) && productId.equals(product.getId()))
+                                    {
+                                        productItem.child("quantity").getRef().setValue(product.getQuantity());
+                                    }
+                                }
+                                else if(productItem.child("storeResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("storeResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(product.getStoreResult()) && productId.equals(sessionId))
+                                    {
+                                        productItem.child("quantity").getRef().setValue(product.getQuantity());
+
+                                    }
+                                }
+                            }
+
+
+
                         }
                     }
 
@@ -173,9 +201,8 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
-                };
+                });
                 notifyDataSetChanged();
-                myQuery.addListenerForSingleValueEvent(valueEventListener);
 
             }
         });
@@ -251,24 +278,6 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                     }
                 });
-
-                /*Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
-
-
-                ValueEventListener valueEventListener = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot dataSnap : dataSnapshot.getChildren())
-                        {
-                            dataSnap.child("quantity").getRef().setValue(product.getQuantity());
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                };*/
                 notifyDataSetChanged();
 
 
@@ -373,20 +382,53 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 wishDBRef.push().setValue(product);
                 Toast.makeText(getContext(),product.getName()+ " added to WishList ", Toast.LENGTH_LONG).show();
 
-                Query myQuery = cartDBRef.orderByChild("id").equalTo(product.getId());
-
-                myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                cartDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        for(DataSnapshot dataSnap : dataSnapshot.getChildren())
-                        {
-                            String toDelete = dataSnap.getKey();
-                            DatabaseConn data = DatabaseConn.open();
+                        if (dataSnapshot.exists()) {
 
-                            data.delete("Cart",deviceId+"/"+toDelete);
+                            //
+
+                            DataSnapshot deviceSnapshot = dataSnapshot;
+                            //Unique Key in database
+                            Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
+                            String sessionId = product.getId();
+                            for (DataSnapshot productItem : deviceChildren) {
+                                if(productItem.child("shopResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("shopResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(product.getStoreResult()) && productId.equals(product.getId()))
+                                    {
+                                        String toDelete = productItem.getKey();
+                                        DatabaseConn data = DatabaseConn.open();
+
+                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        removeFromList(currProduct);
+                                    }
+                                }
+                                else if(productItem.child("storeResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("storeResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(product.getStoreResult()) && productId.equals(sessionId))
+                                    {
+                                        String toDelete = productItem.getKey();
+                                        DatabaseConn data = DatabaseConn.open();
+
+                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        removeFromList(currProduct);
+
+                                    }
+                                }
+                            }
+
+
+
                         }
-                        removeFromList(currProduct);
                     }
 
                     @Override
@@ -394,6 +436,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                     }
                 });
+
             }
         });
 

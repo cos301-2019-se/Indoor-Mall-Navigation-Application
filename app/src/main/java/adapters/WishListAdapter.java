@@ -111,25 +111,50 @@ WishListAdapter extends ArrayAdapter<CartProduct>{
         viewHolder.deleteFromWL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Query myQuery = wishDBRef.orderByChild("id").equalTo(product.getId());
-
-                myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                wishDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        for(DataSnapshot dataSnap : dataSnapshot.getChildren())
-                        {
-                            String toDelete = dataSnap.getKey();
-                            DatabaseConn data = DatabaseConn.open();
-                            Toast.makeText(getContext(),product.getName()+ " removed from Wishlist", Toast.LENGTH_LONG).show();
-                            data.delete("Wishlist",deviceId+"/"+toDelete);
+                        if (dataSnapshot.exists()) {
+                            DataSnapshot deviceSnapshot = dataSnapshot;
+                            //Unique Key in database
+                            Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
+                            String sessionId = product.getId();
+                            for (DataSnapshot productItem : deviceChildren) {
+                                if(productItem.child("shopResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("shopResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(product.getStoreResult()) && productId.equals(sessionId))
+                                    {
+                                        String toDelete = productItem.getKey();
+                                        DatabaseConn data = DatabaseConn.open();
+                                        Toast.makeText(getContext(),product.getName()+ " removed from Cart ", Toast.LENGTH_LONG).show();
+                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        removeFromList(currProduct);
+
+
+                                    }
+                                }
+                                else if(productItem.child("storeResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("storeResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(product.getStoreResult()) && productId.equals(sessionId))
+                                    {
+                                        String toDelete = productItem.getKey();
+                                        DatabaseConn data = DatabaseConn.open();
+                                        Toast.makeText(getContext(),product.getName()+ " removed from Cart ", Toast.LENGTH_LONG).show();
+                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        removeFromList(currProduct);
+                                    }
+                                }
+
+                            }
                         }
-
-                        removeFromList(currProduct);
-
                     }
-
-
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -146,25 +171,54 @@ WishListAdapter extends ArrayAdapter<CartProduct>{
                 Toast.makeText(getContext(),product.getName()+ " added to Cart. ", Toast.LENGTH_LONG).show();
 
                 //Remove from Wishlist
-                Query myQuery = wishDBRef.orderByChild("id").equalTo(product.getId());
-
-                myQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                wishDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        for(DataSnapshot dataSnap : dataSnapshot.getChildren())
-                        {
-                            String toDelete = dataSnap.getKey();
-                            DatabaseConn data = DatabaseConn.open();
-                            //Toast.makeText(getContext(),product.getName()+ " removed from Wishlist", Toast.LENGTH_LONG).show();
-                            data.delete("Wishlist",deviceId+"/"+toDelete);
+                        if (dataSnapshot.exists()) {
+
+                            //
+
+                            DataSnapshot deviceSnapshot = dataSnapshot;
+                            //Unique Key in database
+                            Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
+                            String sessionId = product.getId();
+                            for (DataSnapshot productItem : deviceChildren) {
+                                if(productItem.child("shopResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("shopResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(product.getStoreResult()) && productId.equals(product.getId()))
+                                    {
+                                        String toDelete = productItem.getKey();
+                                        DatabaseConn data = DatabaseConn.open();
+
+                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        removeFromList(currProduct);
+                                    }
+                                }
+                                else if(productItem.child("storeResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("storeResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(product.getStoreResult()) && productId.equals(sessionId))
+                                    {
+                                        String toDelete = productItem.getKey();
+                                        DatabaseConn data = DatabaseConn.open();
+
+                                        data.delete("Cart",deviceId+"/"+toDelete);
+                                        removeFromList(currProduct);
+
+                                    }
+                                }
+                            }
+
+
+
                         }
-
-                        removeFromList(currProduct);
-
                     }
-
-
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {

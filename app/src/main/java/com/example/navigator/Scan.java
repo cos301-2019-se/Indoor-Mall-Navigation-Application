@@ -354,9 +354,6 @@ public class Scan extends Fragment {
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
             final DatabaseReference WLRef = ref;
 
-
-
-
                 WLRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

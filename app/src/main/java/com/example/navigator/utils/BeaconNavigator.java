@@ -73,6 +73,7 @@ public class BeaconNavigator extends BeaconReader {
         }else
         {
             this.directions = null;
+            pathIndex = 0;
         }
 
     }

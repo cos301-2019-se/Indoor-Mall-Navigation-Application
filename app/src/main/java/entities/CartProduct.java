@@ -1,3 +1,24 @@
+/**
+ *
+ *  File Name: CartProduct.java (path: app/src/main/java/com.example.navigator/utils/CartProduct.java)
+ *  Version: 1.0
+ *  Author: Brute Force - Database Management
+ *  Project: Indoor Mall Navigation
+ *  Organisation: DVT
+ *  Copyright: (c) Copyright 2019 University of Pretoria
+ *  Update History:*
+ *
+ *  Date        Author              Changes
+ *  --------------------------------------------
+ *  14/10/2019  Khodani Tshisimba   Original 1.0, Defines Cart Product Object
+ *
+ *  Functional Description: This program file Scan's a product to a Cart or Wishlist.
+ *  Error Messages: None
+ *  Constraints: Can only be used if Items are available
+ *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
+ *
+ */
+
 package entities;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,11 +41,10 @@ public class CartProduct implements Serializable{
     private String name;
     private String price;
     private String quantity;
-    private int photo;
     private String totalPrice;
     private String imageUrl;
-    private Bitmap bmap;
     private String shopResult;
+
 
 
     private static DecimalFormat roundToTwo = new DecimalFormat("#.##");
@@ -38,15 +58,11 @@ public class CartProduct implements Serializable{
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-        this.photo = photo;
         this.imageUrl= "";
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
-        //tPrice = roundToTwoPoint(tPrice);
-        //tPrice = (double) Math.round(tPrice*100)/100;
         this.totalPrice = roundToTwo.format(tPrice);
-        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -57,7 +73,6 @@ public class CartProduct implements Serializable{
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-        //this.photo = photo;
         this.imageUrl = imageUrl;
 
         price.replace(',','.');
@@ -89,7 +104,6 @@ public class CartProduct implements Serializable{
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-        this.photo = photo;
         this.imageUrl = "";
 
         price.replace(',','.');
@@ -103,14 +117,11 @@ public class CartProduct implements Serializable{
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-        this.photo = photo;
         this.imageUrl = "";
-        this.bmap = b;
 
         price.replace(',','.');
         double tPrice = Double.parseDouble(quantity) * Double.parseDouble(price);
         this.totalPrice = roundToTwo.format(tPrice);
-        //this.totalPrice = Double.toString(tPrice);
 
     }
 
@@ -133,10 +144,6 @@ public class CartProduct implements Serializable{
     public String getPrice() {
         return this.price.replace(',','.');
     }
-
-    public void setBmap(Bitmap b){this.bmap = b;}
-
-    public Bitmap getBmap(){return this.bmap;}
 
     public void setPrice(String price) {
         this.price = price;
@@ -172,14 +179,6 @@ public class CartProduct implements Serializable{
 
     public void setQuantity(String description) {
         this.quantity = quantity;
-    }
-
-    public int getPhoto() {
-        return this.photo;
-    }
-
-    public void setPhoto(int photo) {
-        this.photo = photo;
     }
 
     public String getTotalPrice(){return this.totalPrice.replace(',','.');}

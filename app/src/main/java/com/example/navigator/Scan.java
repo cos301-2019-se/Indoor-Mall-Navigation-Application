@@ -20,35 +20,31 @@
  *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
  *
  */
+
+
 package com.example.navigator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.navigator.utils.Installation;
 import com.example.navigator.utils.SearchDialog;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -58,15 +54,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import adapters.ComparePriceDialog;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -80,9 +68,6 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class Scan extends Fragment {
   private Context context;
-  private StorageReference mStorageRef; //Retrieving images from DB.
-  private ZXingScannerView mScannerView;
-  private DatabaseReference databaseReference1,databaseReference3,unameref;
   public static TextView resultTextView;
   public static TextView productName;
   public static TextView productPrice;
@@ -92,17 +77,11 @@ public class Scan extends Fragment {
   /*test*/
    public static String passIndex;
   /*search*/
-  String selectedShop = "";
-  private View rootView;
-  private ViewGroup inflateContainer;
-  private LayoutInflater inflater;
   SearchView searchView;
   ListView listView;
   ArrayList<String> list;
   private Button shopResult;
   public static int activeShopIndex = 0;
-  ArrayAdapter<String > adapter;
- // searchContainer.setVisibility(View.VISIBLE);
   public static boolean WishlistBoolean = false;
   public static boolean CartBoolean = false;
   Button buttonScan;
@@ -129,6 +108,7 @@ public class Scan extends Fragment {
   Button buttonCheckout;
 
   int itemQuantity = 1;
+  public static boolean itemFound = false;
 
   public static String imageUrl;
   //Retrieve images from DB
@@ -183,13 +163,18 @@ public class Scan extends Fragment {
         list = new ArrayList<>();
         ref = FirebaseDatabase.getInstance().getReference();
 
-        ref.child("Shop").addValueEventListener(new ValueEventListener() {
+
+        ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+
                     String ShopName = snapshot.child("name").getValue().toString();
-                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     list.add(ShopName);
+                    Log.d("Shop DB Connection","");
                 }
             }
 
@@ -199,18 +184,19 @@ public class Scan extends Fragment {
             }
         });
 
-        if(!list.isEmpty()) {
-            shopResult.setText(list.get(activeShopIndex));
-        }
-        shopResult.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //searchContainer.setVisibility(View.VISIBLE);
 
-                SearchDialog searchDialog = new SearchDialog(getContext(), list, shopResult);
-                searchDialog.show();
-            }
-        });
+        if(!list.isEmpty())
+        {shopResult.setText(list.get(activeShopIndex));}
+
+
+            shopResult.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SearchDialog searchDialog = new SearchDialog(getContext(), list, shopResult);
+                    searchDialog.show();
+                }
+            });
+
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -252,6 +238,7 @@ public class Scan extends Fragment {
                         list.get(activeShopIndex), otherShops);
                 comparePriceDialog.show();
             }
+
         }
       });
 
@@ -274,38 +261,84 @@ public class Scan extends Fragment {
       //database reference pointing to demo node
       demoRef = rootRef.child("Product");
 
+
+
+
+
+
       buttonAddToCart.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
           CartBoolean = true;
+
           ref = FirebaseDatabase.getInstance().getReference().child("Cart");
-          final DatabaseReference dbRef = ref;
-          ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+          final DatabaseReference cartRef = ref;
 
-              if(dataSnapshot.child(deviceId).exists()){
-                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
+                cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
+                        if (dataSnapshot.child(deviceId).exists()) {
 
-                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
-              }
-              else {
-                ref.push().setValue(deviceId);
-                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
-              }
+                            //
+                            boolean foundItem = false;
+                            DataSnapshot deviceSnapshot = dataSnapshot.child(deviceId);
+                            //Unique Kes in database
+                            Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
+                            String sessionId = resultTextView.getText().toString();
+                            for (DataSnapshot productItem : deviceChildren) {
+                                if(productItem.child("shopResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("shopResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(list.get(activeShopIndex)) && productId.equals(sessionId))
+                                    {
+                                        int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
+                                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
+                                        productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
+                                    }
+                                }
+                                else if(productItem.child("storeResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("storeResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(list.get(activeShopIndex)) && productId.equals(sessionId))
+                                    {
+                                        int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
+                                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
+                                        productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
+                                    }
+                                }
 
-            }
+                                //Contact c = contact.getValue(Contact.class);
+                            }
+                            if(!foundItem)
+                            {
+                                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+                                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+                            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-          });
+                        }
+                        else {
+                            ref.push().setValue(deviceId);//shopResult
+                            ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+                            String sessionId = resultTextView.getText().toString();
+                            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
           Toast.makeText(getContext(),"Item added to Cart", Toast.LENGTH_LONG).show();
         }
       });
@@ -314,33 +347,83 @@ public class Scan extends Fragment {
 
         @Override
         public void onClick(View v) {
+
+
+            itemFound = false;
             WishlistBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
-          final DatabaseReference dbRef = ref;
-          ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            final DatabaseReference WLRef = ref;
 
-              if(dataSnapshot.child(deviceId).exists()){
-                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
-              }
-              else {
-                ref.push().setValue(deviceId);
-                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
-              }
-            }
+                WLRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-          });
+                        if (dataSnapshot.child(deviceId).exists()) {
+                            //
+                            DataSnapshot deviceSnapshot = dataSnapshot.child(deviceId);
+                            //Unique Kes in database
+                            Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
+                            String sessionId = resultTextView.getText().toString();
+                            boolean foundItem = false;
+                            for (DataSnapshot productItem : deviceChildren) {
+                                if(productItem.child("shopResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("shopResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(list.get(activeShopIndex)) && productId.equals(sessionId))
+                                    {
+                                        int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
+                                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
+                                        productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
+                                    }
+                                }
+                                else if(productItem.child("storeResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("storeResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(list.get(activeShopIndex)) && productId.equals(sessionId))
+                                    {
+                                        int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
+                                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
+                                        productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
+                                    }
+                                }
+
+
+                                //Contact c = contact.getValue(Contact.class);
+                            }
+
+                            if(!foundItem)
+                            {
+                                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+                                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+                            }
+
+
+                        } else {
+                            ref.push().setValue(deviceId);//shopResult
+                            ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+                            String sessionId = resultTextView.getText().toString();
+                            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+
           Toast.makeText(getContext(),"Item added to Wish list", Toast.LENGTH_LONG).show();
         }
       });
+
+
+
+
       return view;
     }
 

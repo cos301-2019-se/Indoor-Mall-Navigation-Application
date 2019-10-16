@@ -84,6 +84,7 @@ public class Cart extends Fragment {
     ListView cartList;
     Button checkout;
     DatabaseReference dbRef,cartRef;
+    public static String deviceId;
 
     public Cart() {
     }
@@ -102,7 +103,7 @@ public class Cart extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         //Get Device ID
-        final String deviceId = Installation.id(getContext());
+        deviceId = Installation.id(getContext());
 
         //Retrieve Database Reference
         dbRef = FirebaseDatabase.getInstance().getReference();

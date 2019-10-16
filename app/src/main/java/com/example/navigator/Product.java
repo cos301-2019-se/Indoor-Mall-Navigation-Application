@@ -81,6 +81,7 @@ public class Product {
     }
     public int getQuantity() {return quantity; }
     public String getIdShopResult(){return idShopResult;}
+    public String getStoreResult(){return shopResult;}
 
     public String getImageUrl() {
         return this.imageUrl;

@@ -31,6 +31,7 @@ public class Product {
     public double price;
     public int quantity;
     public String imageUrl;
+    public String idShopResult;
 
     public Product() {
 
@@ -48,6 +49,16 @@ public class Product {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.quantity = qty;
+        this.imageUrl = imageUrl;
+        this.shopResult = shopName;
+        this.idShopResult = id + shopName;
+
+    }
+    public Product(String id, String name, String price, int qty, String imageUrl,String shopName) {
+        this.id = id;
+        this.name = name;
+        this.price = Double.parseDouble(price.replace("R",""));
         this.quantity = qty;
         this.imageUrl = imageUrl;
         this.shopResult = shopName;
@@ -69,6 +80,8 @@ public class Product {
         return price;
     }
     public int getQuantity() {return quantity; }
+    public String getIdShopResult(){return idShopResult;}
+    public String getStoreResult(){return shopResult;}
 
     public String getImageUrl() {
         return this.imageUrl;

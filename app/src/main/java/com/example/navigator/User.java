@@ -68,14 +68,40 @@ public class User {
         return addressL1;
     }
     public String getAddressL2() {
-        return addressL1;
+        return addressL2;
     }
     public String getAddressL3() {
-        return addressL2;
+        return addressL3;
     }
     public String getphoneNumber() {
         return phoneNumber;
     }
 
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAddressL1(String addressL1) {
+        this.addressL1 = addressL1;
+    }
+
+    public void setAddressL2(String addressL2) {
+        this.addressL2 = addressL2;
+    }
+
+    public void setAddressL3(String addressL3) {
+        this.addressL3 = addressL3;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }

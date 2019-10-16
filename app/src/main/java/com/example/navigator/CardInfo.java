@@ -160,6 +160,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
 
                             DatabaseConn data = DatabaseConn.open();
                             data.delete("Cart", deviceId);
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
 
                             //Sending Text Message
@@ -452,7 +453,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
                     sender.sendMail("EmailSender App",
                             "Merchant Invoices from Indoor Mall Navigator",
                             "brute.force.cos301@gmail.com",
-                            "dlaminibandile7@gmail.com", directory_path);
+                            "brute.force.cos301@gmail.com", directory_path);
                     //dialog.dismiss();
                 } catch (Exception e) {
                     Log.e("mylog", "Error: " + e.getMessage());

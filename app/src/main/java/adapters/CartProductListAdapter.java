@@ -300,7 +300,13 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
                 temp = (double) Math.round(temp*100)/100;
                 Cart.oTotal = temp;
-                localOverall.setText("R " +roundToTwo.format(temp));
+                if(Cart.oTotal == 0.00 || Cart.oTotal == 0){
+                    localOverall.setVisibility(View.INVISIBLE);
+                }else {
+                    localOverall.setVisibility(View.VISIBLE);
+                    localOverall.setText("R " +roundToTwo.format(temp));
+                }
+
 
 
                 cartDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -377,7 +383,12 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
                 temp = (double) Math.round(temp*100)/100;
                 Cart.oTotal = temp;
-                localOverall.setText("R " +roundToTwo.format(temp));
+                if(Cart.oTotal == 0.00 || Cart.oTotal == 0){
+                    localOverall.setVisibility(View.INVISIBLE);
+                }else {
+                    localOverall.setVisibility(View.VISIBLE);
+                    localOverall.setText("R " +roundToTwo.format(temp));
+                }
 
                 wishDBRef.push().setValue(product);
                 Toast.makeText(getContext(),product.getName()+ " added to WishList ", Toast.LENGTH_LONG).show();

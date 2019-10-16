@@ -167,7 +167,12 @@ public class Cart extends Fragment {
 
                 //Rounding Value to set to Cart Display
                 oTotal = (double) Math.round(oTotal*100)/100;
-                overallTotal.setText("R " + oTotal);
+                if(oTotal == 0.00 || oTotal == 0){
+                    overallTotal.setVisibility(View.INVISIBLE);
+                }else {
+                    overallTotal.setVisibility(View.VISIBLE);
+                    overallTotal.setText("R " + oTotal);
+                }
 
                 //Send created products to Cart Product Adapter which will generate items
                 if(!products.isEmpty()) {

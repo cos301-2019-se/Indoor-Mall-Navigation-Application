@@ -161,6 +161,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
                             DatabaseConn data = DatabaseConn.open();
                             data.delete("Cart", deviceId);
 
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
                             //Sending Text Message
                             if(checkPermission(Manifest.permission.SEND_SMS)){
@@ -262,7 +263,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
                 Font H1=new Font(Font.FontFamily.TIMES_ROMAN,30.0f, Font.BOLD, BaseColor.BLACK);
                 Paragraph p = new Paragraph();
 
-                Drawable d = getResources().getDrawable(R.drawable.logo3);
+                Drawable d = getResources().getDrawable(R.drawable.logo4);
                 BitmapDrawable bitDw = ((BitmapDrawable) d);
                 Bitmap bmp = bitDw.getBitmap();
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -358,7 +359,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
                 Font H1=new Font(Font.FontFamily.TIMES_ROMAN,30.0f, Font.BOLD, BaseColor.BLACK);
                 Paragraph p = new Paragraph();
 
-                Drawable d = getResources().getDrawable(R.drawable.logo3);
+                Drawable d = getResources().getDrawable(R.drawable.logo4);
                 BitmapDrawable bitDw = ((BitmapDrawable) d);
                 Bitmap bmp = bitDw.getBitmap();
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -449,10 +450,10 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
                 try {
                     String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Indoor Mall Navigator/MerchantInvoices/" + filename;
                     GMailSender sender = new GMailSender("brute.force.cos301@gmail.com", "Dr0n3s&Stuff");
-                    sender.sendMail("EmailSender App",
+                    sender.sendMail("Brute Force Email Sender System",
                             "Merchant Invoices from Indoor Mall Navigator",
                             "brute.force.cos301@gmail.com",
-                            "dlaminibandile7@gmail.com", directory_path);
+                            "brute.force.cos301@gmail.com", directory_path);
                     //dialog.dismiss();
                 } catch (Exception e) {
                     Log.e("mylog", "Error: " + e.getMessage());

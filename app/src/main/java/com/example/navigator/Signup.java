@@ -153,6 +153,8 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
     }
 
 
+
+
     private void registerUser(){
 
         String email = editTextEmail.getText().toString().trim();

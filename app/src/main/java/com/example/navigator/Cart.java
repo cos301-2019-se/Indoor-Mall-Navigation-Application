@@ -69,6 +69,9 @@
         import entities.CartProduct;
         import static android.app.Activity.DEFAULT_KEYS_DIALER;
 
+        import java.math.RoundingMode;
+        import java.text.DecimalFormat;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -85,6 +88,7 @@ public class Cart extends Fragment {
     Button checkout;
     DatabaseReference dbRef,cartRef;
     public static String deviceId;
+    private static DecimalFormat decimal = new DecimalFormat("#.##");
 
     public Cart() {
     }
@@ -167,7 +171,8 @@ public class Cart extends Fragment {
 
                 //Rounding Value to set to Cart Display
                 oTotal = (double) Math.round(oTotal*100)/100;
-                overallTotal.setText("R " + oTotal);
+
+                overallTotal.setText("R " + String.format("%.2f",oTotal));
 
                 //Send created products to Cart Product Adapter which will generate items
                 if(!products.isEmpty()) {

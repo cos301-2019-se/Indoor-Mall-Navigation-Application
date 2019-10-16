@@ -112,8 +112,11 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
         viewHolder.textViewName.setText(product.getName());
         viewHolder.textViewQuantity.setText(product.getQuantity());
+
         viewHolder.textViewPrice.setText("R " + product.getPrice());
-        viewHolder.totalPrice.setText(product.getTotalPrice());
+        double totalPrice = Double.parseDouble(product.getTotalPrice());
+        viewHolder.totalPrice.setText(String.format("%.2f",totalPrice).replace(",","."));
+
 
         //List<String
         int shopImage = R.drawable.ic_store_black_24dp;

@@ -36,6 +36,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,6 +46,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
     private EditText editTextEmail;
     private EditText editTextPassword;
     private EditText editTextUsername;
+    private EditText editTextConfirm;
     private TextView textViewLogIn;
     private DatabaseReference mDatabase;
     private ProgressDialog progressDialog;   //progress loading
@@ -69,6 +71,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         editTextUsername = (EditText) findViewById(R.id.editTextUsername);
+        editTextConfirm = (EditText) findViewById(R.id.editTextConfirm);
         textViewLogIn = (TextView) findViewById(R.id.textViewLogIn);
         buttonSignUp.setOnClickListener(this);
         textViewLogIn.setOnClickListener(this);
@@ -106,6 +109,15 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         return true;
 
     }
+    public boolean validateConfirm(String confirm) {
+        if (confirm.isEmpty()) {
+            //password is empty
+            toastWrapper("Please enter password");
+            //stop the function
+            return false;
+        }
+        return true;
+    }
 
     public boolean validatePassword(String password)
     {
@@ -142,10 +154,13 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
     }
 
 
+
+
     private void registerUser(){
 
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
+        String confirm = editTextConfirm.getText().toString().trim();
         //int length = password.length();
         if(!validateEmail(email))
         {
@@ -153,6 +168,16 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         }
         if(!validatePassword(password))
         {
+            return;
+        }
+        if(!validateConfirm(confirm)) {
+          return;
+        }
+
+
+        String passwordConfirm = editTextConfirm.getText().toString();
+        if (!password.equals(passwordConfirm)) {
+            Toast.makeText(Signup.this,"Both password fields must be identical",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -169,16 +194,34 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                     //user is registerd
                     //start profile activity
                     progressDialog.hide();
+
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                            .setDisplayName(editTextUsername.getText().toString()).build();
+
+                    user.updateProfile(profileUpdates)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        //Log.d(TAG, "User profile updated.");
+                                    }
+                                }
+                            });
+
                     Toast.makeText(Signup.this,"Registerd Successfully",Toast.LENGTH_SHORT).show();
                     finish();
                     //start profile activity
+
+
                     onAuthSuccess(task.getResult().getUser());
                     startActivity(new Intent(getApplicationContext(),Login.class));
                 }
 
                 else{
                     progressDialog.hide();
-                    Toast.makeText(Signup.this,"Could'nt Register, Email already exist",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Signup.this,"Couldn't Register, Email already exist",Toast.LENGTH_SHORT).show();
                 }
 
             }

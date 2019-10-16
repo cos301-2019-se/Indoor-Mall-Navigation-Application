@@ -43,6 +43,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import static android.widget.Toast.LENGTH_LONG;
@@ -87,7 +88,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
     private void userLogin(){
 
-        String email= editTextEmail.getText().toString().trim();
+        final String email= editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
         if(TextUtils.isEmpty(email)){
@@ -121,7 +122,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         progressDialog.dismiss();
                         if(task.isSuccessful()){
 
-                            user = firebaseAuth.getCurrentUser();
+                            AuthResult result = task.getResult();
+                            user = result.getUser();
+
+                            //user.setEmail(dataSnapshot.child("email").getValue().toString());
+                            //user.setUserid(dataSnapshot.child("userid").getValue().toString());
+                            //user.setUsername(dataSnapshot.child("username").getValue().toString());
+
                             finish();
                             //start profile activity
                             startActivity(new Intent(getApplicationContext(),Payment.class)); //cant do new intent in OncompleteListner so getappli..context used

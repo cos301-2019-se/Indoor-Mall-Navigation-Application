@@ -64,6 +64,19 @@
                 android:textColor="@color/black"
                 android:layout_margin="5pt" />
 
+            <EditText
+                android:textAlignment="center"
+                android:inputType="textPassword"
+                android:hint="Confirm Password"
+                android:id="@+id/editTextConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="100px"
+                android:background="@color/white"
+                android:textColorHint="@color/black"
+                android:textColor="@color/black"
+                android:layout_margin="5pt" />
+
+
             <Button
                 android:layout_marginTop="5pt"
                 android:layout_gravity="center_horizontal"

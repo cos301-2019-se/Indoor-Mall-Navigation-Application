@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.navigator.R;
+import com.example.navigator.ScanCodeActivity;
 
 import java.util.ArrayList;
 
@@ -32,7 +34,7 @@ public class ComparePriceDialog extends Dialog{
         this.productName = productName;
         this.price = price;
         this.shop = shop;
-        this.otherShops = otherShops;
+        this.otherShops = ScanCodeActivity.otherShops;
         this.scanImageBitmap = scanImageBitmap;
     }
 
@@ -50,6 +52,7 @@ public class ComparePriceDialog extends Dialog{
         TextView prodShop = findViewById(R.id.textViewShopName);
         prodShop.setText(shop);
         ListView otherShopsListView = findViewById(R.id.othershops_lv);
+
         Button close = findViewById(R.id.close_btn);
         close.setOnClickListener(new View.OnClickListener() {
             @Override

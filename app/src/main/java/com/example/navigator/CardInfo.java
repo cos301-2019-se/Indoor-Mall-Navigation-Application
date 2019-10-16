@@ -13,6 +13,7 @@
  */
 
 package com.example.navigator;
+import android.app.ProgressDialog;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -29,10 +31,17 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import com.braintreepayments.cardform.view.CardForm;
+import com.example.navigator.utils.DatabaseConn;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -48,6 +57,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -56,31 +66,36 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import com.example.navigator.MainHelpers.GMailSender;
 
 import entities.CartProduct;
+
+import static com.example.navigator.Cart.deviceId;
 
 public class CardInfo extends AppCompatActivity implements View.OnClickListener {
     CardForm cardForm;
     Button buy;
     AlertDialog.Builder alertBuilder;
     PdfWriter writer;
-    final int SEND_SMS_PERMISSION_REQUEST_CODE = 1;
+   // final int SEND_SMS_PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cardinformation);
 
+
+
         cardForm = findViewById(R.id.card_form);
         buy = findViewById(R.id.btnBuy);
 
-        buy.setEnabled(false);
+       /* buy.setEnabled(false);
         if(checkPermission(Manifest.permission.SEND_SMS)){
             buy.setEnabled(true);
         }
         else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS},SEND_SMS_PERMISSION_REQUEST_CODE);
-        }
+        } */
 
         cardForm.cardRequired(true)
                 .expirationRequired(true)
@@ -110,8 +125,44 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
 
                             String curDateTime = getDateTime();
                             String curFullDateTime = getFullDateTime();
-                            createClientInvoice(Cart.products, curDateTime, curFullDateTime, Login.user.getDisplayName());
+                            createClientInvoice(Cart.products, curDateTime, curFullDateTime, Login.user.getEmail());
+
+                            List<CartProduct> tempArray = Cart.products;
+                            List<CartProduct> outgoingArray = new ArrayList<>();
+                            while(!tempArray.isEmpty()){
+                                String activeShop;
+                                outgoingArray.clear();
+                                if(tempArray.size() > 1) {
+                                    CartProduct curr = tempArray.get(0);
+                                    tempArray.remove(0);
+                                    outgoingArray.add(curr);
+                                    activeShop = curr.getStoreResult();
+
+                                    for (int j = 1; j < tempArray.size(); j++) {
+                                        if (tempArray.get(j).getStoreResult().equals(activeShop)) {
+                                            outgoingArray.add(tempArray.get(j));
+                                            tempArray.remove(j);
+                                            j--;
+                                        }
+                                    }
+                                }
+                                else{
+                                    outgoingArray.add(tempArray.get(0));
+                                    activeShop = tempArray.get(0).getStoreResult();
+                                    tempArray.remove(0);
+                                }
+                                createMerchantsReceipt(outgoingArray, curDateTime, curFullDateTime, Login.user.getEmail(), activeShop);
+                            }
+
+
                             String smsMessage = "Indoor Mall Navigation Payments, Thank You For Shopping With Us!";
+
+
+                            DatabaseConn data = DatabaseConn.open();
+                            data.delete("Cart", deviceId);
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+
                             //Sending Text Message
                             if(checkPermission(Manifest.permission.SEND_SMS)){
                                 SmsManager.getDefault().sendTextMessage(cardForm.getMobileNumber(),null,smsMessage,null,null);
@@ -171,13 +222,6 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
 
     private void createClientInvoice(List<CartProduct> products, String invoceNum, String date, String customerName){
 
-    /*Paragraph p = new Paragraph();
-    Chunk c = new Chunk();
-    Image i = Image.getInstance("resources/images/fox.bmp");
-    c = new Chunk(i, 0, -24);
-    p.add(c);*/
-
-
         Document document = new Document();
         PdfPTable table = new PdfPTable(new float[] { 3, 2, 1, 1, 1 });
         table.setWidthPercentage(100);
@@ -195,7 +239,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
 
         for (int i = 0; i < products.size(); i++){
             table.addCell(products.get(i).getName());
-            table.addCell("");
+            table.addCell(products.get(i).getStoreResult());
             table.addCell("R" + products.get(i).getPrice());
             table.addCell("" + products.get(i).getQuantity());
             double no = Double.valueOf(products.get(i).getPrice()) * Integer.valueOf(products.get(i).getQuantity());
@@ -204,61 +248,65 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
         }
 
         try {
-            String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Indoor Mall Navigator/";
-            writer = PdfWriter.getInstance(document, new FileOutputStream(directory_path + "Invoice" + invoceNum + ".pdf"));
-            document.open();
 
-            Font H1=new Font(Font.FontFamily.TIMES_ROMAN,30.0f, Font.BOLD, BaseColor.BLACK);
-            Paragraph p = new Paragraph();
+            File folder = new File(Environment.getExternalStorageDirectory() +
+                    File.separator + "Indoor Mall Navigator");
+            boolean success = true;
+            if (!folder.exists()) {
+                success = folder.mkdirs();
+            }
+            if (success) {
+                String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Indoor Mall Navigator/";
+                writer = PdfWriter.getInstance(document, new FileOutputStream(directory_path + "Invoice" + invoceNum + ".pdf"));
+                document.open();
 
-            Drawable d = getResources().getDrawable(R.drawable.logo3);
-            BitmapDrawable bitDw = ((BitmapDrawable) d);
-            Bitmap bmp = bitDw.getBitmap();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            Image image = Image.getInstance(stream.toByteArray());
-            Chunk c = new Chunk(image, 0, -90);
-            p.add(c);
-            document.add(p);
+                Font H1=new Font(Font.FontFamily.TIMES_ROMAN,30.0f, Font.BOLD, BaseColor.BLACK);
+                Paragraph p = new Paragraph();
 
-            p = new Paragraph("INVOICE", H1);
-            p.setAlignment(Paragraph.ALIGN_RIGHT);
-            document.add(p);
-            p = new Paragraph("Indoor Mall Navigator");
-            p.setAlignment(Paragraph.ALIGN_RIGHT);
-            document.add(p);
-            p = new Paragraph("Invoice No. " + invoceNum);
-            p.setAlignment(Paragraph.ALIGN_RIGHT);
-            document.add(p);
-            p = new Paragraph("Date: " + date);
-            p.setAlignment(Paragraph.ALIGN_RIGHT);
-            document.add(p);
-            p = new Paragraph("Billed To: " + customerName);
-            p.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(p);
-            p = new Paragraph("Customer Tel.: " + cardForm.getMobileNumber());
-            p.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(p);
-            p = new Paragraph("Address Line 1");
-            p.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(p);
-            p = new Paragraph("Address Line 2");
-            p.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(p);
-            p = new Paragraph("Address Line 3");
-            p.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(p);
-            p = new Paragraph("-");
-            document.add(p);
+                Drawable d = getResources().getDrawable(R.drawable.logo3);
+                BitmapDrawable bitDw = ((BitmapDrawable) d);
+                Bitmap bmp = bitDw.getBitmap();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                Image image = Image.getInstance(stream.toByteArray());
+                Chunk c = new Chunk(image, 0, -90);
+                p.add(c);
+                document.add(p);
 
-            absoluteText("---------------------------------------------------------", 360, 40);
+                p = new Paragraph("INVOICE", H1);
+                p.setAlignment(Paragraph.ALIGN_RIGHT);
+                document.add(p);
+                p = new Paragraph("Indoor Mall Navigator");
+                p.setAlignment(Paragraph.ALIGN_RIGHT);
+                document.add(p);
+                p = new Paragraph("Invoice No. " + invoceNum);
+                p.setAlignment(Paragraph.ALIGN_RIGHT);
+                document.add(p);
+                p = new Paragraph("Date: " + date);
+                p.setAlignment(Paragraph.ALIGN_RIGHT);
+                document.add(p);
+                p = new Paragraph("Billed To: " + customerName);
+                p.setAlignment(Paragraph.ALIGN_LEFT);
+                document.add(p);
+                p = new Paragraph("Customer Tel.: " + cardForm.getMobileNumber());
+                p.setAlignment(Paragraph.ALIGN_LEFT);
+                document.add(p);
+                p = new Paragraph("-");
+                document.add(p);
 
-            DecimalFormat dec = new DecimalFormat("#0.00");
-            absoluteText("Total: R" + dec.format(Cart.oTotal), 400, 20);
+                absoluteText("---------------------------------------------------------", 360, 40);
 
-            document.add(table);
-            document.close();
-            Toast.makeText(getBaseContext(), "Invoice Generation Done", Toast.LENGTH_LONG).show();
+                DecimalFormat dec = new DecimalFormat("#0.00");
+                absoluteText("Total: R" + dec.format(Cart.oTotal), 400, 20);
+
+                document.add(table);
+                document.close();
+                Toast.makeText(getBaseContext(), "Invoice Generation Done", Toast.LENGTH_LONG).show();
+            } else {
+                // Do something else on failure
+            }
+
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -268,13 +316,6 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
     }
 
     private void createMerchantsReceipt(List<CartProduct> products, String invoceNum, String date, String customerName, String merchantName){
-
-    /*Paragraph p = new Paragraph();
-    Chunk c = new Chunk();
-    Image i = Image.getInstance("resources/images/fox.bmp");
-    c = new Chunk(i, 0, -24);
-    p.add(c);*/
-
 
         Document document = new Document();
         PdfPTable table = new PdfPTable(new float[] { 5, 1, 1, 1 });
@@ -289,65 +330,77 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
         for (int j=0;j<cells.length;j++){
             cells[j].setBackgroundColor(BaseColor.GRAY);
         }
-        for (int i=1;i<=10;i++){
-            table.addCell("Description:"+i);
-            table.addCell("Cost:"+i);
-            table.addCell("Qty:"+i);
-            table.addCell("Amount:"+i);
 
-        }
-        try {
-            String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Indoor Mall Navigator/";
-            writer = PdfWriter.getInstance(document, new FileOutputStream(directory_path + merchantName + "Receipt" + invoceNum + ".pdf"));
-            document.open();
-
-            Font H1=new Font(Font.FontFamily.TIMES_ROMAN,30.0f, Font.BOLD, BaseColor.BLACK);
-            Paragraph p = new Paragraph();
-
-            Drawable d = getResources().getDrawable(R.drawable.logo3);
-            BitmapDrawable bitDw = ((BitmapDrawable) d);
-            Bitmap bmp = bitDw.getBitmap();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            Image image = Image.getInstance(stream.toByteArray());
-            Chunk c = new Chunk(image, 0, -90);
-            p.add(c);
-            document.add(p);
-
-            p = new Paragraph(merchantName+"RECEIPT", H1);
-            p.setAlignment(Paragraph.ALIGN_RIGHT);
-            document.add(p);
-            p = new Paragraph("Indoor Mall Navigator");
-            p.setAlignment(Paragraph.ALIGN_RIGHT);
-            document.add(p);
-            p = new Paragraph("Invoice No. " + invoceNum);
-            p.setAlignment(Paragraph.ALIGN_RIGHT);
-            document.add(p);
-            p = new Paragraph("Date: " + date);
-            p.setAlignment(Paragraph.ALIGN_RIGHT);
-            document.add(p);
-            p = new Paragraph("Billed To: " + customerName);
-            p.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(p);
-            p = new Paragraph("Address Line 1");
-            p.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(p);
-            p = new Paragraph("Address Line 2");
-            p.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(p);
-            p = new Paragraph("Address Line 3");
-            p.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(p);
-            p = new Paragraph("-");
-            document.add(p);
-
-            absoluteText("---------------------------------------------------------", 360, 40);
+        double activeTotal = 0;
+        for (int i = 0; i < products.size(); i++){
+            table.addCell(products.get(i).getName());
+            table.addCell("R" + products.get(i).getPrice());
+            table.addCell("" + products.get(i).getQuantity());
+            double no = Double.valueOf(products.get(i).getPrice()) * Integer.valueOf(products.get(i).getQuantity());
             DecimalFormat dec = new DecimalFormat("#0.00");
-            absoluteText("Total: R" + dec.format(Cart.oTotal), 400, 20);
+            table.addCell("R" + dec.format(no));
+            activeTotal += Double.parseDouble(products.get(i).getTotalPrice());
+        }
 
-            document.add(table);
-            document.close();
-            Toast.makeText(getBaseContext(), "Invoice Generation Done", Toast.LENGTH_LONG).show();
+        try {
+            String filename;
+            File folder = new File(Environment.getExternalStorageDirectory() +
+                    File.separator + "Indoor Mall Navigator/MerchantInvoices");
+            boolean success = true;
+            if (!folder.exists()) {
+                success = folder.mkdirs();
+            }
+            if (success) {
+                String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Indoor Mall Navigator/MerchantInvoices/";
+                filename = merchantName + "Invoice" + invoceNum + ".pdf";
+                writer = PdfWriter.getInstance(document, new FileOutputStream(directory_path + filename));
+                document.open();
+
+                Font H1=new Font(Font.FontFamily.TIMES_ROMAN,30.0f, Font.BOLD, BaseColor.BLACK);
+                Paragraph p = new Paragraph();
+
+                Drawable d = getResources().getDrawable(R.drawable.logo3);
+                BitmapDrawable bitDw = ((BitmapDrawable) d);
+                Bitmap bmp = bitDw.getBitmap();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                Image image = Image.getInstance(stream.toByteArray());
+                Chunk c = new Chunk(image, 0, -90);
+                p.add(c);
+                document.add(p);
+
+                p = new Paragraph(merchantName.toUpperCase() +" INVOICE", H1);
+                p.setAlignment(Paragraph.ALIGN_RIGHT);
+                document.add(p);
+                p = new Paragraph("Indoor Mall Navigator");
+                p.setAlignment(Paragraph.ALIGN_RIGHT);
+                document.add(p);
+                p = new Paragraph("Invoice No. " + invoceNum);
+                p.setAlignment(Paragraph.ALIGN_RIGHT);
+                document.add(p);
+                p = new Paragraph("Date: " + date);
+                p.setAlignment(Paragraph.ALIGN_RIGHT);
+                document.add(p);
+                p = new Paragraph("Billed To: " + customerName);
+                p.setAlignment(Paragraph.ALIGN_LEFT);
+                document.add(p);
+                p = new Paragraph("-");
+                document.add(p);
+
+                absoluteText("---------------------------------------------------------", 360, 40);
+                DecimalFormat dec = new DecimalFormat("#0.00");
+                absoluteText("Total: R" + dec.format(activeTotal), 400, 20);
+
+                document.add(table);
+                document.close();
+                //Toast.makeText(getBaseContext(), "Invoice Generation Done", Toast.LENGTH_LONG).show();
+                sendMessage(filename);
+            } else {
+                // Do something else on failure
+            }
+
+
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -368,25 +421,6 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
         return df.format(new Date());
     }
 
-
-
-    private ArrayList<Product> getDummyProducts()
-    {
-        ArrayList<Product> products = new ArrayList<>();
-
-        products.add(new Product("5060466519077","Power Play",19.99,1));
-        products.add(new Product("8718114642871","Vaseline Lip T",23.99,2));
-        products.add(new Product("6009635830536","Manuscript Book",10.99,5));
-        products.add(new Product("6009695584912","Bioplus",4.99,4));
-        products.add(new Product("6003326009584","Flying Fish Pressed Lemmon",15.99,1));
-        products.add(new Product("6009690380038","Oasis Still 500ml",9.99,8));
-        products.add(new Product("60018939","Vaseline Blueseal",23.99,5));
-        products.add(new Product("6001120602871","Jungle Bar",10.99,2));
-        products.add(new Product("6001120624972","Sour Jelly Beans",22.99,2));
-
-        return products;
-    }
-
     private void absoluteText(String text, int x, int y) {
         try {
             PdfContentByte cb = writer.getDirectContent();
@@ -403,5 +437,29 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendMessage(final String filename) {
+        /*final ProgressDialog dialog = new ProgressDialog(getApplicationContext());
+        dialog.setTitle("Sending Merchant Invoices");
+        dialog.setMessage("Please wait");
+        dialog.show();*/
+        Thread sender = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Indoor Mall Navigator/MerchantInvoices/" + filename;
+                    GMailSender sender = new GMailSender("brute.force.cos301@gmail.com", "Dr0n3s&Stuff");
+                    sender.sendMail("EmailSender App",
+                            "Merchant Invoices from Indoor Mall Navigator",
+                            "brute.force.cos301@gmail.com",
+                            "brute.force.cos301@gmail.com", directory_path);
+                    //dialog.dismiss();
+                } catch (Exception e) {
+                    Log.e("mylog", "Error: " + e.getMessage());
+                }
+            }
+        });
+        sender.start();
     }
 }

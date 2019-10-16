@@ -157,8 +157,6 @@ public class Navigate extends Fragment implements SensorEventListener,
             android.Manifest.permission.CAMERA
     };
     private ArrayList<Beacon> beaconsInRange = new ArrayList<>();
-    private double bearing = 180;
-    private double distance;
     private float[] orientationSmoothing = new float[10];
     private int smoothing = 0;
 
@@ -289,7 +287,7 @@ public class Navigate extends Fragment implements SensorEventListener,
         compassView = (CompassView) rootView.findViewById(R.id.compass);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mSensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
-        accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         magnetSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         green_dot = rootView.findViewById(R.id.greenDot);
         arrowView = rootView.findViewById(R.id.arrow);
@@ -687,26 +685,59 @@ public class Navigate extends Fragment implements SensorEventListener,
 
             float rotation = arrowView.getRotation();
             Log.d(TAG, "onSensorChanged: Rotation: " + rotation);
-            if(rotation < bearing)
+            float difference = bearing - rotation;
+            Log.d(TAG, "onSensorChanged: Difference: " + difference);
+
+
+            if(difference > 0)
             {
-                arrowView.setRotation((float)(rotation + 0.5));
-                if(rotation < bearing - 10)
+                if(difference > 180)
                 {
-                    arrowView.setRotation((float)(rotation + 1));
+                    arrowView.setRotation(wrapDegree((float)(rotation - 0.5)));
+
+                }else
+                {
+                    arrowView.setRotation(wrapDegree((float)(rotation + 0.5)));
                 }
-            }else if(rotation > bearing)
+
+//                arrowView.setRotation((float)(rotation + 0.5));
+//                if(rotation < bearing - 10)
+//                {
+//                    arrowView.setRotation((float)(rotation + 1));
+//                }
+            }else if(difference < 0)
             {
-                arrowView.setRotation((float)(rotation - 0.5));
-                if(rotation > bearing + 10)
+                if(difference < - 180)
                 {
-                    arrowView.setRotation((float)(rotation - 1));
+                    arrowView.setRotation(wrapDegree((float)(rotation + 0.5)));
+                }else
+                {
+                    arrowView.setRotation(wrapDegree((float)(rotation - 0.5)));
                 }
+//                arrowView.setRotation(wrapDegree((float)(rotation - 0.5)));
+//                if(rotation > bearing + 10)
+//                {
+//                    arrowView.setRotation((float)(rotation - 1));
+//                }
             }
 //            arrowView.setRotation(bearing);
         }
 
     }
 
+    private float wrapDegree(float degree)
+    {
+        float newDeg = degree;
+        while(newDeg > 360)
+        {
+            newDeg -= 360;
+        }
+        while(newDeg < 0)
+        {
+            newDeg += 360;
+        }
+        return newDeg;
+    }
     private void updateTextDirection(double bearing) {
         int range = (int) (bearing / (360f / 16f));
         String dirTxt = "";

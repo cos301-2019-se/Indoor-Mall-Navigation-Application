@@ -8,10 +8,11 @@
  *  Copyright: (c) Copyright 2019 University of Pretoria
  *  Update History:*
  *
- *  Date        Author           Changes
+ *  Date        Author              Changes
  *  --------------------------------------------
- *  08/07/2019  Mpho  Mashaba    Original
- *  01/08/2019  Thabo Ntsoane    Version 1.0.1
+ *  08/07/2019  Mpho  Mashaba       Original
+ *  01/08/2019  Thabo Ntsoane       Version 1.1
+ *  14/10/2019  Khodani Tshisimba   Version 1.2, Validate Scan
  *
  *  Functional Description: This program file Scan's a product to a Cart or Wishlist.
  *  Error Messages: None
@@ -19,35 +20,31 @@
  *  Assumptions: It is assumed that the user will be able to add items correctly to the cart.
  *
  */
+
+
 package com.example.navigator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.navigator.utils.Installation;
 import com.example.navigator.utils.SearchDialog;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -57,15 +54,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import adapters.ComparePriceDialog;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -79,27 +68,20 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class Scan extends Fragment {
   private Context context;
-  private StorageReference mStorageRef; //Retrieving images from DB.
-  private ZXingScannerView mScannerView;
-  private DatabaseReference databaseReference1,databaseReference3,unameref;
   public static TextView resultTextView;
   public static TextView productName;
   public static TextView productPrice;
   public static ImageView scanImage;
   public static Bitmap scanImageBitmap;
   public static EditText quantityValue;
+  /*test*/
+   public static String passIndex;
   /*search*/
-  String selectedShop = "";
-  private View rootView;
-  private ViewGroup inflateContainer;
-  private LayoutInflater inflater;
   SearchView searchView;
   ListView listView;
   ArrayList<String> list;
   private Button shopResult;
   public static int activeShopIndex = 0;
-  ArrayAdapter<String > adapter;
- // searchContainer.setVisibility(View.VISIBLE);
   public static boolean WishlistBoolean = false;
   public static boolean CartBoolean = false;
   Button buttonScan;
@@ -114,11 +96,9 @@ public class Scan extends Fragment {
   private LinearLayout addToCartContainer;
   private LinearLayout addToWishlistContainer;
   public ArrayList<String> otherShops = null;
+  public ArrayList<Product> compareProducts = new ArrayList<>();
   public static View view;
-  Button Notify;
-  String productNam = "";
-  String productPrices = "";
-  String AnotherOne = "Whatever";
+
 
   private FirebaseAuth firebaseAuth;
   private ProgressDialog progressDialog;
@@ -128,6 +108,7 @@ public class Scan extends Fragment {
   Button buttonCheckout;
 
   int itemQuantity = 1;
+  public static boolean itemFound = false;
 
   public static String imageUrl;
   //Retrieve images from DB
@@ -146,7 +127,7 @@ public class Scan extends Fragment {
                              Bundle savedInstanceState) {
      // mStorageRef = FirebaseStorage.getInstance();//Retrieving From DB
       //StorageReference storageRef = mStorageRef.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child("android.jpg");
-
+        //populateCompare();//populatesCompare
       // Inflate the layout for this fragment
       view = inflater.inflate(R.layout.fragment_scan, container, false);
       resultTextView = (TextView) view.findViewById(R.id.result_text);
@@ -169,9 +150,9 @@ public class Scan extends Fragment {
       shopResult = (Button) view.findViewById(R.id.shop_name);
 
         //Notify = (Button) view.findViewById(R.id.btn_notify);
-      rootRef = FirebaseDatabase.getInstance().getReference();
 
-
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        
         /*
       *   PHONE ID
       * */
@@ -181,19 +162,20 @@ public class Scan extends Fragment {
         searchView = (SearchView) view.findViewById(R.id.searchView);
         listView = (ListView) view.findViewById(R.id.lv1);
         list = new ArrayList<>();
-
-
         ref = FirebaseDatabase.getInstance().getReference();
 
 
-
-        ref.child("Shop").addValueEventListener(new ValueEventListener() {
+        ref.child("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+
                     String ShopName = snapshot.child("name").getValue().toString();
-                    //String ShopName = snapshot.child("name").toString(); returns {key: name,value : ABSA
                     list.add(ShopName);
+                    Log.d("Shop DB Connection","");
                 }
             }
 
@@ -203,18 +185,19 @@ public class Scan extends Fragment {
             }
         });
 
-        if(!list.isEmpty()) {
-            shopResult.setText(list.get(activeShopIndex));
-        }
-        shopResult.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //searchContainer.setVisibility(View.VISIBLE);
 
-                SearchDialog searchDialog = new SearchDialog(getContext(), list, shopResult);
-                searchDialog.show();
-            }
-        });
+        if(!list.isEmpty())
+        {shopResult.setText(list.get(activeShopIndex));}
+
+
+            shopResult.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SearchDialog searchDialog = new SearchDialog(getContext(), list, shopResult);
+                    searchDialog.show();
+                }
+            });
+
 
       decrementQuantity.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -239,150 +222,124 @@ public class Scan extends Fragment {
           itemQuantity = count;
         }
       });
-/*
-      Notify.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-           //String pn ;
-          final String pp;
-          demoRef =rootRef.child("Product");
-          demoRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-              String result = "60018939";
-              for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                String snapResult =  snapshot.child("id").getValue().toString();
-                //.toString()
-                if(result.equals(snapResult)){
-                  //String productNam = snapshot.child("name").getValue().toString();
-                  //String productPrices = snapshot.child("price").getValue().toString();
-
-                  productNam = snapshot.child("name").getValue().toString();
-                  productPrices = snapshot.child("price").getValue().toString() ;
-                }
-              }
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-          });
-          AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-          builder.setCancelable(true);
-          builder.setTitle("Products running out");
-          builder.setMessage("the following Product in your wishlist is out of stock: \n"+productNam +"\n"+productPrices);
-          //\n "+productNam+"\n"+productPrices
-
-
-          builder.setNegativeButton("Remove", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-               // DialogInterface.cancel();
-            }
-          });
-          builder.setPositiveButton("Cart", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-          });
-          builder.show();
-        }
-      });*/
-
 
       comparePrice.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             if(!list.isEmpty()) {
                 otherShops = new ArrayList<>();
-                otherShops.add("Shoprite - R18.00");
-                otherShops.add("Pick 'n Pay - R20.00");
-                otherShops.add("Spar - R22.00");
+                for(int i =0; i < compareProducts.size(); i++)
+                {
+                    if(compareProducts.get(i).id.equals(resultTextView.getText().toString())){
+                        otherShops.add("It's R"+compareProducts.get(i).price + " at " + compareProducts.get(i).shopResult);
+                    }
+                }
+
                 ComparePriceDialog comparePriceDialog = new ComparePriceDialog(getContext(), scanImageBitmap, productName.getText().toString(), productPrice.getText().toString(),
                         list.get(activeShopIndex), otherShops);
                 comparePriceDialog.show();
             }
 
         }
-
-
       });
+
 
       buttonScan.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
-
-            startActivity(new Intent(getContext(),ScanCodeActivity.class));
-
-
-          //CHECK!
-         /* String barCode = resultTextView.getText().toString();
-          storageRef = storage.getReferenceFromUrl("gs://bruteforce-d8058.appspot.com").child(barCode);
-          try {
-            final File localFile = File.createTempFile("images", "jpg");
-            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-              @Override
-              public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                scanImage.setImageBitmap(bitmap);
-
-              }
-            }).addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception exception) {
-              }
-            });
-          } catch (IOException e ) {}*/
+            //Toast.makeText(getContext(), "/"+displayedShop+"/", Toast.LENGTH_LONG).show();
+            if(shopResult.getText().toString().equals("Shop Name")|| shopResult.getText().toString().equals("SHOP NAME"))
+            {    Toast.makeText(getContext(), "Please Select Current Store", Toast.LENGTH_LONG).show();}
+            else {
+                passIndex = list.get(activeShopIndex);
+                startActivity(new Intent(getContext(), ScanCodeActivity.class));
+            }
         }
-
-
       });
-
-
-
-
 
       rootRef = FirebaseDatabase.getInstance().getReference();
       //database reference pointing to demo node
       demoRef = rootRef.child("Product");
 
+
+
+
+
+
       buttonAddToCart.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            CartBoolean = true;
+          CartBoolean = true;
+
           ref = FirebaseDatabase.getInstance().getReference().child("Cart");
-          final DatabaseReference dbRef = ref;
-          ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+          final DatabaseReference cartRef = ref;
 
-              if(dataSnapshot.child(deviceId).exists()){
-                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
+                cartRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                //CODE TO RETRIEVE IMAGE THROUGH ITS BARCODE WHICH IS : resultTextView.getText().toString()
+                        if (dataSnapshot.child(deviceId).exists()) {
 
-                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));
-              }
-              else {
-                ref.push().setValue(deviceId);
-                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl,list.get(activeShopIndex));//shopResult
-              }
+                            //
+                            boolean foundItem = false;
+                            DataSnapshot deviceSnapshot = dataSnapshot.child(deviceId);
+                            //Unique Kes in database
+                            Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
+                            String sessionId = resultTextView.getText().toString();
+                            for (DataSnapshot productItem : deviceChildren) {
+                                if(productItem.child("shopResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("shopResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(list.get(activeShopIndex)) && productId.equals(sessionId))
+                                    {
+                                        int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
+                                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
+                                        productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
+                                    }
+                                }
+                                else if(productItem.child("storeResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("storeResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(list.get(activeShopIndex)) && productId.equals(sessionId))
+                                    {
+                                        int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
+                                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
+                                        productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
+                                    }
+                                }
 
-            }
+                                //Contact c = contact.getValue(Contact.class);
+                            }
+                            if(!foundItem)
+                            {
+                                ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+                                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+                            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-          });
+                        }
+                        else {
+                            ref.push().setValue(deviceId);//shopResult
+                            ref = FirebaseDatabase.getInstance().getReference().child("Cart").child(deviceId);
+                            String sessionId = resultTextView.getText().toString();
+                            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
           Toast.makeText(getContext(),"Item added to Cart", Toast.LENGTH_LONG).show();
         }
       });
@@ -391,170 +348,103 @@ public class Scan extends Fragment {
 
         @Override
         public void onClick(View v) {
+
+
+            itemFound = false;
             WishlistBoolean = true;
           ref = FirebaseDatabase.getInstance().getReference().child("Wishlist");
-          final DatabaseReference dbRef = ref;
-          ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            final DatabaseReference WLRef = ref;
 
-              if(dataSnapshot.child(deviceId).exists()){
-                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
+                WLRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                AddProduct(sessionId,itemQuantity,imageUrl,shopResult.getText().toString());//shopResult
-              }
-              else {
-                ref.push().setValue(deviceId);
-                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
-                String sessionId = resultTextView.getText().toString();
-                AddProduct(sessionId,itemQuantity,imageUrl,shopResult.toString());//shopResult
-              }
+                        if (dataSnapshot.child(deviceId).exists()) {
+                            //
+                            DataSnapshot deviceSnapshot = dataSnapshot.child(deviceId);
+                            //Unique Kes in database
+                            Iterable<DataSnapshot> deviceChildren = deviceSnapshot.getChildren();
+                            String sessionId = resultTextView.getText().toString();
+                            boolean foundItem = false;
+                            for (DataSnapshot productItem : deviceChildren) {
+                                if(productItem.child("shopResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("shopResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(list.get(activeShopIndex)) && productId.equals(sessionId))
+                                    {
+                                        int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
+                                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
+                                        productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
+                                    }
+                                }
+                                else if(productItem.child("storeResult").exists())
+                                {
+                                    //Toast.makeText(getApplicationContext(),"It's set. " , Toast.LENGTH_LONG).show();
+                                    String store = productItem.child("storeResult").getValue().toString();
+                                    String productId = productItem.child("id").getValue().toString();
+                                    if(store.equals(list.get(activeShopIndex)) && productId.equals(sessionId))
+                                    {
+                                        int tempQuantity = Integer.parseInt(productItem.child("quantity").getValue().toString());
+                                        tempQuantity += Integer.parseInt(quantityValue.getText().toString());
+                                        productItem.child("quantity").getRef().setValue(tempQuantity);
+                                        foundItem = true;
+                                    }
+                                }
 
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-          });
+                                //Contact c = contact.getValue(Contact.class);
+                            }
+
+                            if(!foundItem)
+                            {
+                                ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+                                AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+                            }
+
+
+                        } else {
+                            ref.push().setValue(deviceId);//shopResult
+                            ref = FirebaseDatabase.getInstance().getReference().child("Wishlist").child(deviceId);
+                            String sessionId = resultTextView.getText().toString();
+                            AddProduct(sessionId,productName.getText().toString(),productPrice.getText().toString(),itemQuantity,imageUrl,list.get(activeShopIndex));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+
           Toast.makeText(getContext(),"Item added to Wish list", Toast.LENGTH_LONG).show();
         }
       });
 
+
+
+
       return view;
-
-    }
-    public void AddProduct(String sessionId, final int itemQty, String imageUrl,String shopResult){
-      if(sessionId.equals("5060466519077")){
-        objProduct = new Product("5060466519077","Power Play",19.99,itemQty,imageUrl, shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("8718114642871")){
-        objProduct = new Product("8718114642871","Vaseline Lip T",23.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009635830536")){
-        objProduct = new Product("6009635830536","Manuscript Book",10.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009695584912")){
-        objProduct = new Product("6009695584912","Bioplus",4.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6003326009584")){
-        objProduct = new Product("6003326009584","Flying Fish Pressed Lemmon",15.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009690380038")){
-        objProduct = new Product("6009690380038","Oasis Still 500ml",9.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("60018939")){
-        objProduct = new Product("60018939","Vaseline Blueseal",23.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001120602871")){
-        objProduct = new Product("6001120602871","Jungle Bar",10.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001120624972")){
-        objProduct = new Product("6001120624972","Sour Jelly Beans",22.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001007091521")){
-        objProduct = new Product("6001007091521","Cream Soda",15.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6007652000574")){
-        objProduct = new Product("6007652000574","Short Hand Note Book",21.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("036002914585")){
-        objProduct = new Product("036002914585","Aluminium Hiking Flask",139.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("503993116")){
-        objProduct = new Product("503993116","round neck shirt",129.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("90586523150")){
-        objProduct = new Product("90586523150","leather shoes",599.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001275000003")){
-        objProduct = new Product("6001275000003","Jungle Oats",28.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009510804812")){
-        objProduct = new Product("6009510804812","Lays Salted",14.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001069206611")){
-        objProduct = new Product("6001069206611","Lays Sour Cream",14.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("5449000107787")){
-        objProduct = new Product("5449000107787","Valpre Spring Water",9.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001076025038")){
-        objProduct = new Product("6001076025038","Eno",30.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6001076037079")){
-        objProduct = new Product("6001076037079","Grand-PA",45.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9781259080791")){
-        objProduct = new Product("9781259080791","Object Oriented Software Engineering",849.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9780842371513")){
-        objProduct = new Product("9780842371513","Through Gates of Splendor - E.E",59.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009677500053")){
-        objProduct = new Product("6009677500053","Bene Water",9.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9781433506321")){
-        objProduct = new Product("9781433506321","Don't Waste Your Life - J.P",74.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9780805016888")){
-        objProduct = new Product("9780805016888","Asthma & Exercise - N.G",49.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9781259080791")){
-        objProduct = new Product("9781259080791","OO Software Engineering - D.C.K",849.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("9781741818444")){
-        objProduct = new Product("9781741818444","Simply Guitar - S.M",24.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("6009612470045")){
-        objProduct = new Product("6009612470045","aQuelle Still Water",8.99,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("8892961606160")){
-        objProduct = new Product("8892961606160","Spar Rewards Tag",2.50,itemQty,imageUrl,shopResult);
-        ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("7353280248377711")){
-          objProduct = new Product("7353280248377711","Smart Shopper Card",2.50,itemQty,imageUrl,shopResult);
-          ref.push().setValue(objProduct);
-      }
-      else if(sessionId.equals("0200625835623")){
-          objProduct = new Product("0200625835623","Clicks Club Card",0.99,itemQty,imageUrl,shopResult);
-          ref.push().setValue(objProduct);
-      }
-
-
     }
 
+    public void AddProduct(String sessionId,String PName,String pPrice, final int itemQty, String imageUrl,String shopResult){
+      objProduct = new Product(sessionId,PName,pPrice,itemQty,imageUrl,shopResult);
+      ref.push().setValue(objProduct);
+    }
 
-
+/*
+    public void populateCompare (){
+        //tic
+        compareProducts.add(new Product("80050025","Tic Tac Orange",10.00, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Woolworths"));
+        compareProducts.add(new Product("80050025","Tic Tac Orange",9.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Pick 'n Pay"));
+        //dor
+        compareProducts.add(new Product("6009510802542","Doritos Chili",9.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Pick 'n Pay"));
+        compareProducts.add(new Product("6009510802542","Doritos Chili",6.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","CNA"));
+        //eet
+        compareProducts.add(new Product("6009704170686","Eet-Sum-Mor",7.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Pick 'n Pay"));
+        compareProducts.add(new Product("6009704170686","Eet-Sum-Mor",4.99, 1,"https://firebasestorage.googleapis.com/v0/b/bruteforce-d8058.appspot.com/o/80050025.jpg?alt=media&token=8963ab8a-9226-46b9-906e-3379b02c11a3","Woolworths"));
+    }*/
 }
 
 

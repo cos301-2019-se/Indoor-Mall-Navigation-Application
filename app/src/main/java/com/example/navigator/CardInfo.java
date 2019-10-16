@@ -14,8 +14,10 @@
 
 package com.example.navigator;
 import android.app.ProgressDialog;
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -23,8 +25,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -68,6 +73,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
     Button buy;
     AlertDialog.Builder alertBuilder;
     PdfWriter writer;
+   // final int SEND_SMS_PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +84,14 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
 
         cardForm = findViewById(R.id.card_form);
         buy = findViewById(R.id.btnBuy);
+
+       /* buy.setEnabled(false);
+        if(checkPermission(Manifest.permission.SEND_SMS)){
+            buy.setEnabled(true);
+        }
+        else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS},SEND_SMS_PERMISSION_REQUEST_CODE);
+        } */
 
         cardForm.cardRequired(true)
                 .expirationRequired(true)
@@ -108,7 +122,14 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
                             String curDateTime = getDateTime();
                             String curFullDateTime = getFullDateTime();
                             createClientInvoice(Cart.products, curDateTime, curFullDateTime, Login.user.getEmail());
-
+                            String smsMessage = "Indoor Mall Navigation Payments, Thank You For Shopping With Us!";
+                            //Sending Text Message
+                            if(checkPermission(Manifest.permission.SEND_SMS)){
+                                SmsManager.getDefault().sendTextMessage(cardForm.getMobileNumber(),null,smsMessage,null,null);
+                            }
+                            else{
+                                Toast.makeText(CardInfo.this, "SMS Permission Denied", Toast.LENGTH_LONG).show();
+                            }
                         }
                     });
                     alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -116,6 +137,8 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.dismiss();
                         }
+
+
                     });
                     AlertDialog alertDialog = alertBuilder.create();
                     alertDialog.show();
@@ -129,6 +152,31 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
     @Override
     public void onClick(View view) {
 
+    }
+/*
+    public void sendSmsByManager() {
+        try {
+            // Get the default instance of the SmsManager
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNumber.getText().toString(),
+                    null,
+                    smsBody.getText().toString(),
+                    null,
+                    null);
+            Toast.makeText(getApplicationContext(), "Your sms has successfully sent!",
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception ex) {
+            Toast.makeText(getApplicationContext(),"Your sms has failed...",
+                    Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+*/
+
+    public  boolean checkPermission(String permission)
+    {
+        int check = ContextCompat.checkSelfPermission(this,permission);
+        return (check == PackageManager.PERMISSION_GRANTED);
     }
 
 

@@ -15,7 +15,7 @@ public class BeaconNavigator extends BeaconReader {
     private String targetID = null;
     private MapPoint[] directions = null;
     private MapPoint nearestPoint = null;
-    private double distanceThreshold = 0.8;
+    private double distanceThreshold = 1.5;
     private int pathIndex = 0;
     private ArrivalHandler arrival = null;
     private DistanceHandler distanceHandle = null;
@@ -81,12 +81,35 @@ public class BeaconNavigator extends BeaconReader {
 
     }
 
+    private Beacon getDistanceBeacon()
+    {
+        Log.d(TAG, "getDistanceBeacon: Start");
+        if(nearest != null)
+        {
+            Log.d(TAG, "getDistanceBeacon: nearest set");
+            if(targetID != null)
+            {
+                Log.d(TAG, "getDistanceBeacon: target set");
+                for (int i = 0; i < inRange.size(); i++)
+                {
+                    Log.d(TAG, "getDistanceBeacon: Checking distance to " + inRange.get(i).getId1().toString());
+                    if(inRange.get(i).getId1().toString().equals(directions[pathIndex].getId()) || inRange.get(i).getId1().toString().equals(targetID))
+                    {
+                        Log.d(TAG, "getDistanceBeacon: Using distance from "+inRange.get(i).getId1().toString());
+                        return inRange.get(i);
+                    }
+                }
+            }else
+            {
+                return nearest;
+            }
+        }
+        return null;
+    }
+
     private boolean distanceCheck() {
         Log.d(TAG, "distanceCheck: Distance " + nearest.getDistance());
-        if(distanceHandle != null)
-        {
-            distanceHandle.onDistanceChange(nearest.getDistance());
-        }
+
         return nearest.getDistance() <= distanceThreshold;
     }
 
@@ -200,7 +223,21 @@ public class BeaconNavigator extends BeaconReader {
     @Override
     public void update(Collection<Beacon> beacons) {
         super.update(beacons);
+
         nearestPoint = MapPoint.matchingID(nodes, nearest.getId1().toString());
+        if(distanceHandle != null)
+        {
+            Beacon distanceBeacon = getDistanceBeacon();
+            if(distanceBeacon != null)
+            {
+                distanceHandle.onDistanceChange(distanceBeacon.getDistance());
+
+            }else
+            {
+                distanceHandle.onDistanceChange(nearest.getDistance());
+
+            }
+        }
         navigate();
     }
 

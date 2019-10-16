@@ -46,6 +46,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
     private EditText editTextEmail;
     private EditText editTextPassword;
     private EditText editTextUsername;
+    private EditText editTextConfirm;
     private TextView textViewLogIn;
     private DatabaseReference mDatabase;
     private ProgressDialog progressDialog;   //progress loading
@@ -70,6 +71,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         editTextUsername = (EditText) findViewById(R.id.editTextUsername);
+        editTextConfirm = (EditText) findViewById(R.id.editTextConfirm);
         textViewLogIn = (TextView) findViewById(R.id.textViewLogIn);
         buttonSignUp.setOnClickListener(this);
         textViewLogIn.setOnClickListener(this);
@@ -106,6 +108,15 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
 
         return true;
 
+    }
+    public boolean validateConfirm(String confirm) {
+        if (confirm.isEmpty()) {
+            //password is empty
+            toastWrapper("Please enter password");
+            //stop the function
+            return false;
+        }
+        return true;
     }
 
     public boolean validatePassword(String password)
@@ -147,6 +158,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
 
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
+        String confirm = editTextConfirm.getText().toString().trim();
         //int length = password.length();
         if(!validateEmail(email))
         {
@@ -154,6 +166,16 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         }
         if(!validatePassword(password))
         {
+            return;
+        }
+        if(!validateConfirm(confirm)) {
+          return;
+        }
+
+
+        String passwordConfirm = editTextConfirm.getText().toString();
+        if (!password.equals(passwordConfirm)) {
+            Toast.makeText(Signup.this,"Both password fields must be identical",Toast.LENGTH_SHORT).show();
             return;
         }
 

@@ -403,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, N
 //        Mpho:
 
 
-        CNA.addTwoWayPoint(woolworths, 2.0, 257);
+        CNA.addTwoWayPoint(woolworths, 2.0, 295);
         woolworths.addTwoWayPoint(pnp, 4, 70);
         Map map = new Map();
         map.addPoint(CNA);

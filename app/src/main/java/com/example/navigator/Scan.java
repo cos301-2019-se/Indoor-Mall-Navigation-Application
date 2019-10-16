@@ -58,7 +58,8 @@ import java.util.ArrayList;
 
 import adapters.ComparePriceDialog;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
-
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 
 /**
@@ -109,6 +110,7 @@ public class Scan extends Fragment {
 
   int itemQuantity = 1;
   public static boolean itemFound = false;
+  private static DecimalFormat decimal = new DecimalFormat("#.##");
 
   public static String imageUrl;
   //Retrieve images from DB

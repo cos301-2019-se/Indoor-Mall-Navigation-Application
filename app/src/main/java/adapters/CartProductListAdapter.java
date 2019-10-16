@@ -149,8 +149,8 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 product.increaseQuantity();
                 viewHolder.textViewQuantity.setText(product.getQuantity());
-                double totalPrice
-                viewHolder.totalPrice.setText("R " + String.format("%.2f",Double.parseDouble(product.getTotalPrice())));
+                double totalPrice = Double.parseDouble(product.getTotalPrice());
+                viewHolder.totalPrice.setText("R " + String.format("%.2f",totalPrice).replace(",","."));
 
                 //Get the double from cart
                 String sOverallTotal = localOverall.getText().toString().substring(2);
@@ -159,7 +159,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 temp += Double.parseDouble(product.getPrice());
                 Cart.oTotal = temp;
 
-                localOverall.setText("R " + String.format("%.2f",temp));
+                localOverall.setText("R " + String.format("%.2f",temp).replace(",","."));
 
                 //Query to find the ID
                 cartDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -227,14 +227,15 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                     temp -= Double.parseDouble(product.getPrice());
                     temp = (double) Math.round(temp*100)/100;
                     Cart.oTotal = temp;
-                    localOverall.setText("R " + String.format("%.2f",temp));
+                    localOverall.setText("R " + String.format("%.2f",temp).replace(",","."));
 
                 }
 
                 product.decreaseQuantity();
 
                 viewHolder.textViewQuantity.setText(product.getQuantity());
-                viewHolder.totalPrice.setText("R " + String.format("%.2f",Double.parseDouble(product.getTotalPrice())));
+                double totalPrice = Double.parseDouble(product.getTotalPrice());
+                viewHolder.totalPrice.setText("R " + String.format("%.2f",totalPrice).replace(",","."));
 
                 cartDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -304,7 +305,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
                 temp = (double) Math.round(temp*100)/100;
                 Cart.oTotal = temp;
-                localOverall.setText("R " + String.format("%.2f",temp));
+                localOverall.setText("R " + String.format("%.2f",temp).replace(",","."));
 
 
                 cartDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -381,7 +382,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 temp -= Double.parseDouble(product.getTotalPrice().replace(',','.'));
                 temp = (double) Math.round(temp*100)/100;
                 Cart.oTotal = temp;
-                localOverall.setText("R " + String.format("%.2f",temp));
+                localOverall.setText("R " + String.format("%.2f",temp).replace(",","."));
 
                 wishDBRef.push().setValue(product);
                 Toast.makeText(getContext(),product.getName()+ " added to WishList ", Toast.LENGTH_LONG).show();

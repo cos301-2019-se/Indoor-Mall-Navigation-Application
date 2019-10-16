@@ -56,6 +56,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import static com.example.navigator.R.layout.cart_product_list_layout;
 
@@ -64,6 +66,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
     private Context context;
     private List<CartProduct> products;
     private TextView localOverall;
+    private static DecimalFormat decimal = new DecimalFormat("#.##");
 
     private static DecimalFormat roundToTwo = new DecimalFormat("#.##");
     //Get device ID
@@ -109,8 +112,11 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
         viewHolder.textViewName.setText(product.getName());
         viewHolder.textViewQuantity.setText(product.getQuantity());
+
         viewHolder.textViewPrice.setText("R " + product.getPrice());
-        viewHolder.totalPrice.setText(product.getTotalPrice());
+        double totalPrice = Double.parseDouble(product.getTotalPrice());
+        viewHolder.totalPrice.setText(String.format("%.2f",totalPrice).replace(",","."));
+
 
         //List<String
         int shopImage = R.drawable.ic_store_black_24dp;
@@ -146,7 +152,8 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
 
                 product.increaseQuantity();
                 viewHolder.textViewQuantity.setText(product.getQuantity());
-                viewHolder.totalPrice.setText("R " + product.getTotalPrice());
+                double totalPrice = Double.parseDouble(product.getTotalPrice());
+                viewHolder.totalPrice.setText("R " + String.format("%.2f",totalPrice).replace(",","."));
 
                 //Get the double from cart
                 String sOverallTotal = localOverall.getText().toString().substring(2);
@@ -155,7 +162,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                 temp += Double.parseDouble(product.getPrice());
                 Cart.oTotal = temp;
 
-                localOverall.setText("R " +roundToTwo.format(temp));
+                localOverall.setText("R " + String.format("%.2f",temp).replace(",","."));
 
                 //Query to find the ID
                 cartDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -223,14 +230,15 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                     temp -= Double.parseDouble(product.getPrice());
                     temp = (double) Math.round(temp*100)/100;
                     Cart.oTotal = temp;
-                    localOverall.setText("R " +roundToTwo.format(temp));
+                    localOverall.setText("R " + String.format("%.2f",temp).replace(",","."));
 
                 }
 
                 product.decreaseQuantity();
 
                 viewHolder.textViewQuantity.setText(product.getQuantity());
-                viewHolder.totalPrice.setText("R " + product.getTotalPrice());
+                double totalPrice = Double.parseDouble(product.getTotalPrice());
+                viewHolder.totalPrice.setText("R " + String.format("%.2f",totalPrice).replace(",","."));
 
                 cartDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -304,9 +312,8 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                     localOverall.setVisibility(View.INVISIBLE);
                 }else {
                     localOverall.setVisibility(View.VISIBLE);
-                    localOverall.setText("R " +roundToTwo.format(temp));
+                    localOverall.setText("R " + String.format("%.2f",temp).replace(",","."));
                 }
-
 
 
                 cartDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -387,7 +394,7 @@ public class CartProductListAdapter extends ArrayAdapter<CartProduct> {
                     localOverall.setVisibility(View.INVISIBLE);
                 }else {
                     localOverall.setVisibility(View.VISIBLE);
-                    localOverall.setText("R " +roundToTwo.format(temp));
+                    localOverall.setText("R " + String.format("%.2f",temp).replace(",","."));
                 }
 
                 wishDBRef.push().setValue(product);

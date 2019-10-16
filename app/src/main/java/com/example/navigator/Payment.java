@@ -48,7 +48,7 @@ public class Payment extends AppCompatActivity implements View.OnClickListener {
          *
          * */
         String sOverallTotal = totalCheckOutPrice.getText().toString().substring(2);
-        totalCheckOutPrice.setText("TOTAL PRICE: R"+ String.valueOf(Cart.oTotal));
+        totalCheckOutPrice.setText("TOTAL PRICE: R"+ String.format("%.2f",Cart.oTotal).replace(",","."));
 
 
         debitImage.setOnClickListener(new View.OnClickListener() {

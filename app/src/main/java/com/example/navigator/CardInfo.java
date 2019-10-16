@@ -160,6 +160,7 @@ public class CardInfo extends AppCompatActivity implements View.OnClickListener 
 
                             DatabaseConn data = DatabaseConn.open();
                             data.delete("Cart", deviceId);
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
 

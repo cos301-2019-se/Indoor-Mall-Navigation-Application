@@ -60,11 +60,7 @@ public class BeaconNavigator extends BeaconReader {
         Log.d(TAG, "setTargetID: Set target to" + id);
         targetID = id;
         if (nearestPoint != null && targetID != null) {
-            for (int i = 0; i < nodes.size(); i++) {
-                if (nodes.get(i).getId().equals(nearestPoint.getId())) {
-                    setDirections(nodes.get(i).getDirectionsTo(targetID, nodes.size()));
-                }
-            }
+            recalculateDirections();
         }
     }
 
@@ -161,6 +157,7 @@ public class BeaconNavigator extends BeaconReader {
                         Log.d(TAG, "navigate: User is on path");
                     } else {
                         Log.d(TAG, "navigate: User is not on the path. Recalculate");
+                        recalculateDirections();
                     }
                 }
 
@@ -170,6 +167,16 @@ public class BeaconNavigator extends BeaconReader {
 //            setTargetID(targetID);
         }
     }
+
+    private void recalculateDirections()
+    {
+        for (int i = 0; i < nodes.size(); i++) {
+            if (nodes.get(i).getId().equals(nearestPoint.getId())) {
+                setDirections(nodes.get(i).getDirectionsTo(targetID, nodes.size()));
+            }
+        }
+    }
+
 
     public float getBearing() {
         if(nearestPoint != null)

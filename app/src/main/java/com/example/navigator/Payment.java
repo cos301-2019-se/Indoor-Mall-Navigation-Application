@@ -36,7 +36,7 @@ public class Payment extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.activity_checkout);
 
         debitImage = (ImageView) findViewById(R.id.imageCredit);
-        eftImage = (ImageView) findViewById(R.id.imageEFT);
+        //eftImage = (ImageView) findViewById(R.id.imageEFT);
         totalCheckOutPrice = (TextView) findViewById(R.id.totalPrice);
 
         /*Calling the overall value
